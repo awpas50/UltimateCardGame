@@ -10,14 +10,14 @@ export default class UIHandler {
         }
 
         this.buildPlayerAreas = () => {
-            scene.playerHandArea = scene.add.rectangle(470, 860, 850, 230);
+            scene.playerHandArea = scene.add.rectangle(200, 660, 350, 230);
             scene.playerHandArea.setStrokeStyle(4, 0xff69b4);
-            scene.playerDeckArea = scene.add.rectangle(1000, 860, 155, 215);
+            scene.playerDeckArea = scene.add.rectangle(470, 660, 155, 215);
             scene.playerDeckArea.setStrokeStyle(4, 0x00ffff);
 
-            scene.opponentHandArea = scene.add.rectangle(470, 135, 850, 230);
+            scene.opponentHandArea = scene.add.rectangle(200, 135, 350, 230);
             scene.opponentHandArea.setStrokeStyle(4, 0xff69b4);
-            scene.opponentDeckArea = scene.add.rectangle(1000, 135, 155, 215);
+            scene.opponentDeckArea = scene.add.rectangle(470, 135, 155, 215);
             scene.opponentDeckArea.setStrokeStyle(4, 0x00ffff);
         }
 
