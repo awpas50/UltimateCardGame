@@ -29,11 +29,11 @@ io.on('connection', function(socket) {
     socket.on('dealDeck', function(socketId) {
         players[socketId].inDeck = shuffle(["boolean", "ping"]);
         console.log(players);
-
+        console.log("dealDeck");
         if(Object.keys(players)) {
             return;
         }
-        
+        console.log("changeGameState1");
         io.emit('changeGameState', 'Initializing');
     })
 })
