@@ -13,7 +13,7 @@ export default class SocketHandler {
             scene.GameHandler.changeTurn();
         })
 
-        scene.socket.on('connect', (gameState) => {
+        scene.socket.on('changeGameState', (gameState) => {
             scene.GameHandler.changeGameState(gameState);
             if(gameState === "Initializing") {
                 scene.DeckHandler.dealCard(200, 860, "cardBack", "playerCard");
@@ -26,7 +26,7 @@ export default class SocketHandler {
         scene.socket.on('dealCards', (socketId, cards) => {
             if(socketId === scene.socket.id) {
                 for(let i in cards) {
-                    let card = scene.GameHandler.playerHand.push(scene.DeckHandler.dealCard(155 + (i * 155), 860, cards[i], "playerCard"));
+                    let card = scene.GameHandler.playerHand.push(scene.DeckHandler.dealCard(155 + (i * 155), 300, cards[i], "playerCard"));
                 }
             } else {
                 for(let i in cards) {

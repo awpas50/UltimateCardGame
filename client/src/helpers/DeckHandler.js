@@ -1,5 +1,5 @@
 import CardBack from "../cards/CardBack";
-import Boolean from "../cards/boolean";
+import Boolean from "../cards/Boolean";
 import Ping from "../cards/Ping";
 
 export default class DeckHandler {
@@ -11,6 +11,8 @@ export default class DeckHandler {
                 ping: new Ping(scene)
             }
             let newCard = cards[name];
+
+            console.log("A new card is generated in DeckHandler");
             return(newCard.render(x, y, type));
         }
     }
