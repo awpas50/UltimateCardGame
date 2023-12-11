@@ -14,7 +14,7 @@ export default class GameHandler {
 
         this.changeGameState = (gameState) => {
             this.gameState = gameState;
-            console.log("GameState: " + this.isMyTurn);
+            console.log("GameState: " + this.gameState);
         }
     }
 }

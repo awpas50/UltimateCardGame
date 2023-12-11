@@ -39,7 +39,7 @@ export default class Game extends Phaser.Scene {
         this.UIHandler = new UIHandler(this);
         this.UIHandler.buildUI();
 
-        this.DeckHandler.dealCard(200, 460, "cardBack", "playerCard").setScale(0.26);
+        //this.DeckHandler.dealCard(200, 460, "cardBack", "playerCard").setScale(0.26);
 
         this.InteractiveHandler = new InteractiveHandler(this);
     }
