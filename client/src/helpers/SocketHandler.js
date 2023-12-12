@@ -44,10 +44,17 @@ export default class SocketHandler {
 
         scene.socket.on('dealCards', (socketId, cards) => {
             if (socketId === scene.socket.id) {
-                for (let i in cards) {
+                //Author card
+                //scene.DeckHandler.dealCard(189, 645, "AuthorCard", "authorCard").setScale(0.26, 0.26);
+                scene.add.image(189, 585, "W009").setScale(0.26);
+                scene.add.image(189, 230, "W010").setScale(0.26, -0.26);
+                for (let i in cards) { 
                     let card = scene.GameHandler.playerHand.push(scene.DeckHandler.dealCard(55 + (i * 55), 760, cards[i], "playerCard").setScale(0.26));
                 }
             } else {
+                scene.add.image(189, 585, "W010").setScale(0.26);
+                scene.add.image(189, 230, "W009").setScale(0.26, -0.26);
+                //scene.DeckHandler.dealCard(189, 220, "AuthorCard2", "authorCard").setScale(0.26, -0.26);
                 for (let i in cards) {
                     let card = scene.GameHandler.opponentHand.push(scene.DeckHandler.dealCard(85 + (i * 35), 0, "cardBack", "opponentCard").setScale(0.26));
                 }
@@ -64,15 +71,15 @@ export default class SocketHandler {
                 switch(dropZoneName) {
                     case "dropZone1":
                         console.log("DD");
-                        scene.DeckHandler.dealCard(189, 345, cardName, "opponentCard").setScale(0.26);
+                        scene.DeckHandler.dealCard(189, 345, cardName, "opponentCard").setScale(0.26, -0.26);
                         break;
                     case "dropZone2":
                         console.log("EE");
-                        scene.DeckHandler.dealCard(90, 220, cardName, "opponentCard").setScale(0.26);
+                        scene.DeckHandler.dealCard(90, 220, cardName, "opponentCard").setScale(0.26, -0.26);
                         break;
                     case "dropZone3":
                         console.log("FF");
-                        scene.DeckHandler.dealCard(280, 220, cardName, "opponentCard").setScale(0.26);
+                        scene.DeckHandler.dealCard(280, 220, cardName, "opponentCard").setScale(0.26, -0.26);
                         break;
                 }
                 //scene.dropZone.data.values.cards++; 

@@ -24,26 +24,6 @@ export default class UIHandler {
             return this.scene.dropZone3.name;
         }
 
-        // this.buildZones = () => {
-        //     scene.dropZone1 = this.renderZone(189, 458, 330 / 3.25, 430 / 3.25);
-        //     scene.dropZone2 = this.renderZone(90, 575, 330 / 3.25, 430 / 3.25);
-        //     scene.dropZone3 = this.renderZone(280, 575, 330 / 3.25, 430 / 3.25);
-        // }
-        // this.renderZone = (x, y, width, height) => {
-        //     let dropZone = scene.add.zone(x, y, width, height).setRectangleDropZone(width, height);
-        //     dropZone.setData({
-        //         "cards": 0
-        //     });
-        //     let dropZoneOutline = scene.add.graphics();
-        //     dropZoneOutline.lineStyle(4, 0xffd700);
-
-        //     // Calculate the top-left corner coordinates of the stroke rectangle
-        //     const topLeftX = dropZone.x - width / 2; // Divide by 8 to shift by half the width
-        //     const topLeftY = dropZone.y - height / 2; // Divide by 8 to shift by half the height
-        //     dropZoneOutline.strokeRect(topLeftX, topLeftY, width, height);
-        //     return dropZone;
-        // }
-
         this.buildZoneOutline = () => {
             this.zoneHandler.renderOutlineGrid(220, 270, 330, 430);
         }

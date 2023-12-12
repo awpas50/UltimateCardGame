@@ -6,13 +6,13 @@ export default class ZoneHandler {
             dropZone.setData({
                 "cards": 0
             });
-            let dropZoneOutline = scene.add.graphics();
-            dropZoneOutline.lineStyle(4, 0xffd700);
+            // let dropZoneOutline = scene.add.graphics();
+            // dropZoneOutline.lineStyle(4, 0xffd700);
 
-            // Calculate the top-left corner coordinates of the stroke rectangle
-            const topLeftX = dropZone.x - width / 2; // Divide by 8 to shift by half the width
-            const topLeftY = dropZone.y - height / 2; // Divide by 8 to shift by half the height
-            dropZoneOutline.strokeRect(topLeftX, topLeftY, width, height);
+            // // Calculate the top-left corner coordinates of the stroke rectangle
+            // const topLeftX = dropZone.x - width / 2; // Divide by 8 to shift by half the width
+            // const topLeftY = dropZone.y - height / 2; // Divide by 8 to shift by half the height
+            // dropZoneOutline.strokeRect(topLeftX, topLeftY, width, height);
             return dropZone;
         }
         // this.renderOutline = (dropZone) => {
