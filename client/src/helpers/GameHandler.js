@@ -7,9 +7,13 @@ export default class GameHandler {
         this.playerHand = [];
         this.opponentHand = [];
 
-        this.changeTurn = () => {
+        this.changeTurn = () => { 
             this.isMyTurn = !this.isMyTurn;
             console.log("isMyTurn: " + this.isMyTurn);
+        }
+
+        this.getCurrentTurn = () => { 
+            return this.isMyTurn;
         }
 
         this.changeGameState = (gameState) => {

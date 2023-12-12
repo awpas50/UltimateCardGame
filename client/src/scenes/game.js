@@ -14,7 +14,7 @@ export default class Game extends Phaser.Scene {
     }
 
     // before creation
-    preload() {
+    preload() { 
 
         this.load.image('I001', require('../assets/ICard/I001.png').default);
         this.load.image('I002', require('../assets/ICard/I002.png').default);

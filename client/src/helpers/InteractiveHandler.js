@@ -27,7 +27,7 @@ export default class InteractiveHandler {
             }
             if (gameObjects[0].type === "Image" &&
                 gameObjects[0].data.list.name !== "cardBack") {
-                    scene.cardPreview = scene.add.image(pointer.worldX, pointer.worldY - 200, gameObjects[0].data.values.sprite).setScale(0.8, 0.8);
+                    scene.cardPreview = scene.add.image(pointer.worldX, pointer.worldY - 200, gameObjects[0].data.values.sprite).setScale(1, 1);
                     console.log(gameObjects);
                 }
             
@@ -64,16 +64,28 @@ export default class InteractiveHandler {
         // Card drop
         scene.input.on('drop', (pointer, gameObject, dropZone) => {
             if (scene.GameHandler.isMyTurn && scene.GameHandler.gameState === "Ready") {
-                gameObject.x = (dropZone.x) + (dropZone.data.values.cards * 50);
+                gameObject.x = dropZone.x;
                 gameObject.y = dropZone.y;
-                scene.dropZone.data.values.cards++;
+                //scene.dropZone.data.values.cards++;
                 scene.input.setDraggable(gameObject, false);
-                scene.socket.emit('cardPlayed', gameObject.data.values.name, scene.socket.id);
+
+                console.log(scene.UIHandler.getDropZone1);
+                scene.socket.emit('cardPlayed', gameObject.data.values.name, scene.socket.id, dropZone.name);
             }
             else {
                 gameObject.x = gameObject.input.dragStartX;
                 gameObject.y = gameObject.input.dragStartY;
             }
         })
+
+        //Debug
+        scene.input.on('pointerdown', (pointer) => {
+            // Get the x and y coordinates of the mouse pointer
+            const x = pointer.x;
+            const y = pointer.y;
+        
+            // Show the coordinates on the console
+            console.log(`Clicked at X: ${x}, Y: ${y}`);
+        });
     }
 }
