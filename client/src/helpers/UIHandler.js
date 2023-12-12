@@ -21,8 +21,12 @@ export default class UIHandler {
             scene.opponentDeckArea.setStrokeStyle(4, 0x00ffff);
         }
 
+        this.buildPlayerNumberText = (playerNumber) => {
+            scene.playerNumberText = scene.add.text(700, 100, "你是: 玩家 " + playerNumber).setFontSize(32).setFontFamily("Trebuchet MS"); 
+        }
+
         this.buildGameText = () => {
-            scene.dealCards = scene.add.text(400, 400, "Deal Cards").setFontSize(14).setFontFamily("Trebuchet MS");
+            scene.dealCards = scene.add.text(400, 400, "抽卡").setFontSize(32).setFontFamily("Trebuchet MS");
         }
 
         this.buildUI = () => {

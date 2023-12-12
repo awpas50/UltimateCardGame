@@ -5,6 +5,6 @@ export default class Ping extends Card {
         super(scene);
         this.name = "ping";
         this.playerCardSprite = "I001";
-        this.opponentCardSprite = "I002";
+        this.opponentCardSprite = "I001";
     }
 }

@@ -4,7 +4,7 @@ export default class Boolean extends Card {
     constructor(scene) {
         super(scene);
         this.name = "boolean";
-        this.playerCardSprite = "I005";
+        this.playerCardSprite = "I004";
         this.opponentCardSprite = "I004";
     }
 }

@@ -27,10 +27,15 @@ io.on('connection', function(socket) {
         io.emit('firstTurn');
     }
 
+    if(players[socket.id].isPlayerA) {
+        socket.emit('setPlayerNumberText', 1);
+    } else if(!players[socket.id].isPlayerA) {
+        socket.emit('setPlayerNumberText', 2);
+    }
+
     socket.on('dealDeck', function(socketId) {
         players[socketId].inDeck = shuffle(["boolean", "ping"]);
         console.log(players);
-        console.log("dealDeck");
         if(Object.keys(players) < 2) {
             return;
         }
@@ -51,6 +56,16 @@ io.on('connection', function(socket) {
             gameState = "Ready";
             io.emit('changeGameState', "Ready");
         }
+    });
+
+    socket.on('cardPlayed', function (cardName, socketId) {
+        io.emit('cardPlayed', cardName, socketId);
+        io.emit('changeTurn');
+    });
+
+    socket.on('disconnect', function () {
+        console.log('A user disconnected: ' + socket.id);
+        delete players[socket.id];
     });
 })
 

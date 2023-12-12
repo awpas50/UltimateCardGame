@@ -25,6 +25,7 @@ export default class Game extends Phaser.Scene {
         this.load.image('I007', require('../assets/ICard/I007.png').default);
 
         this.load.image('H001B', require('../assets/Back/H001B.png').default);
+        this.load.image('H001B_Filped', require('../assets/Back/H001B_Filped.png').default);
         this.load.image('W001B', require('../assets/Back/W001B.png').default);
         this.load.image('Test1', require('../assets/Back/Test1.jpg').default);
     }
@@ -38,8 +39,6 @@ export default class Game extends Phaser.Scene {
         this.SocketHandler = new SocketHandler(this);
         this.UIHandler = new UIHandler(this);
         this.UIHandler.buildUI();
-
-        //this.DeckHandler.dealCard(200, 460, "cardBack", "playerCard").setScale(0.26);
 
         this.InteractiveHandler = new InteractiveHandler(this);
     }
