@@ -1,3 +1,5 @@
+//import { WCard_Data_23246, ICard_Data_23246 } from './client/src/scenes/game.js';
+
 const server = require('express')();
 const http = require('http').createServer(server);
 const cors = require('cors');
@@ -5,6 +7,9 @@ const shuffle = require('shuffle-array');
 let players = {};
 let readyCheck = 0;
 let gameState = "Initializing";
+
+const fs = require('fs');
+const path = require('path');
 
 const io = require('socket.io')(http, {
     cors: {
@@ -15,6 +20,10 @@ const io = require('socket.io')(http, {
 
 io.on('connection', function(socket) {
     console.log('A user connected: ' + socket.id);
+
+    let folderPath = './client/src/23246/ICard'; // Update this with your folder path
+    let imageNames = getImageNamesInFolder(folderPath);
+    console.log('Image names in the folder:', imageNames);
 
     players[socket.id] = {
         inDeck: [],
@@ -36,9 +45,9 @@ io.on('connection', function(socket) {
 
     // Called in SocketHandler
     socket.on('dealDeck', function(socketId) {
-        // In JavaScript, you can freely assign different types of values to a variable or object property without declaring their types beforehand.
-        // It's completely legitimate to assign a shuffled array even if it was initially declared as an empty array.
-        players[socketId].inDeck = shuffle(["boolean", "ping"]);
+        // imageNames: (Array of string) string[]
+        // shuffles an array of string here:
+        players[socketId].inDeck = shuffle(imageNames);
         console.log(players);
         if(Object.keys(players) < 2) {
             return;
@@ -51,15 +60,17 @@ io.on('connection', function(socket) {
     // If the deck is empty, it shuffles and refills the deck before adding cards to the hand.
     socket.on('dealCards', function (socketId) {
         for (let i = 0; i < 6; i++) {
+            // In JavaScript, you can freely assign different types of values to a variable or object property without declaring their types beforehand.
+            // It's completely legitimate to assign a shuffled array even if it was initially declared as an empty array.
             if (players[socketId].inDeck.length === 0) {
-                players[socketId].inDeck = shuffle(["boolean", "ping"]);
+                players[socketId].inDeck = shuffle(imageNames);
             }
             players[socketId].inHand.push(players[socketId].inDeck.shift());
         }
         console.log(players);
         // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
         io.emit('addCardsInScene', socketId, players[socketId].inHand);
-        readyCheck++;
+        readyCheck++; 
         if (readyCheck >= 2) {
             gameState = "Ready";
             io.emit('changeGameState', "Ready");
@@ -83,3 +94,16 @@ io.on('connection', function(socket) {
 http.listen(3000, function() {
     console.log('Server Started!');
 })
+
+// Function to get image names in a folder
+function getImageNamesInFolder(folderPath) {
+    // Get the list of files in the folder
+    const files = fs.readdirSync(folderPath);
+
+    // Filter out only the image files (files with .jpg extension)
+    const imageNames = files
+        .filter(file => path.extname(file).toLowerCase() === '.jpg')
+        .map(file => path.basename(file, '.jpg')); // Remove the .jpg extension
+
+    return imageNames;
+}

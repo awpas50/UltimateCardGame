@@ -1,10 +1,10 @@
-import Card from "./card";
+import Card from "./Card";
 
 export default class ICard extends Card {
     constructor(scene) {
         super(scene);
-        this.name = "ICard";
-        this.playerCardSprite = "I002";
-        this.opponentCardSprite = "I002";
+        this.id = "23246_I047";
+        this.playerCardSprite = "23246_I047";
+        this.opponentCardSprite = "23246_I047";
     }
 }

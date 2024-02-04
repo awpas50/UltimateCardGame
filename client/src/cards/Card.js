@@ -1,24 +1,26 @@
 export default class Card {
     constructor(scene) {
-        this.render = (x, y, type) => {
+        this.render = (x, y, side) => {
             let sprite;
-            if(type === 'playerCard') {
+            let card;
+            if(side === 'playerCard') {
                 sprite = this.playerCardSprite;
             }
             else {
                 sprite = this.opponentCardSprite;
             }
-
-            if(type === 'playerCard') {
+            
+            // add.image: Phaser 3 built-in code (x-coordinate, y-coordinate, image referenced by name in game.js)
+            card = scene.add.image(x, y, sprite).setInteractive().setData({
+                "id": this.id,
+                "side": side,
+                "sprite": sprite
+            }); 
+            
+            if(side === 'playerCard') { 
                 scene.input.setDraggable(card);
             }
-            // add.image: Phaser 3 built-in code (x-coordinate, y-coordinate, image referenced by name in game.js)
-            let card = scene.add.image(x, y, sprite).setInteractive().setData({
-                "name": this.name,
-                "type": type,
-                "sprite": sprite
-            });
-            
+             
             return card;
         }
     }

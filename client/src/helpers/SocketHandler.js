@@ -49,15 +49,18 @@ export default class SocketHandler {
                 //scene.DeckHandler.dealCard(189, 645, "AuthorCard", "authorCard").setScale(0.26, 0.26);
                 scene.add.image(189, 585, "W009").setScale(0.26); //player 1
                 scene.add.image(189, 230, "W010").setScale(0.26, -0.26); //player 2
-                for (let i in cards) { 
-                    let card = scene.GameHandler.playerHand.push(scene.DeckHandler.InstantiateCard(55 + (i * 55), 760, cards[i], "playerCard").setScale(0.26));
+                for (let i in cards) {
+                    //card[i]: card name
+                    // Use card name to retrieve card data
+                    let card = scene.GameHandler.playerHand.push(scene.DeckHandler.InstantiateCard(55 + (i * 55), 760, "ICard", cards[i], "playerCard").setScale(0.26));
                 }
+                console.log(scene.GameHandler.playerHand);
             } else {
                 scene.add.image(189, 585, "W010").setScale(0.26); // player 2
                 scene.add.image(189, 230, "W009").setScale(0.26, -0.26); // player 1
                 //scene.DeckHandler.dealCard(189, 220, "AuthorCard2", "authorCard").setScale(0.26, -0.26);
                 for (let i in cards) {
-                    let card = scene.GameHandler.opponentHand.push(scene.DeckHandler.InstantiateCard(85 + (i * 35), 0, "cardBack", "opponentCard").setScale(0.26));
+                    let card = scene.GameHandler.opponentHand.push(scene.DeckHandler.InstantiateCard(85 + (i * 35), 0, "cardBack", "cardBack", "opponentCard").setScale(0.26));
                 }
             }
         })
@@ -73,15 +76,15 @@ export default class SocketHandler {
                 switch(dropZoneName) {
                     case "dropZone1":
                         console.log("DD");
-                        scene.DeckHandler.InstantiateCard(189, 345, cardName, "opponentCard").setScale(0.26, -0.26);
+                        scene.DeckHandler.InstantiateCard(189, 345, "ICard", cardName, "opponentCard").setScale(0.26, -0.26);
                         break;
                     case "dropZone2":
                         console.log("EE"); 
-                        scene.DeckHandler.InstantiateCard(90, 220, cardName, "opponentCard").setScale(0.26, -0.26);
+                        scene.DeckHandler.InstantiateCard(90, 220, "ICard", cardName, "opponentCard").setScale(0.26, -0.26);
                         break;
                     case "dropZone3":
                         console.log("FF");
-                        scene.DeckHandler.InstantiateCard(280, 220, cardName, "opponentCard").setScale(0.26, -0.26);
+                        scene.DeckHandler.InstantiateCard(280, 220, "ICard", cardName, "opponentCard").setScale(0.26, -0.26);
                         break;
                 }
             }
