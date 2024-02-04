@@ -42,6 +42,33 @@ export default class Game extends Phaser.Scene {
 
     // just like void Start() in Unity
     create() {
+        // Set scale mode
+        this.scale.scaleMode = Phaser.Scale.ScaleModes.NEAREST;
+
+        // Ensure the canvas doesn't smooth images
+        this.scale.canvas.setAttribute('image-rendering', 'pixelated');
+        
+        // Check if the canvas exists
+        // if (this.sys.game.canvas) {
+        //     const context = this.sys.game.canvas.getContext('2d');
+            
+        //     // Check if the context and imageSmoothingQuality are supported
+        //     if (context && 'imageSmoothingQuality' in context) {
+        //         context.imageSmoothingQuality = 'high';
+        //     } else {
+        //         console.warn('Canvas context or imageSmoothingQuality is not supported in this browser.');
+        //     }
+        // } else {
+        //     console.warn('Canvas element not found.');
+        // }
+
+        // 屬性，靈感值
+        const ICard_Data = {
+            "23246_I002": { ID: "23246_I002", name: "幻想", element: "水", series: "袁枚系列", points: 60 },
+
+            // Add more card IDs and their corresponding ATK values here
+        };
+
         this.CardHandler = new CardHandler();
         this.DeckHandler = new DeckHandler(this);
         this.GameHandler = new GameHandler(this);

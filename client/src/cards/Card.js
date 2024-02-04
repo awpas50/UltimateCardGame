@@ -9,15 +9,15 @@ export default class Card {
                 sprite = this.opponentCardSprite;
             }
 
+            if(type === 'playerCard') {
+                scene.input.setDraggable(card);
+            }
+            // add.image: Phaser 3 built-in code (x-coordinate, y-coordinate, image referenced by name in game.js)
             let card = scene.add.image(x, y, sprite).setInteractive().setData({
                 "name": this.name,
                 "type": type,
                 "sprite": sprite
             });
-
-            if(type === 'playerCard') {
-                scene.input.setDraggable(card);
-            }
             
             return card;
         }

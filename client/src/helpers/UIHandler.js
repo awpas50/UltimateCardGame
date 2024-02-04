@@ -4,7 +4,7 @@ export default class UIHandler {
     constructor(scene) {
         this.zoneHandler = new ZoneHandler(scene);
         
-        this.buildZones = () => {
+        this.BuildZones = () => {
             scene.dropZone1 = this.zoneHandler.renderZone(189, 458, 330 / 3.25, 430 / 3.25);
             scene.dropZone2 = this.zoneHandler.renderZone(90, 575, 330 / 3.25, 430 / 3.25);
             scene.dropZone3 = this.zoneHandler.renderZone(280, 575, 330 / 3.25, 430 / 3.25);
@@ -24,11 +24,11 @@ export default class UIHandler {
             return this.scene.dropZone3.name;
         }
 
-        this.buildZoneOutline = () => {
+        this.BuildZoneOutline = () => {
             this.zoneHandler.renderOutlineGrid(220, 270, 330, 430);
         }
 
-        this.buildPlayerAreas = () => {
+        this.BuildPlayerAreas = () => {
             scene.playerHandArea = scene.add.rectangle(200, 880, 350, 230);
             scene.playerHandArea.setStrokeStyle(4, 0xff69b4);
             scene.playerDeckArea = scene.add.rectangle(470, 660, 155, 215);
@@ -61,15 +61,16 @@ export default class UIHandler {
             }
         }
 
-        this.buildGameText = () => {
-            scene.dealCards = scene.add.text(430, 400, "點我抽卡").setFontSize(32).setFontFamily("Trebuchet MS");
+        this.BuildGameText = () => {
+            // Let a variable called dealCards, and this is a text.
+            scene.dealCardText = scene.add.text(430, 400, "點我抽卡").setFontSize(32).setFontFamily("Trebuchet MS");
         }
 
         this.buildUI = () => {
-            this.buildZones();
-            this.buildZoneOutline();
-            this.buildPlayerAreas();
-            this.buildGameText(); 
+            this.BuildZones();
+            this.BuildZoneOutline();
+            this.BuildPlayerAreas();
+            this.BuildGameText(); 
         }
     }
 }

@@ -34,7 +34,10 @@ io.on('connection', function(socket) {
         socket.emit('buildPlayerNumberText', 2);
     }
 
+    // Called in SocketHandler
     socket.on('dealDeck', function(socketId) {
+        // In JavaScript, you can freely assign different types of values to a variable or object property without declaring their types beforehand.
+        // It's completely legitimate to assign a shuffled array even if it was initially declared as an empty array.
         players[socketId].inDeck = shuffle(["boolean", "ping"]);
         console.log(players);
         if(Object.keys(players) < 2) {
@@ -43,6 +46,9 @@ io.on('connection', function(socket) {
         io.emit('changeGameState', 'Initializing'); 
     })
 
+    // Called in InteractiveHandler.js
+    // populates the players[socketId].inHand array with elements from the players[socketId].inDeck array.
+    // If the deck is empty, it shuffles and refills the deck before adding cards to the hand.
     socket.on('dealCards', function (socketId) {
         for (let i = 0; i < 6; i++) {
             if (players[socketId].inDeck.length === 0) {
@@ -51,7 +57,8 @@ io.on('connection', function(socket) {
             players[socketId].inHand.push(players[socketId].inDeck.shift());
         }
         console.log(players);
-        io.emit('dealCards', socketId, players[socketId].inHand);
+        // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
+        io.emit('addCardsInScene', socketId, players[socketId].inHand);
         readyCheck++;
         if (readyCheck >= 2) {
             gameState = "Ready";
@@ -60,6 +67,7 @@ io.on('connection', function(socket) {
         }
     });
 
+    // Called in InteractiveHandler.js
     socket.on('cardPlayed', function (cardName, socketId, dropZoneID) {
         io.emit('cardPlayed', cardName, socketId, dropZoneID);
         io.emit('changeTurn');

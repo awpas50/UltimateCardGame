@@ -1,17 +1,18 @@
 export default class InteractiveHandler {
     constructor(scene) {
-        scene.dealCards.on('pointerdown', () => {
+        // When clicking on a particular text, perform certain interaction
+        scene.dealCardText.on('pointerdown', () => {
             scene.socket.emit("dealCards", scene.socket.id);
-            scene.dealCards.disableInteractive();
+            scene.dealCardText.disableInteractive();
 
         })
 
         // Card color
-        scene.dealCards.on('pointerover', () => {
-            scene.dealCards.setColor('#fff5fa');
+        scene.dealCardText.on('pointerover', () => {
+            scene.dealCardText.setColor('#fff5fa');
         })
-        scene.dealCards.on('pointerout', () => {
-            scene.dealCards.setColor('#00ffff');
+        scene.dealCardText.on('pointerout', () => {
+            scene.dealCardText.setColor('#00ffff');
         })
 
         // Section: Card preview
