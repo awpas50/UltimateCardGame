@@ -1,4 +1,4 @@
-import Card from "./card";
+import Card from "./Card.js";
 
 export default class CardBack extends Card {
     constructor(scene) {

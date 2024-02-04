@@ -47,17 +47,25 @@ export default class SocketHandler {
             if (socketId === scene.socket.id) {
                 //Author card
                 //scene.DeckHandler.dealCard(189, 645, "AuthorCard", "authorCard").setScale(0.26, 0.26);
-                scene.add.image(189, 585, "W009").setScale(0.26); //player 1
-                scene.add.image(189, 230, "W010").setScale(0.26, -0.26); //player 2
+                scene.add.image(189, 585, "23246_W001").setScale(0.26); //player 1
+                scene.add.image(189, 230, "23246_W002").setScale(0.26, -0.26); //player 2
                 for (let i in cards) {
                     //card[i]: card name
                     // Use card name to retrieve card data
-                    let card = scene.GameHandler.playerHand.push(scene.DeckHandler.InstantiateCard(55 + (i * 55), 760, "ICard", cards[i], "playerCard").setScale(0.26));
+                    let card = scene.DeckHandler.InstantiateCard(55 + (i * 55), 760, "ICard", cards[i], "playerCard").setScale(0.26);
+                    scene.GameHandler.playerHand.push(card);
+                    console.log(typeof card);
+                    console.log("scene.GameHandler.playerHand[0]: "+ scene.GameHandler.playerHand[0]);
+                    let testMessage = card.getData('test');
+                    console.log(testMessage); // This should output: "test message"
+
+                    let testMessage2 = scene.GameHandler.playerHand[0].getData('test');
+                    console.log(testMessage2); // This should output: "test message"
                 }
                 console.log(scene.GameHandler.playerHand);
             } else {
-                scene.add.image(189, 585, "W010").setScale(0.26); // player 2
-                scene.add.image(189, 230, "W009").setScale(0.26, -0.26); // player 1
+                scene.add.image(189, 585, "23246_W002").setScale(0.26); // player 2
+                scene.add.image(189, 230, "23246_W001").setScale(0.26, -0.26); // player 1
                 //scene.DeckHandler.dealCard(189, 220, "AuthorCard2", "authorCard").setScale(0.26, -0.26);
                 for (let i in cards) {
                     let card = scene.GameHandler.opponentHand.push(scene.DeckHandler.InstantiateCard(85 + (i * 35), 0, "cardBack", "cardBack", "opponentCard").setScale(0.26));

@@ -25,11 +25,9 @@ export default class DeckHandler {
             let newCard;
             if(cardType == "ICard") {
                 newCard = voidCard[cardType];
-                console.log(cardID);
                 newCard.id = cardID;
                 newCard.playerCardSprite = cardID;
                 newCard.opponentCardSprite = cardID;
-                console.log(newCard.id);
             }
             if(cardType == "cardBack") {
                 newCard = voidCard[cardType];

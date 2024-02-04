@@ -14,7 +14,8 @@ export default class Card {
             card = scene.add.image(x, y, sprite).setInteractive().setData({
                 "id": this.id,
                 "side": side,
-                "sprite": sprite
+                "sprite": sprite,
+                "test": "test message"
             }); 
             
             if(side === 'playerCard') { 
