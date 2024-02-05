@@ -35,7 +35,7 @@ export default class Card {
                     "sky": WCard_Data_23246[this.id].sky,
                     "ground": WCard_Data_23246[this.id].ground,
                     "person": WCard_Data_23246[this.id].person,
-                    "authorBuff": WCard_Data_23246[this.id].authorBuff
+                    "authorBuffs": WCard_Data_23246[this.id].authorBuffs
                 }); 
             }
             if(cardType == "cardBack") {

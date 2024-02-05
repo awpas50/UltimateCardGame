@@ -71,6 +71,7 @@ export default class InteractiveHandler {
             console.log(gameObject.getData("test"));
             switch(dropZone.name) {
                 case "dropZone1": //天
+                    // Check if matches the elements on the authorCard
                     if(!scene.GameHandler.playerSkyElements.includes(gameObject.getData("element"))) {
                         gameObject.x = gameObject.input.dragStartX;
                         gameObject.y = gameObject.input.dragStartY;
@@ -93,13 +94,35 @@ export default class InteractiveHandler {
                     break;
             }
             if (scene.GameHandler.isMyTurn && scene.GameHandler.gameState === "Ready") {
+                let authorBuffPoints = 0;
+                let elementID;
+                switch(gameObject.getData("element")) {
+                    case "火":
+                        elementID = 0;
+                        break;
+                    case "水":
+                        elementID = 1;
+                        break;
+                    case "木":
+                        elementID = 2;
+                        break;
+                    case "金":
+                        elementID = 3;
+                        break;
+                    case "土":
+                        elementID = 4;
+                        break;
+                }
+
+                authorBuffPoints = scene.GameHandler.authorBuffs[elementID];
+
                 gameObject.x = dropZone.x;
                 gameObject.y = dropZone.y;
                 //scene.dropZone.data.values.cards++;
                 console.log("gameObject.getData(points)" + gameObject.getData("points"))
                 scene.input.setDraggable(gameObject, false);
                 scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name);
-                scene.socket.emit('calculatePoints', gameObject.getData("points"), scene.socket.id, dropZone.name);
+                scene.socket.emit('calculatePoints', gameObject.getData("points") + authorBuffPoints, scene.socket.id, dropZone.name);
             } 
             else {
                 gameObject.x = gameObject.input.dragStartX;

@@ -73,6 +73,7 @@ export default class SocketHandler {
         scene.socket.on('setAuthorElements', (authorCardName) => {
             //Author card
             scene.GameHandler.setAuthorElements(authorCardName); //Player side
+            scene.GameHandler.setAuthorBuffs(authorCardName); //Player side
         })
         // Called in InteractiveHandler.js
         // Where does Player 2 cards display in Player 1 scene??

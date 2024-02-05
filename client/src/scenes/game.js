@@ -15,31 +15,31 @@ export const WCard_Data_23246 = {
         sky: ["金", "水"], 
         ground: ["土", "水", "木"], 
         person: ["火", "水", "金"],
-        authorBuff: [0, 50, 0, -20, 0]},
+        authorBuffs: [0, 50, 0, -20, 0]},
 
     "23246_W002": { ID: "23246_W002", name: "孟子", level: 2, 
         sky: ["土", "火"], 
         ground: ["水", "火", "土"], 
         person: ["木", "火", "金"],
-        authorBuff: [40, 0, 0, 0, 10]},
+        authorBuffs: [40, 0, 0, 0, 10]},
 
     "23246_W009": { ID: "23246_W009", name: "李商隱", level: 3, 
         sky: ["水"], 
         ground: ["火", "水", "木", "金", "土"], 
         person: ["火", "水", "木", "金", "土"],
-        authorBuff: [0, 20, 0, 0, 0]},
+        authorBuffs: [0, 20, 0, 0, 0]},
 
     "23246_W010": { ID: "23246_W010", name: "李白", level: 4, 
         sky: ["木", "水", "火"], 
         ground: ["火", "水", "木", "金", "土"], 
         person: ["火", "水", "木", "金", "土"],
-        authorBuff: [60, 60, 0, 0, 0]},
+        authorBuffs: [60, 60, 0, 0, 0]},
 
     "23246_W016": { ID: "23246_W016", name: "童年孟子", level: 1, 
         sky: ["水"], 
         ground: ["土", "水"], 
         person: ["火", "水"],
-        authorBuff: [0, 20, 0, 0, 0]},
+        authorBuffs: [0, 20, 0, 0, 0]},
 }
 // 編號/名稱/屬性/系列/靈感值
 export const ICard_Data_23246 = {

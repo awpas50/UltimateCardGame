@@ -13,6 +13,8 @@ export default class GameHandler {
         this.playerSkyElements = [];
         this.playerGroundElements = [];
         this.playerPersonElements = [];
+        //加成
+        this.authorBuffs = [];
         //天地人
         this.playerSkyPoint = 0;
         this.playerGroundPoint = 0;
@@ -38,6 +40,10 @@ export default class GameHandler {
             console.log("playerSkyElements: " + this.playerSkyElements);
             console.log("playerGroundElements: " + this.playerGroundElements);
             console.log("playerPersonElements: " + this.playerPersonElements);
+        }
+
+        this.setAuthorBuffs = (authorCardName) => {
+            this.authorBuffs = WCard_Data_23246[authorCardName].authorBuffs;
         }
 
         this.changeTurn = () => { 
