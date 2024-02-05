@@ -1,3 +1,5 @@
+import {ICard_Data_23246, WCard_Data_23246} from "../scenes/game.js";
+
 export default class InteractiveHandler {
     constructor(scene) {
         // When clicking on a particular text, perform certain interaction
@@ -29,7 +31,7 @@ export default class InteractiveHandler {
             if (gameObjects[0].type === "Image" &&
                 gameObjects[0].data.list.name !== "cardBack") {
                     scene.cardPreview = scene.add.image(pointer.worldX, pointer.worldY - 200, gameObjects[0].data.values.sprite).setScale(1, 1);
-                    console.log(gameObjects);
+                    //console.log(gameObjects);
                 }
             
         });
@@ -63,16 +65,42 @@ export default class InteractiveHandler {
         }) 
 
         // Card drop
+        // 'drop' *** built-in function in Phaser 3
+        // gameObject: Card
         scene.input.on('drop', (pointer, gameObject, dropZone) => {
+            console.log(gameObject.getData("test"));
+            switch(dropZone.name) {
+                case "dropZone1": //天
+                    if(!scene.GameHandler.playerSkyElements.includes(gameObject.getData("element"))) {
+                        gameObject.x = gameObject.input.dragStartX;
+                        gameObject.y = gameObject.input.dragStartY;
+                        return;
+                    }
+                    break;
+                case "dropZone2": //地
+                    if(!scene.GameHandler.playerGroundElements.includes(gameObject.getData("element"))) {
+                        gameObject.x = gameObject.input.dragStartX;
+                        gameObject.y = gameObject.input.dragStartY;
+                        return;
+                    }
+                    break;
+                case "dropZone3": //人
+                    if(!scene.GameHandler.playerPersonElements.includes(gameObject.getData("element"))) {
+                        gameObject.x = gameObject.input.dragStartX;
+                        gameObject.y = gameObject.input.dragStartY;
+                        return;
+                    }
+                    break;
+            }
             if (scene.GameHandler.isMyTurn && scene.GameHandler.gameState === "Ready") {
                 gameObject.x = dropZone.x;
                 gameObject.y = dropZone.y;
                 //scene.dropZone.data.values.cards++;
+                console.log("gameObject.getData(points)" + gameObject.getData("points"))
                 scene.input.setDraggable(gameObject, false);
-
-                console.log(scene.UIHandler.getDropZone1);
-                scene.socket.emit('cardPlayed', gameObject.data.values.name, scene.socket.id, dropZone.name);
-            }
+                scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name);
+                scene.socket.emit('calculatePoints', gameObject.getData("points"), scene.socket.id, dropZone.name);
+            } 
             else {
                 gameObject.x = gameObject.input.dragStartX;
                 gameObject.y = gameObject.input.dragStartY;
@@ -86,7 +114,7 @@ export default class InteractiveHandler {
             const y = pointer.y;
         
             // Show the coordinates on the console
-            console.log(`Clicked at X: ${x}, Y: ${y}`);
+            //console.log(`Clicked at X: ${x}, Y: ${y}`);
         });
     }
 }

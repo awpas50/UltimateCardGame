@@ -21,13 +21,19 @@ const io = require('socket.io')(http, {
 io.on('connection', function(socket) {
     console.log('A user connected: ' + socket.id);
 
-    let folderPath = './client/src/23246/ICard'; // Update this with your folder path
-    let imageNames = getImageNamesInFolder(folderPath);
-    console.log('Image names in the folder:', imageNames);
+    let folderPathICard = './client/src/23246/ICard';
+    let imageNamesICard = getImageNamesInFolder(folderPathICard);
+
+    let folderPathWCard = './client/src/23246/WCard';
+    let imageNamesWCard = getImageNamesInFolder(folderPathWCard);
 
     players[socket.id] = {
         inDeck: [],
         inHand: [],
+
+        inDeck_WCard: [],
+        inHand_WCard: [],
+
         isPlayerA: false
     }
 
@@ -47,7 +53,8 @@ io.on('connection', function(socket) {
     socket.on('dealDeck', function(socketId) {
         // imageNames: (Array of string) string[]
         // shuffles an array of string here:
-        players[socketId].inDeck = shuffle(imageNames);
+        players[socketId].inDeck = shuffle(imageNamesICard);
+        players[socketId].inDeck_WCard = shuffle(imageNamesWCard);
         console.log(players);
         if(Object.keys(players) < 2) {
             return;
@@ -63,13 +70,21 @@ io.on('connection', function(socket) {
             // In JavaScript, you can freely assign different types of values to a variable or object property without declaring their types beforehand.
             // It's completely legitimate to assign a shuffled array even if it was initially declared as an empty array.
             if (players[socketId].inDeck.length === 0) {
-                players[socketId].inDeck = shuffle(imageNames);
+                players[socketId].inDeck = shuffle(imageNamesICard);
             }
             players[socketId].inHand.push(players[socketId].inDeck.shift());
         }
+
+        if (players[socketId].inDeck_WCard.length === 0) {
+            players[socketId].inDeck_WCard = shuffle(imageNamesWCard);
+        }
+        players[socketId].inHand_WCard.push(players[socketId].inDeck_WCard.shift());
+
         console.log(players);
         // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
-        io.emit('addCardsInScene', socketId, players[socketId].inHand);
+        io.emit('addICardsInScene', socketId, players[socketId].inHand);
+        io.emit('addWCardsInScene', socketId, players[socketId].inHand_WCard);
+        socket.emit('setAuthorElements', players[socketId].inHand_WCard);
         readyCheck++; 
         if (readyCheck >= 2) {
             gameState = "Ready";
@@ -79,11 +94,17 @@ io.on('connection', function(socket) {
     });
 
     // Called in InteractiveHandler.js
+    socket.on('calculatePoints', function(points, socketId, dropZoneID) {
+        io.emit('calculatePoints', points, socketId, dropZoneID);
+    });
+    
     socket.on('cardPlayed', function (cardName, socketId, dropZoneID) {
         io.emit('cardPlayed', cardName, socketId, dropZoneID);
         io.emit('changeTurn');
         io.emit('setPlayerTurnText');
     });
+
+    
 
     socket.on('disconnect', function () {
         console.log('A user disconnected: ' + socket.id);

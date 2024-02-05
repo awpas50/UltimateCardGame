@@ -2,6 +2,7 @@ import CardBack from "../cards/CardBack";
 import Boolean from "../cards/Boolean";
 import Ping from "../cards/Ping";
 import ICard from "../cards/ICard";
+import WCard from "../cards/WCard";
 import AuthorCard from "../cards/AuthorCard";
 import AuthorCard2 from "../cards/AuthorCard2";
 
@@ -16,6 +17,7 @@ export default class DeckHandler {
             let voidCard = {
                 // decideCardType by the keys
                 ICard: new ICard(scene),
+                WCard: new WCard(scene),
                 cardBack: new CardBack(scene)
             }
             // In this case, newCard can refer to an instance of any class that extends the Card class, such as CardBack, Boolean, or Ping.
@@ -23,7 +25,7 @@ export default class DeckHandler {
             
             //If cardType = ICard, than the script knows it refers to new ICard(scene).
             let newCard;
-            if(cardType == "ICard") {
+            if(cardType == "ICard" || cardType == "WCard") {
                 newCard = voidCard[cardType];
                 newCard.id = cardID;
                 newCard.playerCardSprite = cardID;
@@ -33,9 +35,9 @@ export default class DeckHandler {
                 newCard = voidCard[cardType];
             }
 
-            console.log("A new card (object) is generated in DeckHandler");
+            //console.log("A new card (object) is generated in DeckHandler");
             // returns an object. 
-            return(newCard.render(x, y, side));
+            return(newCard.render(x, y, cardType, side));
         }
     }
 }

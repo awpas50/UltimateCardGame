@@ -10,7 +10,7 @@ import UIHandler from "../helpers/UIHandler";
 
 // 火/水/木/金/土屬性加成
 // 例子: [0, 50, 0, -20, 0] 指水+50, 金-20.
-const WCard_Data_23246 = {
+export const WCard_Data_23246 = {
     "23246_W001": { ID: "23246_W001", name: "李煜", level: 2, 
         sky: ["金", "水"], 
         ground: ["土", "水", "木"], 
@@ -42,7 +42,7 @@ const WCard_Data_23246 = {
         authorBuff: [0, 20, 0, 0, 0]},
 }
 // 編號/名稱/屬性/系列/靈感值
-const ICard_Data_23246 = {
+export const ICard_Data_23246 = {
     "23246_I002": { ID: "23246_I002", name: "幻想", element: "水", series: "袁枚系列", points: 60 },
     "23246_I006": { ID: "23246_I006", name: "瞠視", element: "水", series: "袁枚系列", points: 50 },
     "23246_I007": { ID: "23246_I007", name: "文墨", element: "土", series: "袁枚系列", points: 40 },
