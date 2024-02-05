@@ -21,7 +21,7 @@ export default class UIHandler {
             return this.scene.dropZone2.name;
         }
         this.getDropZone3 = () => {
-            return this.scene.dropZone3.name;
+            return this.scene.dropZone3.name; 
         }
 
         this.BuildZoneOutline = () => {
@@ -49,7 +49,7 @@ export default class UIHandler {
             }
         }
 
-        this.buildPlayerTurnText = () => {
+        this.buildPlayerTurnText = () => { 
             scene.playerTurnText = scene.add.text(700, 160, "正在等待另一位玩家抽卡......").setFontSize(32).setFontFamily("Trebuchet MS");
         }
 
@@ -59,6 +59,14 @@ export default class UIHandler {
             } else { 
                 scene.playerTurnText.text = '對方的回合';
             }
+        }
+
+        this.buildPlayerPointText = () => {
+            scene.playerPointText = scene.add.text(700, 210, "靈感值: ").setFontSize(32).setFontFamily("Trebuchet MS");
+        }
+
+        this.setPlayerPointText = (points) => {
+            scene.playerPointText.text = '靈感值:' + points;
         }
 
         this.BuildGameText = () => {

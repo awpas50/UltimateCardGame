@@ -2,13 +2,14 @@ import io from 'socket.io-client';
 
 export default class SocketHandler {
     constructor(scene) {
-
         scene.socket = io('http://localhost:3000/');
 
         scene.socket.on('connect', () => {
             console.log('Connected!');
             scene.socket.emit('dealDeck', scene.socket.id);
         });
+
+
 
         //Called in server.js (socket.emit)
         scene.socket.on('buildPlayerTurnText', () => {
@@ -17,9 +18,21 @@ export default class SocketHandler {
         //Called in server.js (socket.emit)
         scene.socket.on('setPlayerTurnText', () => {
             let b = scene.GameHandler.getCurrentTurn();
-            console.log(b);
             scene.UIHandler.setPlayerTurnText(b); 
         })
+
+
+        //Called in server.js (socket.emit)
+        scene.socket.on('buildPlayerPointText', () => {
+            scene.UIHandler.buildPlayerPointText(); 
+        })
+        scene.socket.on('setPlayerPointText', () => {
+            let points = scene.GameHandler.getPlayerTotalPoint();
+            scene.UIHandler.setPlayerPointText(points); 
+        })
+
+
+
         //Called in server.js (socket.emit)
         scene.socket.on('buildPlayerNumberText', (playerNumber) => {
             scene.UIHandler.buildPlayerNumberText(playerNumber);
@@ -29,7 +42,6 @@ export default class SocketHandler {
             scene.GameHandler.changeTurn();
             scene.GameHandler.getCurrentTurn();
         })
-        
 
         // Called after socket.on('dealDeck') or socket.on('dealCards') in server.js
         scene.socket.on('changeGameState', (gameState) => {
@@ -129,7 +141,6 @@ export default class SocketHandler {
                         scene.GameHandler.setPlayerPersonPoint(points);
                         break;
                 }
-                scene.GameHandler.setPlayerTotalPoint();
             }
             else {
                 switch(dropZoneName) {
@@ -138,13 +149,15 @@ export default class SocketHandler {
                         break;
                     case "dropZone2": //地
                         scene.GameHandler.setOpponentGroundPoint(points);
-                        break;
+                        break; 
                     case "dropZone3": //人
                         scene.GameHandler.setOpponentPersonPoint(points);
                         break;
                 }
-                scene.GameHandler.setOpponentTotalPoint();
+                
             }
+            scene.GameHandler.setPlayerTotalPoint();
+            scene.GameHandler.setOpponentTotalPoint();
         })
 
         // Called after scene.socket.on('cardPlayed')

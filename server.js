@@ -43,6 +43,7 @@ io.on('connection', function(socket) {
     }
 
     socket.emit('buildPlayerTurnText');
+    socket.emit('buildPlayerPointText');
     if(players[socket.id].isPlayerA) {
         socket.emit('buildPlayerNumberText', 1);
     } else if(!players[socket.id].isPlayerA) {
@@ -99,6 +100,7 @@ io.on('connection', function(socket) {
     // Called in InteractiveHandler.js
     socket.on('calculatePoints', function(points, socketId, dropZoneID) {
         io.emit('calculatePoints', points, socketId, dropZoneID);
+        socket.emit('setPlayerPointText');
     });
     
     socket.on('cardPlayed', function (cardName, socketId, dropZoneID) {

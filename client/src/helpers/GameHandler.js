@@ -99,5 +99,9 @@ export default class GameHandler {
             this.opponentTotalPoints = this.opponentSkyPoint + this.opponentGroundPoint + this.opponentPersonPoint;
             console.log("Player: " + this.playerTotalPoints + " " + "Opponent: " + this.opponentTotalPoints);
         }
+
+        this.getPlayerTotalPoint = () => {
+            return this.playerTotalPoints;
+        }
     }
 }
