@@ -76,7 +76,7 @@ export default class InteractiveHandler {
                         gameObject.x = gameObject.input.dragStartX;
                         gameObject.y = gameObject.input.dragStartY;
                         return;
-                    }
+                    } 
                     break;
                 case "dropZone2": //地
                     if(!scene.GameHandler.playerGroundElements.includes(gameObject.getData("element"))) {

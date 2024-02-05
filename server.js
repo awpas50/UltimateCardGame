@@ -39,7 +39,7 @@ io.on('connection', function(socket) {
 
     if(Object.keys(players).length < 2) {
         players[socket.id].isPlayerA = true;
-        io.emit('firstTurn');
+        //io.emit('firstTurn');
     }
 
     socket.emit('buildPlayerTurnText');
@@ -84,10 +84,13 @@ io.on('connection', function(socket) {
         // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
         io.emit('addICardsInScene', socketId, players[socketId].inHand);
         io.emit('addWCardsInScene', socketId, players[socketId].inHand_WCard);
+        
         socket.emit('setAuthorElements', players[socketId].inHand_WCard);
+        io.emit('setAuthorRarity', socketId, players[socketId].inHand_WCard);
         readyCheck++; 
         if (readyCheck >= 2) {
             gameState = "Ready";
+            io.emit('decideWhichPlayerfirstTurn');
             io.emit('changeGameState', "Ready");
             io.emit('setPlayerTurnText');
         }

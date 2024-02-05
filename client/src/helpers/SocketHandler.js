@@ -29,6 +29,7 @@ export default class SocketHandler {
             scene.GameHandler.changeTurn();
             scene.GameHandler.getCurrentTurn();
         })
+        
 
         // Called after socket.on('dealDeck') or socket.on('dealCards') in server.js
         scene.socket.on('changeGameState', (gameState) => {
@@ -50,8 +51,6 @@ export default class SocketHandler {
                     scene.GameHandler.playerHand.push(card);
                     // let testMessage = card.getData('test');
                     // console.log(testMessage); // This should output: "test message"
-                    // let testMessage2 = scene.GameHandler.playerHand[0].getData('test');
-                    // console.log(testMessage2); // This should output: "test message"
                 } 
                 console.log(scene.GameHandler.playerHand);
             } else {
@@ -75,6 +74,26 @@ export default class SocketHandler {
             scene.GameHandler.setAuthorElements(authorCardName); //Player side
             scene.GameHandler.setAuthorBuffs(authorCardName); //Player side
         })
+        scene.socket.on('setAuthorRarity', (socketId, authorCardName) => {
+            //Author card
+            if (socketId === scene.socket.id) {
+                scene.GameHandler.setPlayerAuthorRarity(authorCardName); //Player side
+                console.log("playerAuthorRarity: " + scene.GameHandler.playerAuthorRarity);
+            } else {
+                scene.GameHandler.setOpponentAuthorRarity(authorCardName); //Opponent side
+                console.log("opponentAuthorRarity: " + scene.GameHandler.opponentAuthorRarity);
+            }
+        })
+        scene.socket.on('decideWhichPlayerfirstTurn', () => {
+            if(scene.GameHandler.playerAuthorRarity > scene.GameHandler.opponentAuthorRarity) {
+                scene.GameHandler.changeTurn();
+                scene.GameHandler.getCurrentTurn();
+            }
+            else if(scene.GameHandler.playerAuthorRarity === scene.GameHandler.opponentAuthorRarity) {
+                //roll dice
+            }
+        })
+
         // Called in InteractiveHandler.js
         // Where does Player 2 cards display in Player 1 scene??
         scene.socket.on('cardPlayed', (cardName, socketId, dropZoneName) => {

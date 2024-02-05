@@ -32,6 +32,7 @@ export default class Card {
                     "side": side,
                     "sprite": sprite,
 
+                    "rarity": WCard_Data_23246[this.id].rarity,
                     "sky": WCard_Data_23246[this.id].sky,
                     "ground": WCard_Data_23246[this.id].ground,
                     "person": WCard_Data_23246[this.id].person,

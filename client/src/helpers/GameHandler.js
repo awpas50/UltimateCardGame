@@ -9,6 +9,10 @@ export default class GameHandler {
         this.playerHand = [];
         this.opponentHand = [];
 
+        //稀有度
+        this.playerAuthorRarity = 1;
+        this.opponentAuthorRarity = 1; 
+
         //天地人屬性
         this.playerSkyElements = [];
         this.playerGroundElements = [];
@@ -46,8 +50,15 @@ export default class GameHandler {
             this.authorBuffs = WCard_Data_23246[authorCardName].authorBuffs;
         }
 
+        this.setPlayerAuthorRarity = (authorCardName) => {
+            this.playerAuthorRarity = WCard_Data_23246[authorCardName].rarity;
+        }
+        this.setOpponentAuthorRarity = (authorCardName) => {
+            this.opponentAuthorRarity = WCard_Data_23246[authorCardName].rarity;
+        }
+
         this.changeTurn = () => { 
-            this.isMyTurn = !this.isMyTurn;
+            this.isMyTurn = !this.isMyTurn; 
             console.log("isMyTurn: " + this.isMyTurn);
         }
 
