@@ -11,7 +11,7 @@ export default class GameHandler {
 
         //稀有度
         this.playerAuthorRarity = 1;
-        this.opponentAuthorRarity = 1; 
+        this.opponentAuthorRarity = 1;
 
         //天地人屬性
         this.playerSkyElements = [];
@@ -35,6 +35,10 @@ export default class GameHandler {
         //總分
         this.playerTotalGameScore = 0;
         this.opponentTotalGameScore = 0;
+
+        //擲骰子
+        this.playerDiceValue = 0;
+        this.opponentDiceValue = 0;
 
         this.setAuthorElements = (authorCardName) => {
             this.playerSkyElements = WCard_Data_23246[authorCardName].sky;

@@ -68,25 +68,32 @@ export default class InteractiveHandler {
         // 'drop' *** built-in function in Phaser 3
         // gameObject: Card
         scene.input.on('drop', (pointer, gameObject, dropZone) => {
-            console.log(gameObject.getData("test"));
+            //console.log("AAAAAA: " + gameObject.getData("test"));
             switch(dropZone.name) {
                 case "dropZone1": //天
                     // Check if matches the elements on the authorCard
-                    if(!scene.GameHandler.playerSkyElements.includes(gameObject.getData("element"))) {
+                    if(!gameObject.getData("id").includes("I") || !scene.GameHandler.playerSkyElements.includes(gameObject.getData("element"))) {
                         gameObject.x = gameObject.input.dragStartX;
-                        gameObject.y = gameObject.input.dragStartY;
+                        gameObject.y = gameObject.input.dragStartY; 
                         return;
                     } 
                     break;
                 case "dropZone2": //地
-                    if(!scene.GameHandler.playerGroundElements.includes(gameObject.getData("element"))) {
+                    if(!gameObject.getData("id").includes("I") || !scene.GameHandler.playerGroundElements.includes(gameObject.getData("element"))) {
                         gameObject.x = gameObject.input.dragStartX;
                         gameObject.y = gameObject.input.dragStartY;
                         return;
                     }
                     break;
                 case "dropZone3": //人
-                    if(!scene.GameHandler.playerPersonElements.includes(gameObject.getData("element"))) {
+                    if(!gameObject.getData("id").includes("I") || !scene.GameHandler.playerPersonElements.includes(gameObject.getData("element"))) {
+                        gameObject.x = gameObject.input.dragStartX;
+                        gameObject.y = gameObject.input.dragStartY;
+                        return;
+                    }
+                    break;
+                case "dropZone4": //日
+                    if(!gameObject.getData("id").includes("H")) {
                         gameObject.x = gameObject.input.dragStartX;
                         gameObject.y = gameObject.input.dragStartY;
                         return;
@@ -118,11 +125,12 @@ export default class InteractiveHandler {
 
                 gameObject.x = dropZone.x;
                 gameObject.y = dropZone.y;
-                //scene.dropZone.data.values.cards++;
+                //scene.dropZone.data.values.cards++; 
                 console.log("gameObject.getData(points)" + gameObject.getData("points"))
                 scene.input.setDraggable(gameObject, false);
                 scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name);
                 scene.socket.emit('calculatePoints', gameObject.getData("points") + authorBuffPoints, scene.socket.id, dropZone.name);
+                scene.socket.emit('dealOneCard', scene.socket.id);
             } 
             else {
                 gameObject.x = gameObject.input.dragStartX;

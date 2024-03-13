@@ -13,6 +13,14 @@ export default class Card {
             }
             
             // add.image: Phaser 3 built-in code (x-coordinate, y-coordinate, image referenced by name in game.js)
+            if(cardType == "HCard") {
+                card = scene.add.image(x, y, sprite).setInteractive().setData({
+                    "id": this.id,
+
+                    "side": side,
+                    "sprite": sprite,
+                }); 
+            }
             if(cardType == "ICard") {
                 card = scene.add.image(x, y, sprite).setInteractive().setData({
                     "id": this.id,

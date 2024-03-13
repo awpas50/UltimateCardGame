@@ -88,6 +88,24 @@ export const ICard_Data_23246 = {
     "23246_I084": { ID: "23246_I084", name: "折枝", element: "木", series: "孟子系列", points: 50 }
 };
 
+export const HCard_Data_23246 = {
+    "23246_H001": { ID: "23246_H001"},
+    "23246_H013": { ID: "23246_H013"},
+    "23246_H025": { ID: "23246_H025"},
+    "23246_H034": { ID: "23246_H034"},
+    "23246_H036": { ID: "23246_H036"},
+    "23246_H042": { ID: "23246_H042"},
+    "23246_H044": { ID: "23246_H044"},
+    "23246_H045": { ID: "23246_H045"},
+    "23246_H046": { ID: "23246_H046"},
+    "23246_H049": { ID: "23246_H049"},
+    "23246_H050": { ID: "23246_H050"},
+    "23246_H051": { ID: "23246_H051"},
+    "23246_H052": { ID: "23246_H052"},
+    "23246_H054": { ID: "23246_H054"},
+    "23246_H055": { ID: "23246_H055"}
+};
+
 export default class Game extends Phaser.Scene {
     constructor() {
         super({
@@ -100,7 +118,7 @@ export default class Game extends Phaser.Scene {
     preload() {
         this.load.image('23246_W001', require('../23246/WCard/23246_W001.jpg').default);
         this.load.image('23246_W002', require('../23246/WCard/23246_W002.jpg').default);
-        this.load.image('23246_W009', require('../23246/WCard/23246_W009.jpg').default);
+        this.load.image('23246_W009', require('../23246/WCard/23246_W009.jpg').default); 
         this.load.image('23246_W010', require('../23246/WCard/23246_W010.jpg').default);
         this.load.image('23246_W016', require('../23246/WCard/23246_W016.jpg').default);
 
@@ -142,6 +160,22 @@ export default class Game extends Phaser.Scene {
         this.load.image('23246_I082', require('../23246/ICard/23246_I082.jpg').default);
         this.load.image('23246_I083', require('../23246/ICard/23246_I083.jpg').default);
         this.load.image('23246_I084', require('../23246/ICard/23246_I084.jpg').default);
+
+        this.load.image('23246_H001', require('../23246/HCard/23246_H001.jpg').default);
+        this.load.image('23246_H013', require('../23246/HCard/23246_H013.jpg').default);
+        this.load.image('23246_H025', require('../23246/HCard/23246_H025.jpg').default);
+        this.load.image('23246_H034', require('../23246/HCard/23246_H034.jpg').default);
+        this.load.image('23246_H036', require('../23246/HCard/23246_H036.jpg').default);
+        this.load.image('23246_H042', require('../23246/HCard/23246_H042.jpg').default);
+        this.load.image('23246_H044', require('../23246/HCard/23246_H044.jpg').default);
+        this.load.image('23246_H045', require('../23246/HCard/23246_H045.jpg').default);
+        this.load.image('23246_H046', require('../23246/HCard/23246_H046.jpg').default);
+        this.load.image('23246_H049', require('../23246/HCard/23246_H049.jpg').default);
+        this.load.image('23246_H050', require('../23246/HCard/23246_H050.jpg').default);
+        this.load.image('23246_H051', require('../23246/HCard/23246_H051.jpg').default);
+        this.load.image('23246_H052', require('../23246/HCard/23246_H052.jpg').default);
+        this.load.image('23246_H054', require('../23246/HCard/23246_H054.jpg').default);
+        this.load.image('23246_H055', require('../23246/HCard/23246_H055.jpg').default);
 
         this.load.image('H001B', require('../assets/Back/H001B.png').default);
         this.load.image('H001B_Filped', require('../assets/Back/H001B_Filped.png').default);

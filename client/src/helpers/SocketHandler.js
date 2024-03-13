@@ -53,13 +53,19 @@ export default class SocketHandler {
         });
 
         // Called in InteractiveHandler.js
-        scene.socket.on('addICardsInScene', (socketId, cards) => {
+        scene.socket.on('addICardsHCardsInScene', (socketId, cards) => {
             // checks if the socketId matches the local client's socket ID
             if (socketId === scene.socket.id) {
                 for (let i in cards) {
                     //card[i]: card name
                     // Use card name to retrieve card data
-                    let card = scene.DeckHandler.InstantiateCard(55 + (i * 55), 760, "ICard", cards[i], "playerCard").setScale(0.26);
+                    let card;
+                    if(cards[i].includes("I")) {
+                        card = scene.DeckHandler.InstantiateCard(55 + (i * 55), 760, "ICard", cards[i], "playerCard").setScale(0.26);
+                    }
+                    if(cards[i].includes("H")) {
+                        card = scene.DeckHandler.InstantiateCard(55 + (i * 55), 760, "HCard", cards[i], "playerCard").setScale(0.26);
+                    }
                     scene.GameHandler.playerHand.push(card);
                     // let testMessage = card.getData('test');
                     // console.log(testMessage); // This should output: "test message"
@@ -96,13 +102,40 @@ export default class SocketHandler {
                 console.log("opponentAuthorRarity: " + scene.GameHandler.opponentAuthorRarity);
             }
         })
-        scene.socket.on('decideWhichPlayerfirstTurn', () => {
+        scene.socket.on('RollDice', (socketId, roll1, roll2) => {
+            
+            if (socketId === scene.socket.id) {
+                // Display the results
+                console.log("playerDiceValue: " + roll1); 
+                console.log("opponentDiceValue: " + roll2);
+
+                scene.GameHandler.playerDiceValue = roll1;
+                scene.GameHandler.opponentDiceValue = roll2;
+
+                scene.UIHandler.setRollDiceText(roll2, roll1); 
+            }
+            else { // Flip the result
+                // Display the results
+                console.log("playerDiceValue: " + roll2); 
+                console.log("opponentDiceValue: " + roll1);
+
+                scene.GameHandler.playerDiceValue = roll2;
+                scene.GameHandler.opponentDiceValue = roll1;
+
+                scene.UIHandler.setRollDiceText(roll2, roll1);
+            }
+            
+        })
+        scene.socket.on('decideWhichPlayerfirstTurn', (socketId) => {
             if(scene.GameHandler.playerAuthorRarity > scene.GameHandler.opponentAuthorRarity) {
                 scene.GameHandler.changeTurn();
                 scene.GameHandler.getCurrentTurn();
             }
             else if(scene.GameHandler.playerAuthorRarity === scene.GameHandler.opponentAuthorRarity) {
-                //roll dice
+                if(scene.GameHandler.playerDiceValue > scene.GameHandler.opponentDiceValue) {
+                    scene.GameHandler.changeTurn();
+                    scene.GameHandler.getCurrentTurn();
+                }
             }
         })
 
@@ -123,6 +156,9 @@ export default class SocketHandler {
                         break;
                     case "dropZone3": //人
                         scene.DeckHandler.InstantiateCard(280, 220, "ICard", cardName, "opponentCard").setScale(0.26, -0.26);
+                        break;
+                    case "dropZone4": //日
+                        scene.DeckHandler.InstantiateCard(189, 100, "HCard", cardName, "opponentCard").setScale(0.26, -0.26);
                         break;
                 }
             }
