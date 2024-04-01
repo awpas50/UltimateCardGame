@@ -3,6 +3,8 @@
 const server = require('express')();
 const http = require('http').createServer(server);
 const cors = require('cors');
+const path = require('path');
+const serveStatic = require('serve-static');
 const shuffle = require('shuffle-array');
 let players = {};
 let readyCheck = 0;
@@ -17,6 +19,9 @@ const io = require('socket.io')(http, {
         methods: ["GET", "POST"]
     }
 });
+
+server.use(cors());
+server.use(serveStatic(__dirname + "/client/dist"));
 
 io.on('connection', function(socket) {
     console.log('A user connected: ' + socket.id);
@@ -138,7 +143,9 @@ io.on('connection', function(socket) {
     });
 })
 
-http.listen(3000, function() {
+const port = process.env.PORT || 3000;
+
+http.listen(port, function() {
     console.log('Server Started!');
 })
 
