@@ -8,6 +8,7 @@ const shuffle = require('shuffle-array');
 let players = {};
 let readyCheck = 0;
 let gameState = "Initializing";
+const port = process.env.PORT || 3000;
 
 const fs = require('fs');
 const path = require('path');
@@ -24,6 +25,17 @@ server.use(serveStatic(__dirname + "/client/dist"));
 
 io.on('connection', function(socket) {
     console.log('A user connected: ' + socket.id);
+
+    // Handle room creation and joining
+    // socket.on('createRoom', (roomId) => {
+    //     socket.join(roomId);
+    //     console.log(`User created and joined room ${roomId}`);
+    // });
+
+    // socket.on('joinRoom', (roomId) => {
+    //     socket.join(roomId);
+    //     console.log(`User joined room ${roomId}`);
+    // });
 
     let folderPathICard = './client/dist/assets/23246/ICard';
     let imageNamesICard = getImageNamesInFolder(folderPathICard);
@@ -142,7 +154,7 @@ io.on('connection', function(socket) {
     });
 })
 
-const port = process.env.PORT || 3000;
+
 
 http.listen(port, function() {
     console.log('Server Started!');
