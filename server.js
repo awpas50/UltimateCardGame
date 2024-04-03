@@ -3,7 +3,6 @@
 const server = require('express')();
 const http = require('http').createServer(server);
 const cors = require('cors');
-const path = require('path');
 const serveStatic = require('serve-static');
 const shuffle = require('shuffle-array');
 let players = {};
@@ -26,13 +25,13 @@ server.use(serveStatic(__dirname + "/client/dist"));
 io.on('connection', function(socket) {
     console.log('A user connected: ' + socket.id);
 
-    let folderPathICard = './client/src/23246/ICard';
+    let folderPathICard = './client/dist/assets/23246/ICard';
     let imageNamesICard = getImageNamesInFolder(folderPathICard);
 
-    let folderPathHCard = './client/src/23246/HCard';
+    let folderPathHCard = './client/dist/assets/23246/HCard';
     let imageNamesHCard = getImageNamesInFolder(folderPathHCard);
 
-    let folderPathWCard = './client/src/23246/WCard';
+    let folderPathWCard = './client/dist/assets/23246/WCard';
     let imageNamesWCard = getImageNamesInFolder(folderPathWCard);
 
     let mixedArray = [...imageNamesICard, ...imageNamesHCard];
