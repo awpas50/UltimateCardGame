@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin';
 import Game from './scenes/game.js';
 
 const config = {
@@ -8,6 +9,19 @@ const config = {
         autoCenter: Phaser.Scale.CENTER_BOTH,
         width: 600,
         height: 800,
+    },
+    parent: 'phaser-container',
+	dom: {
+        createContainer: true
+    },
+    plugins: {
+		scene: [
+			{
+				key: 'rexUI',
+				plugin: RexUIPlugin,
+				mapping: 'rexUI'
+			}
+		]
     },
     scene: [
         Game

@@ -3,7 +3,7 @@ import ZoneHandler from "./ZoneHandler";
 export default class UIHandler {
     constructor(scene) {
         this.zoneHandler = new ZoneHandler(scene);
-        
+        //-----------------------------------------------------
         this.BuildZones = () => {
             scene.dropZone1 = this.zoneHandler.renderZone(189, 458, 330 / 3.25, 430 / 3.25);
             scene.dropZone2 = this.zoneHandler.renderZone(90, 575, 330 / 3.25, 430 / 3.25);
@@ -89,12 +89,54 @@ export default class UIHandler {
             scene.rollDiceText2.text = '玩家2擲出:' + num2;
         }
 
+        this.BuildRoomNumberText = () => {
+            scene.roomNumberText = scene.add.text(440, 20, "房間編號: ").setFontSize(20).setFontFamily("Trebuchet MS");
+        }
+        this.BuildCreateRoomText = () => { 
+            scene.createRoomText = scene.add.text(350, 500, "建立房間", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
+            scene.createRoomText.setInteractive();
+        }
+        this.BuildJoinRoomText = () => { 
+            scene.joinRoomText = scene.add.text(350, 550, "加入房間", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
+            scene.joinRoomText.setInteractive();
+        }
+
         this.buildUI = () => {
             this.BuildZones();
             this.BuildZoneOutline();
             this.BuildPlayerAreas();
             this.BuildGameText(); 
             this.BuildRollDiceText();
+
+            this.BuildRoomNumberText();
+            this.BuildCreateRoomText();
+            this.BuildJoinRoomText();
+            this.BuildRoomNumberFieldDecoration();
         }
+
+        this.BuildRoomNumberFieldDecoration = () => { 
+            
+        }
+        scene.rexUI.add.roundRectangle(400, 600, 100, 30, 0, 0x666666);
+        const inputText = scene.add.text(430, 610, '123456', { fixedWidth: 150, fixedHeight: 36 });
+            inputText.setOrigin(0.5, 0.5);
+            inputText.setInteractive().on('pointerdown', () => {
+                const editor = scene.rexUI.edit(inputText);
+                const elem = editor.inputText.node;
+                elem.style.top = '-10px';
+            })
+
+        
+        this.GetInputTextContent = () => {
+            console.log(inputText.text);
+            return inputText.text;
+        }
+
+        // const textMessage = getTextContent(inputText);
+        // console.log(textMessage); // Output: "123456"
+
+        // this.getTextContent = (textObject) => {
+        //     return textObject.text;
+        // }
     }
 }

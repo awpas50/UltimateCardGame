@@ -1,4 +1,5 @@
 import {ICard_Data_23246, WCard_Data_23246} from "../scenes/game.js";
+import UIHandler from "./UIHandler.js";
 
 export default class InteractiveHandler {
     constructor(scene) {
@@ -6,8 +7,20 @@ export default class InteractiveHandler {
         scene.dealCardText.on('pointerdown', () => {
             scene.socket.emit("dealCards", scene.socket.id);
             scene.dealCardText.disableInteractive();
-
         })
+
+        scene.createRoomText.on('pointerdown', () => {
+            scene.socket.emit('createRoom', scene.UIHandler.GetInputTextContent());
+            scene.createRoomText.disableInteractive();
+            scene.roomNumberText.text = "房間編號: " + scene.UIHandler.GetInputTextContent();
+        })
+
+        scene.joinRoomText.on('pointerdown', () => {
+            scene.socket.emit('joinRoom', scene.UIHandler.GetInputTextContent());
+            scene.joinRoomText.disableInteractive();
+            scene.roomNumberText.text = "房間編號: " + scene.UIHandler.GetInputTextContent();
+        })
+        
 
         // Card color
         scene.dealCardText.on('pointerover', () => {
@@ -15,6 +28,22 @@ export default class InteractiveHandler {
         })
         scene.dealCardText.on('pointerout', () => {
             scene.dealCardText.setColor('#00ffff');
+        })
+
+        // Card color
+        scene.createRoomText.on('pointerover', () => {
+            scene.createRoomText.setColor('#fff5fa');
+        })
+        scene.createRoomText.on('pointerout', () => {
+            scene.createRoomText.setColor('#00ffff');
+        })
+
+        // Card color
+        scene.joinRoomText.on('pointerover', () => {
+            scene.joinRoomText.setColor('#fff5fa');
+        })
+        scene.joinRoomText.on('pointerout', () => {
+            scene.joinRoomText.setColor('#00ffff');
         })
 
         // Section: Card preview
@@ -33,7 +62,6 @@ export default class InteractiveHandler {
                     scene.cardPreview = scene.add.image(pointer.worldX, pointer.worldY - 200, gameObjects[0].data.values.sprite).setScale(1, 1);
                     //console.log(gameObjects);
                 }
-            
         });
 
         // Hide cardPreview on pointerout if not dragging

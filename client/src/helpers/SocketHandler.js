@@ -5,7 +5,7 @@ export default class SocketHandler {
         // Heroku URL
         scene.socket = io('http://localhost:3000/');
 
-        // Create or join a room
+        //Create or join a room
         // function generateRoomId() {
         //     const timestamp = Date.now().toString();
         //     const randomNum = Math.floor(Math.random() * 1000).toString();
@@ -13,7 +13,7 @@ export default class SocketHandler {
         // }
         // const roomId = generateRoomId();
 
-        // socket.emit('createRoom', roomId);
+        //socket.emit('createRoom', roomId);
 
         scene.socket.on('connect', () => {
             console.log('Connected!');
@@ -39,8 +39,6 @@ export default class SocketHandler {
             let points = scene.GameHandler.getPlayerTotalPoint();
             scene.UIHandler.setPlayerPointText(points); 
         })
-
-
 
         //Called in server.js (socket.emit)
         scene.socket.on('buildPlayerNumberText', (playerNumber) => {

@@ -5,6 +5,8 @@ import InteractiveHandler from "../helpers/InteractiveHandler";
 import SocketHandler from "../helpers/SocketHandler";
 import UIHandler from "../helpers/UIHandler";
 
+import { InputText, TextArea } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
+
 // 編號/名稱/等級/天/地/人屬性
 // 無屬性寫 ["火", "水", "木", "金", "土"]
 
@@ -201,6 +203,7 @@ export default class Game extends Phaser.Scene {
         // } else {
         //     console.warn('Canvas element not found.');
         // }
+
         this.CardHandler = new CardHandler();
         this.DeckHandler = new DeckHandler(this);
         this.GameHandler = new GameHandler(this);

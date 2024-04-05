@@ -27,15 +27,15 @@ io.on('connection', function(socket) {
     console.log('A user connected: ' + socket.id);
 
     // Handle room creation and joining
-    // socket.on('createRoom', (roomId) => {
-    //     socket.join(roomId);
-    //     console.log(`User created and joined room ${roomId}`);
-    // });
+    socket.on('createRoom', (roomId) => {
+        socket.join(roomId);
+        console.log(`User created and joined room ${roomId}`);
+    });
 
-    // socket.on('joinRoom', (roomId) => {
-    //     socket.join(roomId);
-    //     console.log(`User joined room ${roomId}`);
-    // });
+    socket.on('joinRoom', (roomId) => {
+        socket.join(roomId);
+        console.log(`User joined room ${roomId}`);
+    });
 
     let folderPathICard = './client/dist/assets/23246/ICard';
     let imageNamesICard = getImageNamesInFolder(folderPathICard);
