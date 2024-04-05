@@ -15,7 +15,7 @@ const path = require('path');
 
 const io = require('socket.io')(http, {
     cors: {
-        origin: 'http://localhost:8080',
+        origin: 'https://ultimate-card-game-f26046605e38.herokuapp.com/',
         methods: ["GET", "POST"]
     }
 });
