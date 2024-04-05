@@ -209,7 +209,7 @@ export default class Game extends Phaser.Scene {
         this.GameHandler = new GameHandler(this);
         this.SocketHandler = new SocketHandler(this);
         this.UIHandler = new UIHandler(this);
-        this.UIHandler.buildUI();
+        this.UIHandler.buildUI(); 
         this.InteractiveHandler = new InteractiveHandler(this);
         // let backgroundImage = this.add.image(0, 0, 'BG');
         // backgroundImage.setOrigin(0, 0);

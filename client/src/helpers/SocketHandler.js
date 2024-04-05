@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 export default class SocketHandler {
     constructor(scene) {
         // Heroku URL
-        scene.socket = io('http://localhost:3000/');
+        scene.socket = io('https://ultimate-card-game-f26046605e38.herokuapp.com/');
 
         //Create or join a room
         // function generateRoomId() {
