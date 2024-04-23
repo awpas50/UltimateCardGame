@@ -3,6 +3,7 @@ import ZoneHandler from "./ZoneHandler";
 export default class UIHandler {
     constructor(scene) {
         this.zoneHandler = new ZoneHandler(scene);
+        this.inputText = {};
         //-----------------------------------------------------
         this.BuildZones = () => {
             scene.dropZone1 = this.zoneHandler.renderZone(189, 458, 330 / 3.25, 430 / 3.25);
@@ -78,6 +79,26 @@ export default class UIHandler {
         this.BuildGameText = () => {
             // Let a variable called dealCardText, and this is a text. In Unity: Text dealCardText = new Text().....;
             scene.dealCardText = scene.add.text(350, 400, "點我抽卡").setFontSize(20).setFontFamily("Trebuchet MS");
+
+            // OnPointerDown event
+            scene.dealCardText.on('pointerdown', () => {
+                scene.socket.emit("dealCards", scene.socket.id);
+                scene.dealCardText.disableInteractive();
+            })
+            // Control card color
+            scene.dealCardText.on('pointerover', () => {
+                scene.dealCardText.setColor('#fff5fa');
+            })
+            scene.dealCardText.on('pointerout', () => {
+                scene.dealCardText.setColor('#00ffff');
+            })
+        }
+
+        this.ActivateGameText = () => {
+            if(scene.dealCardText != undefined || scene.dealCardText != null) {
+                scene.dealCardText.setInteractive();
+                scene.dealCardText.setColor('#00ffff');
+            }
         }
 
         this.BuildRollDiceText = () => {
@@ -92,43 +113,82 @@ export default class UIHandler {
         this.BuildRoomNumberText = () => {
             scene.roomNumberText = scene.add.text(440, 20, "房間編號: ").setFontSize(20).setFontFamily("Trebuchet MS");
         }
+
         this.BuildCreateRoomText = () => { 
             scene.createRoomText = scene.add.text(350, 500, "建立房間", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
             scene.createRoomText.setInteractive();
+
+            scene.createRoomText.on('pointerdown', () => {
+                this.BuildPlayArea();
+                let randomRoomId = this.generateRoomID();
+                scene.socket.emit('createRoom', randomRoomId);
+                console.log(scene.UIHandler.inputText.text);
+                scene.createRoomText.disableInteractive();
+                scene.joinRoomText.disableInteractive();
+                scene.roomNumberText.text = "房間編號: " + randomRoomId;
+            })
+            // Card color
+            scene.createRoomText.on('pointerover', () => {
+                scene.createRoomText.setColor('#fff5fa');
+            })
+            scene.createRoomText.on('pointerout', () => {
+                scene.createRoomText.setColor('#00ffff');
+            }) 
         }
+
+        scene.socket.on('joinRoomSucceedSignal', () => {
+            this.BuildPlayArea();
+            scene.createRoomText.disableInteractive();
+            scene.joinRoomText.disableInteractive();
+            scene.roomNumberText.text = "房間編號: " + scene.UIHandler.GetInputTextContent(scene.UIHandler.inputText);
+        });
+        
         this.BuildJoinRoomText = () => { 
             scene.joinRoomText = scene.add.text(350, 550, "加入房間", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
             scene.joinRoomText.setInteractive();
+            scene.joinRoomText.on('pointerdown', () => {
+                scene.socket.emit('joinRoom', scene.UIHandler.GetInputTextContent(scene.UIHandler.inputText));
+
+                // (Runs joinRoomSucceedSignal if success.)
+            })
+            // Card color
+            scene.joinRoomText.on('pointerover', () => {
+                scene.joinRoomText.setColor('#fff5fa');
+            })
+            scene.joinRoomText.on('pointerout', () => {
+                scene.joinRoomText.setColor('#00ffff');
+            })
+            
         }
 
-        this.buildUI = () => {
+        // Main
+        this.BuildPlayArea = () => {
+            console.log("BuildPlayArea");
             this.BuildZones();
             this.BuildZoneOutline();
             this.BuildPlayerAreas();
             this.BuildGameText(); 
             this.BuildRollDiceText();
+        }
 
+        this.BuildLobby = () => {
             this.BuildRoomNumberText();
             this.BuildCreateRoomText();
             this.BuildJoinRoomText();
-            this.BuildRoomNumberFieldDecoration();
         }
-
-        this.BuildRoomNumberFieldDecoration = () => { 
-            
-        }
-        scene.rexUI.add.roundRectangle(400, 600, 100, 30, 0, 0x666666);
-        const inputText = scene.add.text(430, 610, '123456', { fixedWidth: 150, fixedHeight: 36 });
+        // Main
+        this.BuildRoomNumberFieldDecoration = (inputText) => { 
+            scene.rexUI.add.roundRectangle(400, 600, 100, 30, 0, 0x666666);
+            inputText = scene.add.text(430, 610, '', { fixedWidth: 150, fixedHeight: 36 });
             inputText.setOrigin(0.5, 0.5);
             inputText.setInteractive().on('pointerdown', () => {
                 const editor = scene.rexUI.edit(inputText);
                 const elem = editor.inputText.node;
                 elem.style.top = '-10px';
             })
-
-        
-        this.GetInputTextContent = () => {
-            console.log(inputText.text);
+            return inputText;
+        }
+        this.GetInputTextContent = (inputText) => {
             return inputText.text;
         }
 
@@ -138,5 +198,15 @@ export default class UIHandler {
         // this.getTextContent = (textObject) => {
         //     return textObject.text;
         // }
+
+        this.generateRoomID = () => {
+            // Generate a random number between 0 and 999999 (inclusive)
+            const randomNumber = Math.floor(Math.random() * 1000000);
+          
+            // Convert the number to a string and pad it with leading zeros if needed
+            const randomNumberString = randomNumber.toString().padStart(6, '0');
+          
+            return randomNumberString;
+          }
     }
 }

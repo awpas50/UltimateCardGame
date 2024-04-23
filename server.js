@@ -1,20 +1,21 @@
 //import { WCard_Data_23246, ICard_Data_23246 } from './client/src/scenes/game.js';
-
 const server = require('express')();
-const http = require('http').createServer(server);
+
 const cors = require('cors');
 const serveStatic = require('serve-static');
 const shuffle = require('shuffle-array');
 let players = {};
 let readyCheck = 0;
 let gameState = "Initializing";
-const port = process.env.PORT || 3000;
 
 const fs = require('fs');
 const path = require('path');
+const http = require('http').createServer(server);
+const port = process.env.PORT || 3000;
 
 const io = require('socket.io')(http, {
     cors: {
+        // localhost:8080 is where the client is.
         origin: 'http://localhost:8080',
         methods: ["GET", "POST"]
     }
@@ -27,14 +28,22 @@ io.on('connection', function(socket) {
     console.log('A user connected: ' + socket.id);
 
     // Handle room creation and joining
-    socket.on('createRoom', (roomId) => {
-        socket.join(roomId);
-        console.log(`User created and joined room ${roomId}`);
+    socket.on('createRoom', (newRoomId) => {
+        socket.join(newRoomId);
+        //players[socketId].roomId = socket.rooms;
+        console.log(`User ${socket.id} created and joined room ${newRoomId}`);
+        console.log("Rooms: " + socket.rooms);
     });
 
     socket.on('joinRoom', (roomId) => {
-        socket.join(roomId);
-        console.log(`User joined room ${roomId}`);
+        if(!io.sockets.adapter.rooms.has(roomId)) {
+            console.log(`Room ${roomId} does not exist!`);
+            return;
+        } else {
+            socket.join(roomId);
+            console.log(`User ${socket.id} joined room ${roomId}`);
+            socket.emit('joinRoomSucceedSignal');
+        }
     });
 
     let folderPathICard = './client/dist/assets/23246/ICard';
@@ -49,6 +58,7 @@ io.on('connection', function(socket) {
     let mixedArray = [...imageNamesICard, ...imageNamesHCard];
 
     players[socket.id] = {
+        roomId: {},
         inDeck: [],
         inHand: [],
         inRubbishBin: [],
@@ -149,6 +159,7 @@ io.on('connection', function(socket) {
     
 
     socket.on('disconnect', function () {
+        socket.leave(socket.rooms[1]);
         console.log('A user disconnected: ' + socket.id);
         delete players[socket.id];
     });
@@ -172,3 +183,4 @@ function getImageNamesInFolder(folderPath) {
 
     return imageNames;
 }
+

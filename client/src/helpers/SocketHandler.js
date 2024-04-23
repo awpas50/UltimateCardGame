@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 export default class SocketHandler {
     constructor(scene) {
         // Heroku URL
+        // Default: localhost:3000 is where the server is.
         scene.socket = io('http://localhost:3000/');
 
         //Create or join a room
@@ -11,7 +12,7 @@ export default class SocketHandler {
         //     const randomNum = Math.floor(Math.random() * 1000).toString();
         //     return `${timestamp}_${randomNum}`;
         // }
-        // const roomId = generateRoomId();
+        // const roomId = generateRoomId(); 
 
         //socket.emit('createRoom', roomId);
 
@@ -54,8 +55,7 @@ export default class SocketHandler {
         scene.socket.on('changeGameState', (gameState) => {
             scene.GameHandler.changeGameState(gameState);
             if (gameState === "Initializing") {
-                scene.dealCardText.setInteractive();
-                scene.dealCardText.setColor('#00ffff');
+                scene.UIHandler.ActivateGameText();
             }
         });
 
