@@ -141,6 +141,8 @@ export default class UIHandler {
             scene.createRoomText.disableInteractive();
             scene.joinRoomText.disableInteractive();
             scene.roomNumberText.text = "房間編號: " + scene.UIHandler.GetInputTextContent(scene.UIHandler.inputText);
+
+            scene.socket.emit('dealDeck', scene.socket.id);
         });
         
         this.BuildJoinRoomText = () => { 

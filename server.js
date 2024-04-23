@@ -83,6 +83,10 @@ io.on('connection', function(socket) {
         socket.emit('buildPlayerNumberText', 2);
     }
 
+    socket.on('HelloWorld', function() {
+        console.log(players);
+    })
+
     // Called in SocketHandler
     socket.on('dealDeck', function(socketId) {
         // imageNames: (Array of string) string[]

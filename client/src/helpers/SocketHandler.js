@@ -18,7 +18,8 @@ export default class SocketHandler {
 
         scene.socket.on('connect', () => {
             console.log('Connected!');
-            scene.socket.emit('dealDeck', scene.socket.id);
+            scene.socket.emit('HelloWorld');
+            //scene.socket.emit('dealDeck', scene.socket.id);
         });
 
         //Called in server.js (socket.emit)
