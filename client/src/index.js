@@ -3,6 +3,7 @@ import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin';
 import Game from './scenes/game.js';
 
 const config = {
+    resolution: 3,
     type: Phaser.AUTO,
     scale: {
         mode: Phaser.Scale.FIT,

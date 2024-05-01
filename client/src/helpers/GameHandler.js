@@ -2,6 +2,10 @@ import {WCard_Data_23246} from "../scenes/game.js";
 
 export default class GameHandler {
     constructor(scene) {
+        this.currentRoomID = "";
+        this.currentPlayersInRoom = [];
+        this.opponentID = [];
+
         this.gameState = "Initializing";
         this.isMyTurn = false;
         this.playerDeck = [];

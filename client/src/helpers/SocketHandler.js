@@ -4,29 +4,19 @@ export default class SocketHandler {
     constructor(scene) {
         // Heroku URL
         // Default: localhost:3000 is where the server is.
-        scene.socket = io('https://ultimate-card-game-f26046605e38.herokuapp.com');
-        //scene.socket = io('http://localhost:3000/');
+        //scene.socket = io('https://ultimate-card-game-f26046605e38.herokuapp.com');
+        scene.socket = io('http://localhost:3000/');
 
         //Create or join a room
-        // function generateRoomId() {
-        //     const timestamp = Date.now().toString();
-        //     const randomNum = Math.floor(Math.random() * 1000).toString();
-        //     return `${timestamp}_${randomNum}`;
-        // }
-        // const roomId = generateRoomId(); 
-
-        //socket.emit('createRoom', roomId);
-
         scene.socket.on('connect', () => {
             console.log('Connected!');
             scene.socket.emit('HelloWorld');
-            //scene.socket.emit('dealDeck', scene.socket.id);
         });
 
         //Called in server.js (socket.emit)
-        scene.socket.on('buildPlayerTurnText', () => {
-            scene.UIHandler.buildPlayerTurnText(); 
-        })
+        // scene.socket.on('buildPlayerTurnText', () => {
+        //     scene.UIHandler.buildPlayerTurnText(); 
+        // })
         //Called in server.js (socket.emit)
         scene.socket.on('setPlayerTurnText', () => {
             let b = scene.GameHandler.getCurrentTurn();
@@ -43,17 +33,23 @@ export default class SocketHandler {
             scene.UIHandler.setPlayerPointText(points); 
         })
 
+        scene.socket.on('playersInRoom', (players) => {
+            console.log('Players in the room:', players);
+            scene.GameHandler.currentPlayersInRoom = players;
+            scene.GameHandler.opponentID = players.filter(player => player !== scene.socket.id);
+            console.log('opponentID:', scene.GameHandler.opponentID);
+        });
+
         //Called in server.js (socket.emit)
         scene.socket.on('buildPlayerNumberText', (playerNumber) => {
             scene.UIHandler.buildPlayerNumberText(playerNumber);
         })
-        //Called in server.js (io.emit)
+        //Called in server.js (io.to(roomId).emit)
         scene.socket.on('firstTurn', () => {
             scene.GameHandler.changeTurn();
             scene.GameHandler.getCurrentTurn();
         })
 
-        // Called after socket.on('dealDeck') or socket.on('dealCards') in server.js
         scene.socket.on('changeGameState', (gameState) => {
             scene.GameHandler.changeGameState(gameState);
             if (gameState === "Initializing") {
@@ -148,7 +144,7 @@ export default class SocketHandler {
             }
         })
 
-        // Called in InteractiveHandler.js
+        // Called in server.js
         // Where does Player 2 cards display in Player 1 scene??
         scene.socket.on('cardPlayed', (cardName, socketId, dropZoneName) => {
             //console.log("cardName:", cardName);

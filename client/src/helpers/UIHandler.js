@@ -56,7 +56,7 @@ export default class UIHandler {
             }
         }
 
-        this.buildPlayerTurnText = () => { 
+        this.BuildPlayerTurnText = () => { 
             scene.playerTurnText = scene.add.text(350, 300, "等待另一位玩家抽卡...").setFontSize(20).setFontFamily("Trebuchet MS");
         }
 
@@ -82,7 +82,7 @@ export default class UIHandler {
 
             // OnPointerDown event
             scene.dealCardText.on('pointerdown', () => {
-                scene.socket.emit("dealCards", scene.socket.id);
+                scene.socket.emit("dealCards", scene.socket.id, scene.GameHandler.currentRoomID, scene.GameHandler.opponentID);
                 scene.dealCardText.disableInteractive();
             })
             // Control card color
@@ -120,11 +120,11 @@ export default class UIHandler {
 
             scene.createRoomText.on('pointerdown', () => {
                 this.BuildPlayArea();
-                let randomRoomId = this.generateRoomID();
+                let randomRoomId = this.generateRandomRoomID();
                 scene.socket.emit('createRoom', randomRoomId);
-                console.log(scene.UIHandler.inputText.text);
-                scene.createRoomText.disableInteractive();
-                scene.joinRoomText.disableInteractive();
+                scene.createRoomText.visible = false;
+                scene.joinRoomText.visible = false;
+                scene.GameHandler.currentRoomID = randomRoomId;
                 scene.roomNumberText.text = "房間編號: " + randomRoomId;
             })
             // Card color
@@ -142,7 +142,9 @@ export default class UIHandler {
             scene.joinRoomText.disableInteractive();
             scene.roomNumberText.text = "房間編號: " + scene.UIHandler.GetInputTextContent(scene.UIHandler.inputText);
 
-            scene.socket.emit('dealDeck', scene.socket.id);
+            scene.GameHandler.currentRoomID = scene.UIHandler.GetInputTextContent(scene.UIHandler.inputText);
+            console.log("Current Room ID: " + scene.GameHandler.currentRoomID);
+            scene.socket.emit('dealDeck', scene.socket.id, scene.GameHandler.currentRoomID);
         });
         
         this.BuildJoinRoomText = () => { 
@@ -150,7 +152,7 @@ export default class UIHandler {
             scene.joinRoomText.setInteractive();
             scene.joinRoomText.on('pointerdown', () => {
                 scene.socket.emit('joinRoom', scene.UIHandler.GetInputTextContent(scene.UIHandler.inputText));
-
+                
                 // (Runs joinRoomSucceedSignal if success.)
             })
             // Card color
@@ -169,6 +171,7 @@ export default class UIHandler {
             this.BuildZones();
             this.BuildZoneOutline();
             this.BuildPlayerAreas();
+            this.BuildPlayerTurnText();
             this.BuildGameText(); 
             this.BuildRollDiceText();
         }
@@ -201,7 +204,7 @@ export default class UIHandler {
         //     return textObject.text;
         // }
 
-        this.generateRoomID = () => {
+        this.generateRandomRoomID = () => {
             // Generate a random number between 0 and 999999 (inclusive)
             const randomNumber = Math.floor(Math.random() * 1000000);
           

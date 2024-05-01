@@ -111,8 +111,8 @@ export default class InteractiveHandler {
                 //scene.dropZone.data.values.cards++; 
                 console.log("gameObject.getData(points)" + gameObject.getData("points"))
                 scene.input.setDraggable(gameObject, false);
-                scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name);
-                scene.socket.emit('calculatePoints', gameObject.getData("points") + authorBuffPoints, scene.socket.id, dropZone.name);
+                scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
+                scene.socket.emit('calculatePoints', gameObject.getData("points") + authorBuffPoints, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
                 scene.socket.emit('dealOneCard', scene.socket.id);
             } 
             else {
