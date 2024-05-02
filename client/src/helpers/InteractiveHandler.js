@@ -53,61 +53,84 @@ export default class InteractiveHandler {
         scene.input.on('drop', (pointer, gameObject, dropZone) => {
             //console.log("AAAAAA: " + gameObject.getData("test"));
             let isMatch = false;
+            let cardType = "";
             switch(dropZone.name) {
                 case "dropZone1": //天
                     // Check if matches the elements on the authorCard
-                    if(!gameObject.getData("id").includes("I") || !scene.GameHandler.playerSkyElements.includes(gameObject.getData("element"))) {
-                        // Does not match, back to start
+                    if(gameObject.getData("id").includes("H")) {
                         isMatch = false;
+                        cardType = "HCard";
+                        console.log("AAAAAAAAAAAA");
+                    } else if ((!gameObject.getData("id").includes("I") || !scene.GameHandler.playerSkyElements.includes(gameObject.getData("element")))) {
+                        isMatch = false;
+                        cardType = "ICard";
+                        console.log("BBBBBBBBBBBB");
                     } else {
                         isMatch = true;
+                        cardType = "ICard";
+                        console.log("CCCCCCCCCCCC");
                     }
                     break;
                 case "dropZone2": //地
-                    if(!gameObject.getData("id").includes("I") || !scene.GameHandler.playerGroundElements.includes(gameObject.getData("element"))) {
+                    if(gameObject.getData("id").includes("H")) {
                         isMatch = false;
+                        cardType = "HCard";
+                    } else if(!gameObject.getData("id").includes("I") || !scene.GameHandler.playerGroundElements.includes(gameObject.getData("element"))) {
+                        isMatch = false;
+                        cardType = "ICard";
                     } else {
                         isMatch = true;
+                        cardType = "ICard";
                     }
                     break;
                 case "dropZone3": //人
-                    if(!gameObject.getData("id").includes("I") || !scene.GameHandler.playerPersonElements.includes(gameObject.getData("element"))) {
+                    if(gameObject.getData("id").includes("H")) {
                         isMatch = false;
+                        cardType = "HCard";
+                    } else if(!gameObject.getData("id").includes("I") || !scene.GameHandler.playerPersonElements.includes(gameObject.getData("element"))) {
+                        isMatch = false;
+                        cardType = "ICard";
                     } else {
                         isMatch = true;
+                        cardType = "ICard";
                     }
                     break;
                 case "dropZone4": //日
-                    if(!gameObject.getData("id").includes("H")) {
+                    if(gameObject.getData("id").includes("I")) {
                         isMatch = false;
+                        cardType = "HCard";
+                    } else if(!gameObject.getData("id").includes("H")) {
+                        isMatch = false;
+                        cardType = "ICard";
                     } else {
-                        isMatch = true;
+                        isMatch = false;
+                        cardType = "ICard";
                     }
                     break;
             }
             if (scene.GameHandler.isMyTurn && scene.GameHandler.gameState === "Ready") {
                 let authorBuffPoints = 0;
                 let elementID;
-                switch(gameObject.getData("element")) {
-                    case "火":
-                        elementID = 0;
-                        break;
-                    case "水":
-                        elementID = 1;
-                        break;
-                    case "木":
-                        elementID = 2;
-                        break;
-                    case "金":
-                        elementID = 3;
-                        break;
-                    case "土":
-                        elementID = 4;
-                        break;
+                if(gameObject.getData("id").includes("I")) {
+                    switch(gameObject.getData("element")) {
+                        case "火":
+                            elementID = 0;
+                            break;
+                        case "水":
+                            elementID = 1;
+                            break;
+                        case "木":
+                            elementID = 2;
+                            break;
+                        case "金":
+                            elementID = 3;
+                            break;
+                        case "土":
+                            elementID = 4;
+                            break;
+                    }
+                    authorBuffPoints = scene.GameHandler.authorBuffs[elementID];
                 }
-
-                authorBuffPoints = scene.GameHandler.authorBuffs[elementID];
-
                 gameObject.x = dropZone.x;
                 gameObject.y = dropZone.y;
 
@@ -115,13 +138,13 @@ export default class InteractiveHandler {
                 if(isMatch) {
                     console.log("gameObject.getData(points)" + gameObject.getData("points"))
                     scene.input.setDraggable(gameObject, false);
-                    scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
-                    scene.socket.emit('calculatePoints', gameObject.getData("points") + authorBuffPoints, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
+                    scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
+                    scene.socket.emit('calculatePoints', gameObject.getData("points") + authorBuffPoints, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
                     scene.socket.emit('dealOneCardInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID);
                 } else {
                     scene.input.setDraggable(gameObject, false);
-                    scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
-                    scene.socket.emit('calculatePoints', 0 + authorBuffPoints, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
+                    scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
+                    scene.socket.emit('calculatePoints', 0 + authorBuffPoints, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
                     scene.socket.emit('dealOneCardInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID);
                 }
                 

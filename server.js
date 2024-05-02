@@ -189,12 +189,12 @@ io.on('connection', function(socket) {
 
     // Called in InteractiveHandler.js
     socket.on('calculatePoints', function(points, socketId, dropZoneID, roomId) {
-        io.to(roomId).emit('calculatePoints', points, socketId, dropZoneID);
+        io.to(roomId).emit('calculatePoints', points, socketId, dropZoneID, roomId);
         socket.emit('setPlayerPointText');
     });
     
-    socket.on('cardPlayed', function (cardName, socketId, dropZoneID, roomId) {
-        io.to(roomId).emit('cardPlayed', cardName, socketId, dropZoneID);
+    socket.on('cardPlayed', function (cardName, socketId, dropZoneID, roomId, cardType) {
+        io.to(roomId).emit('cardPlayed', cardName, socketId, dropZoneID, roomId, cardType);
         io.to(roomId).emit('changeTurn');
         io.to(roomId).emit('setPlayerTurnText');
     });

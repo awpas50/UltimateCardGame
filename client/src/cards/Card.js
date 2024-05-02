@@ -16,7 +16,7 @@ export default class Card {
             if(cardType == "HCard") {
                 card = scene.add.image(x, y, sprite).setInteractive().setData({
                     "id": this.id,
-
+                    "element": "無",
                     "side": side,
                     "sprite": sprite,
                 }); 

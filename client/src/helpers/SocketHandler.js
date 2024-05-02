@@ -160,29 +160,30 @@ export default class SocketHandler {
 
         // Called in server.js
         // Where does Player 2 cards display in Player 1 scene??
-        scene.socket.on('cardPlayed', (cardName, socketId, dropZoneName) => {
-            //console.log("cardName:", cardName);
-            //console.log("socketId:", socketId);
-            //console.log("dropZoneID:", dropZoneName);
+        scene.socket.on('cardPlayed', (cardName, socketId, dropZoneName, roomId, cardType) => {
+            console.log("cardName:", cardName);
+            console.log("socketId:", socketId);
+            console.log("dropZoneID:", dropZoneName);
+            console.log("cardType: " + cardType);
             if (socketId !== scene.socket.id) {
                 scene.GameHandler.opponentHand.shift().destroy();
                 switch(dropZoneName) {
                     case "dropZone1": //天
-                        scene.DeckHandler.InstantiateCard(189, 345, "ICard", cardName, "opponentCard").setScale(0.26, -0.26);
+                        scene.DeckHandler.InstantiateCard(189, 345, cardType, cardName, "opponentCard").setScale(0.26, -0.26);
                         break;
                     case "dropZone2": //地
-                        scene.DeckHandler.InstantiateCard(90, 220, "ICard", cardName, "opponentCard").setScale(0.26, -0.26);
+                        scene.DeckHandler.InstantiateCard(90, 220, cardType, cardName, "opponentCard").setScale(0.26, -0.26);
                         break;
                     case "dropZone3": //人
-                        scene.DeckHandler.InstantiateCard(280, 220, "ICard", cardName, "opponentCard").setScale(0.26, -0.26);
+                        scene.DeckHandler.InstantiateCard(280, 220, cardType, cardName, "opponentCard").setScale(0.26, -0.26);
                         break;
                     case "dropZone4": //日
-                        scene.DeckHandler.InstantiateCard(189, 100, "HCard", cardName, "opponentCard").setScale(0.26, -0.26);
+                        scene.DeckHandler.InstantiateCard(189, 100, cardType, cardName, "opponentCard").setScale(0.26, -0.26);
                         break;
                 }
             }
         })
-        scene.socket.on('calculatePoints', (pointsString, socketId, dropZoneName) => {
+        scene.socket.on('calculatePoints', (pointsString, socketId, dropZoneName, roomId, cardType) => {
             let points = parseInt(pointsString);
             if (socketId === scene.socket.id) {
                 switch(dropZoneName) {
@@ -190,7 +191,7 @@ export default class SocketHandler {
                         scene.GameHandler.setPlayerSkyPoint(points);
                         break;
                     case "dropZone2": //地
-                        scene.GameHandler.setPlayerGroundPoint(points);
+                        scene.GameHandler.setPlayerGroundPoint(points); 
                         break;
                     case "dropZone3": //人
                         scene.GameHandler.setPlayerPersonPoint(points);
