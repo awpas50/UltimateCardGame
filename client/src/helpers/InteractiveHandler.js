@@ -113,7 +113,7 @@ export default class InteractiveHandler {
                 scene.input.setDraggable(gameObject, false);
                 scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
                 scene.socket.emit('calculatePoints', gameObject.getData("points") + authorBuffPoints, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
-                scene.socket.emit('dealOneCard', scene.socket.id);
+                scene.socket.emit('dealOneCardInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID);
             } 
             else {
                 gameObject.x = gameObject.input.dragStartX;

@@ -92,6 +92,20 @@ export default class SocketHandler {
             }
         })
 
+        // cardsToAdd: Array
+        scene.socket.on('dealOneCardInScene', (socketId, cardsToAdd, cardIndex) => {
+            if (socketId === scene.socket.id) {
+                let card;
+                if(cardsToAdd[0].includes("I")) {
+                    card = scene.DeckHandler.InstantiateCard(55 + (cardIndex * 55), 760, "ICard", cardsToAdd[0], "playerCard").setScale(0.26);
+                }
+                if(cardsToAdd[0].includes("H")) {
+                    card = scene.DeckHandler.InstantiateCard(55 + (cardIndex * 55), 760, "HCard", cardsToAdd[0], "playerCard").setScale(0.26);
+                }
+                scene.GameHandler.playerHand.push(card);
+            }
+        })
+
         scene.socket.on('setAuthorElements', (authorCardName) => {
             //Author card
             scene.GameHandler.setAuthorElements(authorCardName); //Player side

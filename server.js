@@ -173,9 +173,18 @@ io.on('connection', function(socket) {
         }
     });
 
-    socket.on('dealOneCard', function (socketId, position) {
-        players[socketId].inHand.splice(position, 0, players[socketId].inDeck[0]);
+    // Arguments: scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID
+    socket.on('dealOneCardInServer', function (socketId, cardName, roomId) {
+        // Player: check spot, remove card from spot, add card to spot
+        // Opponent: Add 1 card back
+        // Get index, for example, I001 is in index 3 than it will replace the 4th card in players[socketId].inHand
+        const cardIndex = players[socketId].inHand.indexOf(cardName);
+        // Based on card index, replace old card with players[socketId].inDeck[0] as a new card
+        players[socketId].inHand.splice(cardIndex, 1, players[socketId].inDeck[0]);
+        // inDeck delete 1 card
         players[socketId].inDeck.shift();
+        // Tell local to actually show one new card
+        io.to(roomId).emit('dealOneCardInScene', socketId, players[socketId].inHand, cardIndex);
     });
 
     // Called in InteractiveHandler.js
