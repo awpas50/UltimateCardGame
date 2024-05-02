@@ -52,34 +52,36 @@ export default class InteractiveHandler {
         // gameObject: Card
         scene.input.on('drop', (pointer, gameObject, dropZone) => {
             //console.log("AAAAAA: " + gameObject.getData("test"));
+            let isMatch = false;
             switch(dropZone.name) {
                 case "dropZone1": //天
                     // Check if matches the elements on the authorCard
                     if(!gameObject.getData("id").includes("I") || !scene.GameHandler.playerSkyElements.includes(gameObject.getData("element"))) {
-                        gameObject.x = gameObject.input.dragStartX;
-                        gameObject.y = gameObject.input.dragStartY; 
-                        return;
-                    } 
+                        // Does not match, back to start
+                        isMatch = false;
+                    } else {
+                        isMatch = true;
+                    }
                     break;
                 case "dropZone2": //地
                     if(!gameObject.getData("id").includes("I") || !scene.GameHandler.playerGroundElements.includes(gameObject.getData("element"))) {
-                        gameObject.x = gameObject.input.dragStartX;
-                        gameObject.y = gameObject.input.dragStartY;
-                        return;
+                        isMatch = false;
+                    } else {
+                        isMatch = true;
                     }
                     break;
                 case "dropZone3": //人
                     if(!gameObject.getData("id").includes("I") || !scene.GameHandler.playerPersonElements.includes(gameObject.getData("element"))) {
-                        gameObject.x = gameObject.input.dragStartX;
-                        gameObject.y = gameObject.input.dragStartY;
-                        return;
+                        isMatch = false;
+                    } else {
+                        isMatch = true;
                     }
                     break;
                 case "dropZone4": //日
                     if(!gameObject.getData("id").includes("H")) {
-                        gameObject.x = gameObject.input.dragStartX;
-                        gameObject.y = gameObject.input.dragStartY;
-                        return;
+                        isMatch = false;
+                    } else {
+                        isMatch = true;
                     }
                     break;
             }
@@ -108,12 +110,21 @@ export default class InteractiveHandler {
 
                 gameObject.x = dropZone.x;
                 gameObject.y = dropZone.y;
-                //scene.dropZone.data.values.cards++; 
-                console.log("gameObject.getData(points)" + gameObject.getData("points"))
-                scene.input.setDraggable(gameObject, false);
-                scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
-                scene.socket.emit('calculatePoints', gameObject.getData("points") + authorBuffPoints, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
-                scene.socket.emit('dealOneCardInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID);
+
+                // calculatePoints does not affect dropZone 4
+                if(isMatch) {
+                    console.log("gameObject.getData(points)" + gameObject.getData("points"))
+                    scene.input.setDraggable(gameObject, false);
+                    scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
+                    scene.socket.emit('calculatePoints', gameObject.getData("points") + authorBuffPoints, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
+                    scene.socket.emit('dealOneCardInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID);
+                } else {
+                    scene.input.setDraggable(gameObject, false);
+                    scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
+                    scene.socket.emit('calculatePoints', 0 + authorBuffPoints, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
+                    scene.socket.emit('dealOneCardInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID);
+                }
+                
             } 
             else {
                 gameObject.x = gameObject.input.dragStartX;
