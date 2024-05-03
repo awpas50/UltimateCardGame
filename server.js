@@ -18,8 +18,8 @@ const port = process.env.PORT || 3000;
 const io = require('socket.io')(http, {
     cors: {
         // localhost:8080 is where the client is.
-        origin: 'https://awpas50.github.io/UltimateCardGame_Frontend/',
-        //origin: 'http://localhost:8080',
+        //origin: 'https://awpas50.github.io/UltimateCardGame_Frontend/',
+        origin: 'http://localhost:8080',
         methods: ["GET", "POST"]
     }
 });
