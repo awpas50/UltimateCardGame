@@ -96,10 +96,10 @@ export default class SocketHandler {
         scene.socket.on('dealOneCardInScene', (socketId, cardsToAdd, cardIndex) => {
             if (socketId === scene.socket.id) {
                 let card;
-                if(cardsToAdd[0].includes("I")) {
+                if(cardsToAdd[cardIndex].includes("I")) {
                     card = scene.DeckHandler.InstantiateCard(55 + (cardIndex * 55), 760, "ICard", cardsToAdd[0], "playerCard").setScale(0.26);
                 }
-                if(cardsToAdd[0].includes("H")) {
+                if(cardsToAdd[cardIndex].includes("H")) {
                     card = scene.DeckHandler.InstantiateCard(55 + (cardIndex * 55), 760, "HCard", cardsToAdd[0], "playerCard").setScale(0.26);
                 }
                 scene.GameHandler.playerHand.push(card);
