@@ -25,17 +25,18 @@ export default class InteractiveHandler {
                 return;
             }
             if (gameObjects[0].type === "Image" &&
-                gameObjects[0].data.list.name !== "cardBack") {
+                gameObjects[0].data.list.id !== "cardBack") {
                 //scene.cardPreview = scene.add.image(pointer.worldX, pointer.worldY - 200, gameObjects[0].data.values.sprite).setScale(1, 1);
+                console.log(gameObjects[0].data);
                 if(this.cardPreview === null) {
-                    this.cardPreview = scene.add.image(750, 400, gameObjects[0].data.values.sprite).setScale(0.75, 0.75);
+                    this.cardPreview = scene.add.image(750, 400, gameObjects[0].data.values.sprite).setScale(0.7, 0.7);
                 } else {
-                    this.cardPreview.setTexture(gameObjects[0].data.values.sprite).setScale(0.75, 0.75);
-                    this.cardPreview.setPosition(750, 400);
+                    this.cardPreview.setTexture(gameObjects[0].data.values.sprite).setScale(0.7, 0.7);
+                    this.cardPreview.setPosition(750, 400); 
                 }
                 let tween = scene.tweens.add({
                     targets: this.cardPreview,
-                    x: 450,
+                    x: 465,
                     duration: 100,
                     ease: 'Linear',
                     yoyo: false, // Don't yoyo (return to start position) after tween ends
@@ -48,11 +49,11 @@ export default class InteractiveHandler {
 
         // Hide cardPreview on pointerout if not dragging
         scene.input.on('pointerup', (event, gameObjects) => {
-            if (gameObjects.length > 0 && 
-                gameObjects[0].type === "Image" &&
-                gameObjects[0].data.list.name !== "cardBack") {
-                //scene.cardPreview.setVisible(false);
-            }
+            // if (gameObjects.length > 0 && 
+            //     gameObjects[0].type === "Image" &&
+            //     gameObjects[0].data.list.name !== "cardBack") {
+            //     scene.cardPreview.setVisible(false);
+            // }
         });
 
         scene.input.on('drag', (pointer, gameObject, dragX, dragY) => {
@@ -93,6 +94,7 @@ export default class InteractiveHandler {
                         isMatch = true;
                         cardType = "ICard";
                     }
+                    scene.GameHandler.skyCardZoneName = gameObject.getData("id");
                     break;
                 case "dropZone2": //地
                     if(gameObject.getData("id").includes("H")) {
@@ -105,6 +107,7 @@ export default class InteractiveHandler {
                         isMatch = true;
                         cardType = "ICard";
                     }
+                    scene.GameHandler.groundCardZoneName = gameObject.getData("id");
                     break;
                 case "dropZone3": //人
                     if(gameObject.getData("id").includes("H")) {
@@ -117,6 +120,7 @@ export default class InteractiveHandler {
                         isMatch = true;
                         cardType = "ICard";
                     }
+                    scene.GameHandler.personCardZoneName = gameObject.getData("id");
                     break;
                 case "dropZone4": //日
                     if(gameObject.getData("id").includes("I")) {
@@ -126,6 +130,7 @@ export default class InteractiveHandler {
                         isMatch = false;
                         cardType = "HCard";
                     }
+                    scene.GameHandler.sunCardZoneName = gameObject.getData("id");
                     break;
             }
             if (scene.GameHandler.isMyTurn && scene.GameHandler.gameState === "Ready") {
@@ -159,21 +164,25 @@ export default class InteractiveHandler {
                 // calculatePoints does not affect dropZone 4
                 if(isMatch) {
                     console.log("gameObject.getData(points)" + gameObject.getData("points"))
+                    //dropZone.data.list.cards++;
                     scene.input.setDraggable(gameObject, false);
                     scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
                     scene.socket.emit('calculatePoints', gameObject.getData("points") + authorBuffPoints, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
                     scene.socket.emit('dealOneCardInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID);
                 } else {
+                    //dropZone.data.list.cards++;
                     scene.input.setDraggable(gameObject, false);
                     scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
                     scene.socket.emit('calculatePoints', 0 + authorBuffPoints, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
                     scene.socket.emit('dealOneCardInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID);
                 }
-                
+                scene.socket.emit('addCardCount', scene.socket.id, scene.GameHandler.opponentID, scene.GameHandler.currentRoomID);
+                console.log(dropZone);
+                console.log(dropZone.data.list.cards);
             } 
             else {
                 gameObject.x = gameObject.input.dragStartX;
-                gameObject.y = gameObject.input.dragStartY;
+                gameObject.y = gameObject.input.dragStartY; 
             }
         })
 

@@ -13,6 +13,11 @@ export default class GameHandler {
         this.playerHand = [];
         this.opponentHand = [];
 
+        this.skyCardZoneName = "";
+        this.groundCardZoneName = "";
+        this.personCardZoneName = "";
+        this.sunCardZoneName = "";
+
         //稀有度
         this.playerAuthorRarity = 1;
         this.opponentAuthorRarity = 1;
@@ -123,6 +128,6 @@ export default class GameHandler {
         this.setOpponentTotalWinScore = () => {
             this.opponentTotalWinScore = this.opponentSkyPoint + this.opponentGroundPoint + this.opponentPersonPoint;
             console.log("Player Win Score: " + this.playerTotalWinScore + " " + "Opponent Win Score: " + this.opponentTotalWinScore);
-        }
+        } 
     }
 }

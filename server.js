@@ -18,8 +18,8 @@ const port = process.env.PORT || 3000;
 const io = require('socket.io')(http, {
     cors: {
         // localhost:8080 is where the client is.
-        //origin: 'https://awpas50.github.io/UltimateCardGame_Frontend/',
-        origin: 'http://localhost:8080',
+        origin: 'https://awpas50.github.io/UltimateCardGame_Frontend/',
+        //origin: 'http://localhost:8080',
         methods: ["GET", "POST"]
     }
 });
@@ -111,6 +111,7 @@ io.on('connection', function(socket) {
         inHand_WCard: [],
         inRubbishBin_WCard: [],
 
+        cardCount: 0,
         isReady: false
     }
 
@@ -205,6 +206,21 @@ io.on('connection', function(socket) {
         io.to(roomId).emit('changeTurn');
         io.to(roomId).emit('setPlayerTurnText');
     });
+
+    socket.on('addCardCount', function(socketID, opponentID, roomId) {
+        players[socketID].cardCount++;
+        console.log("players[socketID].cardCount: " + players[socketID].cardCount);
+        console.log("players[opponentID].cardCount: " + players[opponentID].cardCount);
+
+        if (players[socketID].cardCount >= 4 && players[opponentID].cardCount >= 4) {
+            console.log("END");
+            io.to(roomId).emit('endRound', socketID);
+        }
+        //io.to(roomId).emit('checkIfFinishRound', socketID, opponentID, roomId);
+    })
+    socket.on('checkIfFinishRound', function(socketID, opponentID, roomId) {
+        
+    })
 
     socket.on('disconnect', function () {
         //socket.leave(socket.rooms[1]);
