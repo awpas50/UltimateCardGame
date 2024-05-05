@@ -59,6 +59,10 @@ io.on('connection', function(socket) {
         if(!io.sockets.adapter.rooms.has(roomId)) {
             console.log(`Room ${roomId} does not exist!`);
             return;
+        }
+        else if (playersInRooms.has(roomId) && playersInRooms.get(roomId).length >= 2) {
+            console.log(`Room ${roomId} is full!`);
+            return;
         } else {
             socket.join(roomId);
             console.log(`User ${socket.id} joined room ${roomId}`);
@@ -78,6 +82,9 @@ io.on('connection', function(socket) {
             arrayToUpdate.push(newItem);
             // Update the value in the Map with the modified array
             playersInRooms.set(keyToUpdate, arrayToUpdate);
+            // for (let [key, value] of playersInRooms) {
+            //     console.log(`Key: ${key}, Value: ${value}`);
+            //   }
             // Send the list of players in the room to all clients
             io.to(roomId).emit('playersInRoom', Array.from(playersInRooms.get(roomId)));
         }
@@ -167,7 +174,7 @@ io.on('connection', function(socket) {
             } while (roll2 === roll1); // Ensure roll2 is different from roll1
             io.to(roomId).emit('RollDice', socketId, roll1, roll2);
 
-            io.to(roomId).emit('decideWhichPlayerfirstTurn', socketId);
+            io.to(roomId).emit('decideWhichPlayerfirstTurn', socketId, roll1, roll2);
             io.to(roomId).emit('changeGameState', "Ready");
             io.to(roomId).emit('setPlayerTurnText');
         }

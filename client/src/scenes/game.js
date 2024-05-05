@@ -112,7 +112,6 @@ export default class Game extends Phaser.Scene {
     constructor() {
         super({
             key: 'Game',
-            pixelart: true
         })
     }
 
@@ -187,6 +186,7 @@ export default class Game extends Phaser.Scene {
     }
     // just like void Start() in Unity
     create() {
+        this.cameras.main.roundPixels = true;
         // Set scale mode
         this.scale.scaleMode = Phaser.Scale.ScaleModes.NEAREST;
         // Ensure the canvas doesn't smooth images
@@ -209,7 +209,7 @@ export default class Game extends Phaser.Scene {
         this.GameHandler = new GameHandler(this);
         this.SocketHandler = new SocketHandler(this);
         this.UIHandler = new UIHandler(this);
-        this.UIHandler.inputText = this.UIHandler.BuildRoomNumberFieldDecoration(this.UIHandler.inputText);
+        this.UIHandler.inputText = this.UIHandler.BuildInputTextField(this.UIHandler.inputText);
         console.log(this.UIHandler.inputText);
         this.UIHandler.BuildLobby();
         this.InteractiveHandler = new InteractiveHandler(this);

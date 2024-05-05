@@ -126,6 +126,9 @@ export default class UIHandler {
                 scene.joinRoomText.visible = false;
                 scene.GameHandler.currentRoomID = randomRoomId;
                 scene.roomNumberText.text = "房間編號: " + randomRoomId;
+
+                this.inputText.visible = false;
+                this.HideInputTextDecation();
             })
             // Card color
             scene.createRoomText.on('pointerover', () => {
@@ -145,6 +148,11 @@ export default class UIHandler {
             scene.GameHandler.currentRoomID = scene.UIHandler.GetInputTextContent(scene.UIHandler.inputText);
             console.log("Current Room ID: " + scene.GameHandler.currentRoomID);
             scene.socket.emit('dealDeck', scene.socket.id, scene.GameHandler.currentRoomID);
+
+            scene.createRoomText.visible = false;
+            scene.joinRoomText.visible = false;
+            this.inputText.destroy();
+            this.HideInputTextDecation();
         });
         
         this.BuildJoinRoomText = () => { 
@@ -153,7 +161,7 @@ export default class UIHandler {
             scene.joinRoomText.on('pointerdown', () => {
                 scene.socket.emit('joinRoom', scene.UIHandler.GetInputTextContent(scene.UIHandler.inputText));
                 
-                // (Runs joinRoomSucceedSignal if success.)
+                // (Runs joinRoomSucceedSignal from server.js if success.)
             })
             // Card color
             scene.joinRoomText.on('pointerover', () => {
@@ -177,13 +185,14 @@ export default class UIHandler {
         }
 
         this.BuildLobby = () => {
+            this.BuildInputTextDecation();
             this.BuildRoomNumberText();
             this.BuildCreateRoomText();
             this.BuildJoinRoomText();
         }
         // Main
-        this.BuildRoomNumberFieldDecoration = (inputText) => { 
-            scene.rexUI.add.roundRectangle(400, 600, 100, 30, 0, 0x666666);
+        this.BuildInputTextField = (inputText) => { 
+            
             inputText = scene.add.text(430, 610, '', { fixedWidth: 150, fixedHeight: 36 });
             inputText.setOrigin(0.5, 0.5);
             inputText.setInteractive().on('pointerdown', () => {
@@ -197,8 +206,15 @@ export default class UIHandler {
             return inputText.text;
         }
 
+        this.BuildInputTextDecation = () => {
+            scene.inputTextRectangle = scene.rexUI.add.roundRectangle(400, 600, 100, 30, 0, 0x666666);
+        }
+        this.HideInputTextDecation = () => {
+            scene.inputTextRectangle.setFillStyle(0x000000); 
+        }
+
         // const textMessage = getTextContent(inputText);
-        // console.log(textMessage); // Output: "123456"
+        // console.log(textMessage); // Output: "123456" 
 
         // this.getTextContent = (textObject) => {
         //     return textObject.text;

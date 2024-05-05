@@ -66,10 +66,10 @@ export default class SocketHandler {
                     // Use card name to retrieve card data
                     let card;
                     if(cards[i].includes("I")) {
-                        card = scene.DeckHandler.InstantiateCard(55 + (i * 55), 760, "ICard", cards[i], "playerCard").setScale(0.26);
+                        card = scene.DeckHandler.InstantiateCard(55 + (i * 55), 780, "ICard", cards[i], "playerCard").setScale(0.26);
                     }
                     if(cards[i].includes("H")) {
-                        card = scene.DeckHandler.InstantiateCard(55 + (i * 55), 760, "HCard", cards[i], "playerCard").setScale(0.26);
+                        card = scene.DeckHandler.InstantiateCard(55 + (i * 55), 780, "HCard", cards[i], "playerCard").setScale(0.26);
                     }
                     scene.GameHandler.playerHand.push(card);
                     // let testMessage = card.getData('test');
@@ -97,10 +97,10 @@ export default class SocketHandler {
             if (socketId === scene.socket.id) {
                 let card;
                 if(cardsToAdd[cardIndex].includes("I")) {
-                    card = scene.DeckHandler.InstantiateCard(55 + (cardIndex * 55), 760, "ICard", cardsToAdd[0], "playerCard").setScale(0.26);
+                    card = scene.DeckHandler.InstantiateCard(55 + (cardIndex * 55), 780, "ICard", cardsToAdd[cardIndex], "playerCard").setScale(0.26);
                 }
                 if(cardsToAdd[cardIndex].includes("H")) {
-                    card = scene.DeckHandler.InstantiateCard(55 + (cardIndex * 55), 760, "HCard", cardsToAdd[0], "playerCard").setScale(0.26);
+                    card = scene.DeckHandler.InstantiateCard(55 + (cardIndex * 55), 780, "HCard", cardsToAdd[cardIndex], "playerCard").setScale(0.26);
                 }
                 scene.GameHandler.playerHand.push(card);
             }
@@ -130,8 +130,6 @@ export default class SocketHandler {
 
                 scene.GameHandler.playerDiceValue = roll1;
                 scene.GameHandler.opponentDiceValue = roll2;
-
-                scene.UIHandler.setRollDiceText(roll2, roll1); 
             }
             else { // Flip the result
                 // Display the results
@@ -140,20 +138,27 @@ export default class SocketHandler {
 
                 scene.GameHandler.playerDiceValue = roll2;
                 scene.GameHandler.opponentDiceValue = roll1;
-
-                scene.UIHandler.setRollDiceText(roll2, roll1);
             }
-            
         })
-        scene.socket.on('decideWhichPlayerfirstTurn', (socketId) => {
+
+        scene.socket.on('decideWhichPlayerfirstTurn', (socketId, roll1, roll2) => {
+            // 等級較高
             if(scene.GameHandler.playerAuthorRarity > scene.GameHandler.opponentAuthorRarity) {
                 scene.GameHandler.changeTurn();
                 scene.GameHandler.getCurrentTurn();
             }
+            // 等級一樣
             else if(scene.GameHandler.playerAuthorRarity === scene.GameHandler.opponentAuthorRarity) {
                 if(scene.GameHandler.playerDiceValue > scene.GameHandler.opponentDiceValue) {
                     scene.GameHandler.changeTurn();
                     scene.GameHandler.getCurrentTurn();
+                }
+
+                if (socketId === scene.socket.id) {
+                    scene.UIHandler.setRollDiceText(roll1, roll2); 
+                }
+                else {
+                    scene.UIHandler.setRollDiceText(roll2, roll1);
                 }
             }
         })
@@ -196,6 +201,8 @@ export default class SocketHandler {
                     case "dropZone3": //人
                         scene.GameHandler.setPlayerPersonPoint(points);
                         break;
+                    default:
+                        break;
                 }
             }
             else {
@@ -209,17 +216,17 @@ export default class SocketHandler {
                     case "dropZone3": //人
                         scene.GameHandler.setOpponentPersonPoint(points);
                         break;
+                    default:
+                        break;
                 }
-                
             }
             scene.GameHandler.setPlayerTotalPoint();
             scene.GameHandler.setOpponentTotalPoint();
         })
 
-        // Called after scene.socket.on('cardPlayed')
         scene.socket.on('changeTurn', () => {
             scene.GameHandler.changeTurn();
-            scene.GameHandler.getCurrentTurn(); 
+            scene.GameHandler.getCurrentTurn();
         })
     }
 }

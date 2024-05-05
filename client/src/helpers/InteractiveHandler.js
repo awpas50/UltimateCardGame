@@ -4,20 +4,46 @@ export default class InteractiveHandler {
     constructor(scene) {
         // Section: Card preview
         // Create cardPreview on pointerdown
-        scene.cardPreview = scene.add.image(0, 0, "I001");
-        scene.cardPreview.setVisible(false);
+        
+        let isCardPreviewActive = false;
+        //scene.cardPreview = scene.add.image(0, 0, "I001");
+        //scene.cardPreview.setVisible(false);
+        this.cardPreview = null;
 
         scene.input.on('pointerdown', (event, gameObjects) => {
-            // Check if gameObject is defined
             let pointer = scene.input.activePointer;
+            // Check if gameObject is defined
+            console.log("isCardPreviewActive: " + isCardPreviewActive);
+            // If not clicking anything gameObjects returns empty array, like this....... []
+            console.log(gameObjects);
+            if((gameObjects.length == 0 || gameObjects[0].type === "Zone") && isCardPreviewActive && this.cardPreview !== null) {
+                console.log("AAAAAAA");
+                this.cardPreview.setPosition(1250, 400);
+                this.isCardPreviewActive = false;
+            }
             if (!gameObjects || gameObjects.length == 0) {
                 return;
             }
             if (gameObjects[0].type === "Image" &&
                 gameObjects[0].data.list.name !== "cardBack") {
-                    scene.cardPreview = scene.add.image(pointer.worldX, pointer.worldY - 200, gameObjects[0].data.values.sprite).setScale(1, 1);
-                    //console.log(gameObjects);
+                //scene.cardPreview = scene.add.image(pointer.worldX, pointer.worldY - 200, gameObjects[0].data.values.sprite).setScale(1, 1);
+                if(this.cardPreview === null) {
+                    this.cardPreview = scene.add.image(750, 400, gameObjects[0].data.values.sprite).setScale(0.75, 0.75);
+                } else {
+                    this.cardPreview.setTexture(gameObjects[0].data.values.sprite).setScale(0.75, 0.75);
+                    this.cardPreview.setPosition(750, 400);
                 }
+                let tween = scene.tweens.add({
+                    targets: this.cardPreview,
+                    x: 450,
+                    duration: 100,
+                    ease: 'Linear',
+                    yoyo: false, // Don't yoyo (return to start position) after tween ends
+                    repeat: 0
+                });
+                isCardPreviewActive = true;
+                tween.play();
+            }
         });
 
         // Hide cardPreview on pointerout if not dragging
@@ -25,14 +51,14 @@ export default class InteractiveHandler {
             if (gameObjects.length > 0 && 
                 gameObjects[0].type === "Image" &&
                 gameObjects[0].data.list.name !== "cardBack") {
-                scene.cardPreview.setVisible(false);
+                //scene.cardPreview.setVisible(false);
             }
         });
 
         scene.input.on('drag', (pointer, gameObject, dragX, dragY) => {
             gameObject.x = dragX;
             gameObject.y = dragY;
-            scene.cardPreview.setVisible(false);
+            //scene.cardPreview.setVisible(false);
         })
         scene.input.on('dragstart', (pointer, gameObject) => {
             gameObject.setTint(0xf0ccde);
@@ -60,15 +86,12 @@ export default class InteractiveHandler {
                     if(gameObject.getData("id").includes("H")) {
                         isMatch = false;
                         cardType = "HCard";
-                        console.log("AAAAAAAAAAAA");
                     } else if ((!gameObject.getData("id").includes("I") || !scene.GameHandler.playerSkyElements.includes(gameObject.getData("element")))) {
                         isMatch = false;
                         cardType = "ICard";
-                        console.log("BBBBBBBBBBBB");
                     } else {
                         isMatch = true;
                         cardType = "ICard";
-                        console.log("CCCCCCCCCCCC");
                     }
                     break;
                 case "dropZone2": //地
@@ -98,19 +121,16 @@ export default class InteractiveHandler {
                 case "dropZone4": //日
                     if(gameObject.getData("id").includes("I")) {
                         isMatch = false;
+                        cardType = "ICard";
+                    } else if(gameObject.getData("id").includes("H")) {
+                        isMatch = false;
                         cardType = "HCard";
-                    } else if(!gameObject.getData("id").includes("H")) {
-                        isMatch = false;
-                        cardType = "ICard";
-                    } else {
-                        isMatch = false;
-                        cardType = "ICard";
                     }
                     break;
             }
             if (scene.GameHandler.isMyTurn && scene.GameHandler.gameState === "Ready") {
                 let authorBuffPoints = 0;
-                let elementID;
+                let elementID = 99;
                 if(gameObject.getData("id").includes("I")) {
                     switch(gameObject.getData("element")) {
                         case "火":
@@ -127,6 +147,8 @@ export default class InteractiveHandler {
                             break;
                         case "土":
                             elementID = 4;
+                            break;
+                        default:
                             break;
                     }
                     authorBuffPoints = scene.GameHandler.authorBuffs[elementID];
