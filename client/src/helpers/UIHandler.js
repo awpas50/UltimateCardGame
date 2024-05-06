@@ -172,20 +172,20 @@ export default class UIHandler {
             })
         }
 
-        this.BuildWhoWinText = (player1Score, player2Score, socketID) => {
+        this.BuildWhoWinText = (playerScore, opponentScore, socketID) => {
             if (socketID === scene.socket.id) {
-                if(player1Score > player2Score) {
+                if(playerScore > opponentScore) {
                     scene.whoWinText = scene.add.text(350, 450, "玩家1勝利!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
-                } else if (player1Score < player2Score){ 
+                } else if (playerScore < opponentScore){ 
                     scene.whoWinText = scene.add.text(350, 450, "玩家2勝利!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
                 } else {
                     scene.whoWinText = scene.add.text(350, 450, "平手!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
                 }
             }
             else {
-                if(player1Score < player2Score) {
+                if(playerScore < opponentScore) {
                     scene.whoWinText = scene.add.text(350, 450, "玩家1勝利!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
-                } else if (player1Score > player2Score){ 
+                } else if (playerScore > opponentScore){ 
                     scene.whoWinText = scene.add.text(350, 450, "玩家2勝利!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
                 } else {
                     scene.whoWinText = scene.add.text(350, 450, "平手!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });

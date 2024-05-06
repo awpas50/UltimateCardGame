@@ -26,6 +26,7 @@ export default class InteractiveHandler {
             }
             if (gameObjects[0].type === "Image" &&
                 gameObjects[0].data.list.id !== "cardBack") {
+                //scene.sound.play('dragCard');
                 //scene.cardPreview = scene.add.image(pointer.worldX, pointer.worldY - 200, gameObjects[0].data.values.sprite).setScale(1, 1);
                 console.log(gameObjects[0].data);
                 if(this.cardPreview === null) {
@@ -86,10 +87,10 @@ export default class InteractiveHandler {
                     // Check if matches the elements on the authorCard
                     if(gameObject.getData("id").includes("H")) {
                         isMatch = false;
-                        cardType = "HCard";
+                        cardType = "cardBack";
                     } else if ((!gameObject.getData("id").includes("I") || !scene.GameHandler.playerSkyElements.includes(gameObject.getData("element")))) {
                         isMatch = false;
-                        cardType = "ICard";
+                        cardType = "cardBack";
                     } else {
                         isMatch = true;
                         cardType = "ICard";
@@ -99,10 +100,10 @@ export default class InteractiveHandler {
                 case "dropZone2": //地
                     if(gameObject.getData("id").includes("H")) {
                         isMatch = false;
-                        cardType = "HCard";
+                        cardType = "cardBack";
                     } else if(!gameObject.getData("id").includes("I") || !scene.GameHandler.playerGroundElements.includes(gameObject.getData("element"))) {
                         isMatch = false;
-                        cardType = "ICard";
+                        cardType = "cardBack";
                     } else {
                         isMatch = true;
                         cardType = "ICard";
@@ -112,10 +113,10 @@ export default class InteractiveHandler {
                 case "dropZone3": //人
                     if(gameObject.getData("id").includes("H")) {
                         isMatch = false;
-                        cardType = "HCard";
+                        cardType = "cardBack";
                     } else if(!gameObject.getData("id").includes("I") || !scene.GameHandler.playerPersonElements.includes(gameObject.getData("element"))) {
                         isMatch = false;
-                        cardType = "ICard";
+                        cardType = "cardBack";
                     } else {
                         isMatch = true;
                         cardType = "ICard";
@@ -125,7 +126,7 @@ export default class InteractiveHandler {
                 case "dropZone4": //日
                     if(gameObject.getData("id").includes("I")) {
                         isMatch = false;
-                        cardType = "ICard";
+                        cardType = "cardBack";
                     } else if(gameObject.getData("id").includes("H")) {
                         isMatch = false;
                         cardType = "HCard";
@@ -171,6 +172,7 @@ export default class InteractiveHandler {
                     scene.socket.emit('dealOneCardInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID);
                 } else {
                     //dropZone.data.list.cards++;
+                    cardType === "cardBack" && gameObject.setTexture('H001B');
                     scene.input.setDraggable(gameObject, false);
                     scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
                     scene.socket.emit('calculatePoints', 0 + authorBuffPoints, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
@@ -179,6 +181,9 @@ export default class InteractiveHandler {
                 scene.socket.emit('addCardCount', scene.socket.id, scene.GameHandler.opponentID, scene.GameHandler.currentRoomID);
                 console.log(dropZone);
                 console.log(dropZone.data.list.cards);
+
+                //const RNG = Math.floor(Math.random() * 3) + 1;
+                //scene.sound.play(`flipCard${RNG}`);
             } 
             else {
                 gameObject.x = gameObject.input.dragStartX;

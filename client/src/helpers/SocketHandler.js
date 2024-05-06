@@ -171,19 +171,21 @@ export default class SocketHandler {
             console.log("dropZoneID:", dropZoneName);
             console.log("cardType: " + cardType);
             if (socketId !== scene.socket.id) {
-                scene.GameHandler.opponentHand.shift().destroy();
+                scene.GameHandler.opponentHand.shift().destroy(); 
+                const scaleX = 0.26;
+                const scaleY = cardType === "cardBack" ? 0.26 : -0.26;
                 switch(dropZoneName) {
                     case "dropZone1": //天
-                        scene.DeckHandler.InstantiateCard(189, 345, cardType, cardName, "opponentCard").setScale(0.26, -0.26);
+                        scene.DeckHandler.InstantiateCard(189, 345, cardType, cardName, "opponentCard").setScale(scaleX, scaleY);
                         break;
                     case "dropZone2": //地
-                        scene.DeckHandler.InstantiateCard(90, 220, cardType, cardName, "opponentCard").setScale(0.26, -0.26);
+                        scene.DeckHandler.InstantiateCard(90, 220, cardType, cardName, "opponentCard").setScale(scaleX, scaleY);
                         break;
                     case "dropZone3": //人
-                        scene.DeckHandler.InstantiateCard(280, 220, cardType, cardName, "opponentCard").setScale(0.26, -0.26);
+                        scene.DeckHandler.InstantiateCard(280, 220, cardType, cardName, "opponentCard").setScale(scaleX, scaleY);
                         break;
                     case "dropZone4": //日
-                        scene.DeckHandler.InstantiateCard(189, 100, cardType, cardName, "opponentCard").setScale(0.26, -0.26);
+                        scene.DeckHandler.InstantiateCard(189, 100, cardType, cardName, "opponentCard").setScale(scaleX, scaleY);
                         break;
                 }
 
