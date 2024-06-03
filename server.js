@@ -15,11 +15,12 @@ const { Console } = require('console');
 const http = require('http').createServer(server);
 const port = process.env.PORT || 3000;
 
+require('dotenv').config();
+
 const io = require('socket.io')(http, {
     cors: {
         // localhost:8080 is where the client is.
-        origin: 'https://awpas50.github.io/UltimateCardGame_Frontend/',
-        //origin: 'http://localhost:8080',
+        origin: process.env.SERVER_LOCATION,
         methods: ["GET", "POST"]
     }
 });
@@ -231,6 +232,7 @@ io.on('connection', function(socket) {
 
 http.listen(port, function() {
     console.log('Server Started!');
+    console.log(`Server is running in ${process.env.NODE_ENV} mode`);
 })
 
 // Function to get image names in a folder
