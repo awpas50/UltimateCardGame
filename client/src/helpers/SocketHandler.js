@@ -4,8 +4,8 @@ export default class SocketHandler {
     constructor(scene) {
         // Heroku URL
         // Default: localhost:3000 is where the client is.
-        //scene.socket = io('https://ultimate-card-game-f26046605e38.herokuapp.com');
-        scene.socket = io('http://localhost:3000/');
+        scene.socket = io('https://ultimate-card-game-f26046605e38.herokuapp.com');
+        //scene.socket = io('http://localhost:3000/');
 
         //Create or join a room
         scene.socket.on('connect', () => {

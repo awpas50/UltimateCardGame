@@ -20,7 +20,7 @@ require('dotenv').config();
 const io = require('socket.io')(http, {
     cors: {
         // localhost:8080 is where the client is.
-        origin: process.env.SERVER_LOCATION,
+        origin: process.env.CLIENT_LOCATION,
         methods: ["GET", "POST"]
     }
 });
