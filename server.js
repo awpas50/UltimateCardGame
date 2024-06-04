@@ -20,7 +20,9 @@ require('dotenv').config();
 const io = require('socket.io')(http, {
     cors: {
         // localhost:8080 is where the client is.
-        origin: process.env.CLIENT_LOCATION,
+        origin: 'https://awpas50.github.io/UltimateCardGame_Frontend/',
+        //origin: 'http://localhost:8080',
+        //origin: process.env.CLIENT_LOCATION,
         methods: ["GET", "POST"]
     }
 });
