@@ -82,6 +82,9 @@ export default class UIHandler {
 
             // OnPointerDown event
             scene.dealCardText.on('pointerdown', () => {
+                const RNG = Math.floor(Math.random() * 3) + 1;
+                scene.sound.play(`flipCard${RNG}`);
+
                 scene.socket.emit("dealCards", scene.socket.id, scene.GameHandler.currentRoomID, scene.GameHandler.opponentID);
                 scene.dealCardText.disableInteractive();
             })
@@ -119,6 +122,9 @@ export default class UIHandler {
             scene.createRoomText.setInteractive();
 
             scene.createRoomText.on('pointerdown', () => {
+                const RNG = Math.floor(Math.random() * 3) + 1;
+                scene.sound.play(`flipCard${RNG}`);
+
                 this.BuildPlayArea();
                 let randomRoomId = this.generateRandomRoomID();
                 scene.socket.emit('createRoom', randomRoomId);
@@ -159,6 +165,9 @@ export default class UIHandler {
             scene.joinRoomText = scene.add.text(260, 430, "加入房間", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
             scene.joinRoomText.setInteractive();
             scene.joinRoomText.on('pointerdown', () => {
+                const RNG = Math.floor(Math.random() * 3) + 1;
+                scene.sound.play(`flipCard${RNG}`);
+
                 scene.socket.emit('joinRoom', scene.UIHandler.GetInputTextContent(scene.UIHandler.inputText));
                 
                 // (Runs joinRoomSucceedSignal from server.js if success.)
@@ -217,6 +226,9 @@ export default class UIHandler {
             inputText = scene.add.text(330, 510, '', { fixedWidth: 150, fixedHeight: 36 });
             inputText.setOrigin(0.5, 0.5);
             inputText.setInteractive().on('pointerdown', () => {
+                const RNG = Math.floor(Math.random() * 3) + 1;
+                scene.sound.play(`flipCard${RNG}`);
+                
                 const editor = scene.rexUI.edit(inputText);
                 const elem = editor.inputText.node;
                 elem.style.top = '-10px';

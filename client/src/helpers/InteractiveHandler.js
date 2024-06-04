@@ -13,11 +13,10 @@ export default class InteractiveHandler {
         scene.input.on('pointerdown', (event, gameObjects) => {
             let pointer = scene.input.activePointer;
             // Check if gameObject is defined
-            console.log("isCardPreviewActive: " + isCardPreviewActive);
+            //console.log("isCardPreviewActive: " + isCardPreviewActive);
             // If not clicking anything gameObjects returns empty array, like this....... []
-            console.log(gameObjects);
+            //console.log(gameObjects);
             if((gameObjects.length == 0 || gameObjects[0].type === "Zone") && isCardPreviewActive && this.cardPreview !== null) {
-                console.log("AAAAAAA");
                 this.cardPreview.setPosition(1250, 400);
                 this.isCardPreviewActive = false;
             }
@@ -26,8 +25,7 @@ export default class InteractiveHandler {
             }
             if (gameObjects[0].type === "Image" &&
                 gameObjects[0].data.list.id !== "cardBack") {
-                //scene.sound.play('dragCard');
-                //scene.cardPreview = scene.add.image(pointer.worldX, pointer.worldY - 200, gameObjects[0].data.values.sprite).setScale(1, 1);
+                scene.sound.play('dragCard');
                 console.log(gameObjects[0].data);
                 if(this.cardPreview === null) {
                     this.cardPreview = scene.add.image(750, 400, gameObjects[0].data.values.sprite).setScale(0.7, 0.7);
@@ -48,19 +46,9 @@ export default class InteractiveHandler {
             }
         });
 
-        // Hide cardPreview on pointerout if not dragging
-        scene.input.on('pointerup', (event, gameObjects) => {
-            // if (gameObjects.length > 0 && 
-            //     gameObjects[0].type === "Image" &&
-            //     gameObjects[0].data.list.name !== "cardBack") {
-            //     scene.cardPreview.setVisible(false);
-            // }
-        });
-
         scene.input.on('drag', (pointer, gameObject, dragX, dragY) => {
             gameObject.x = dragX;
             gameObject.y = dragY;
-            //scene.cardPreview.setVisible(false);
         })
         scene.input.on('dragstart', (pointer, gameObject) => {
             gameObject.setTint(0xf0ccde);
@@ -79,7 +67,6 @@ export default class InteractiveHandler {
         // 'drop' *** built-in function in Phaser 3
         // gameObject: Card
         scene.input.on('drop', (pointer, gameObject, dropZone) => {
-            //console.log("AAAAAA: " + gameObject.getData("test"));
             let isMatch = false;
             let cardType = "";
             switch(dropZone.name) {
@@ -134,7 +121,9 @@ export default class InteractiveHandler {
                     scene.GameHandler.sunCardZoneName = gameObject.getData("id");
                     break;
             }
-            if (scene.GameHandler.isMyTurn && scene.GameHandler.gameState === "Ready") {
+            if (scene.GameHandler.isMyTurn && scene.GameHandler.gameState === "Ready" && dropZone.data.list.cards == 0) {
+                const RNG = Math.floor(Math.random() * 3) + 1;
+                scene.sound.play(`flipCard${RNG}`);
                 let authorBuffPoints = 0;
                 let elementID = 99;
                 if(gameObject.getData("id").includes("I")) {
@@ -165,25 +154,22 @@ export default class InteractiveHandler {
                 // calculatePoints does not affect dropZone 4
                 if(isMatch) {
                     console.log("gameObject.getData(points)" + gameObject.getData("points"))
-                    //dropZone.data.list.cards++;
                     scene.input.setDraggable(gameObject, false);
                     scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
                     scene.socket.emit('calculatePoints', gameObject.getData("points") + authorBuffPoints, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
                     scene.socket.emit('dealOneCardInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID);
+                    console.log(dropZone)
+                    dropZone.data.list.cards++
                 } else {
-                    //dropZone.data.list.cards++;
                     cardType === "cardBack" && gameObject.setTexture('H001B');
                     scene.input.setDraggable(gameObject, false);
                     scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
                     scene.socket.emit('calculatePoints', 0 + authorBuffPoints, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
                     scene.socket.emit('dealOneCardInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID);
+                    console.log(dropZone)
+                    dropZone.data.list.cards++
                 }
                 scene.socket.emit('addCardCount', scene.socket.id, scene.GameHandler.opponentID, scene.GameHandler.currentRoomID);
-                console.log(dropZone);
-                console.log(dropZone.data.list.cards);
-
-                //const RNG = Math.floor(Math.random() * 3) + 1;
-                //scene.sound.play(`flipCard${RNG}`);
             } 
             else {
                 gameObject.x = gameObject.input.dragStartX;

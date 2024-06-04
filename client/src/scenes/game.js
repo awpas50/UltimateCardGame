@@ -184,19 +184,17 @@ export default class Game extends Phaser.Scene {
         this.load.image('Test1', require('../../public/assets/Back/Test1.jpg').default);
         this.load.image('BG', require('../../public/assets/Back/WoodBackground.jpg').default); 
 
-        //this.load.audio('flipCard1', require('../sfx/flipCard1.mp3').default);
-        //this.load.audio('flipCard2', require('../sfx/flipCard2.wav').default);
-        //this.load.audio('flipCard3', require('../sfx/flipCard3.wav').default);
-        //this.load.audio('dragCard', require('../sfx/dragCard.wav').default); 
-
-        
+        this.load.audio('flipCard1', require('../sfx/flipCard1.mp3').default);
+        this.load.audio('flipCard2', require('../sfx/flipCard2.wav').default);
+        this.load.audio('flipCard3', require('../sfx/flipCard3.wav').default);
+        this.load.audio('dragCard', require('../sfx/dragCard.wav').default); 
     }
     // just like void Start() in Unity
     create() {
-        //this.sound.add('flipCard1');
-        //this.sound.add('flipCard2');
-        //this.sound.add('flipCard3');
-        //this.sound.add('dragCard');
+        this.sound.add('flipCard1');
+        this.sound.add('flipCard2');
+        this.sound.add('flipCard3');
+        this.sound.add('dragCard');
 
         this.cameras.main.roundPixels = true;
         // Set scale mode

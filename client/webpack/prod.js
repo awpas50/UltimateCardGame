@@ -19,6 +19,16 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.(wav|mp3)$/,
+        use: [{
+            loader: 'file-loader',
+            options: {
+                name: '[name].[ext]',
+                outputPath: 'src/sfx/', // Output folder for your sound files
+            },
+        }],
+      },
+      {
         test: /\.js$/,
         exclude: /node_modules/,
         use: {
