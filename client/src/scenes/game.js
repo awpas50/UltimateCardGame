@@ -184,6 +184,8 @@ export default class Game extends Phaser.Scene {
         this.load.image('Test1', require('../../public/assets/Back/Test1.jpg').default);
         this.load.image('BG', require('../../public/assets/Back/WoodBackground.jpg').default); 
 
+        this.load.audio('BGM1', require('../sfx/BGM1.mp3').default);
+
         this.load.audio('flipCard1', require('../sfx/flipCard1.mp3').default);
         this.load.audio('flipCard2', require('../sfx/flipCard2.wav').default);
         this.load.audio('flipCard3', require('../sfx/flipCard3.wav').default);
@@ -191,6 +193,11 @@ export default class Game extends Phaser.Scene {
     }
     // just like void Start() in Unity
     create() {
+        this.backgroundMusic = this.sound.add('BGM1');
+        this.backgroundMusic.setLoop(true);
+        this.backgroundMusic.play();
+        this.backgroundMusic.setVolume(0.5);
+
         this.sound.add('flipCard1');
         this.sound.add('flipCard2');
         this.sound.add('flipCard3');

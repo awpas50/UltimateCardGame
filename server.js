@@ -20,8 +20,8 @@ require('dotenv').config();
 const io = require('socket.io')(http, {
     cors: {
         // localhost:8080 is where the client is.
-        origin: 'https://awpas50.github.io/UltimateCardGame_Frontend/',
-        //origin: 'http://localhost:8080',
+        //origin: 'https://awpas50.github.io/UltimateCardGame_Frontend/',
+        origin: 'http://localhost:8080',
         //origin: process.env.CLIENT_LOCATION,
         methods: ["GET", "POST"]
     }
@@ -45,6 +45,8 @@ io.on('connection', function(socket) {
         if (!playersInRooms.has(newRoomId)) {
             playersInRooms.set(newRoomId, new Array());
         }
+
+        players[socket.id].isPlayerA = true;
         
         const keyToUpdate = newRoomId;
         const newItem = socket.id;
@@ -115,7 +117,8 @@ io.on('connection', function(socket) {
         inRubbishBin_WCard: [],
 
         cardCount: 0,
-        isReady: false
+        isReady: false,
+        isPlayerA: false
     }
 
     const roomsArray = Array.from(socket.rooms);
@@ -217,12 +220,8 @@ io.on('connection', function(socket) {
 
         if (players[socketID].cardCount >= 4 && players[opponentID].cardCount >= 4) {
             console.log("END");
-            io.to(roomId).emit('endRound', socketID);
+            io.to(roomId).emit('endRound', socketID, players[socketID].isPlayerA);
         }
-        //io.to(roomId).emit('checkIfFinishRound', socketID, opponentID, roomId);
-    })
-    socket.on('checkIfFinishRound', function(socketID, opponentID, roomId) {
-        
     })
 
     socket.on('disconnect', function () {
