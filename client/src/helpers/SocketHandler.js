@@ -232,7 +232,7 @@ export default class SocketHandler {
             scene.GameHandler.getCurrentTurn();
         })
 
-        scene.socket.on('endRound', (socketID, isPlayerA) => {
+        scene.socket.on('endRound', (socketID, isPlayerA, elementId_list, inspriationPt_list) => {
             let whoWin = -1;
             let win = false;
             let myPoint = scene.GameHandler.playerTotalPoints
@@ -251,7 +251,15 @@ export default class SocketHandler {
                 scene.GameHandler.playerTotalWinScore += 8;
             }
             scene.UIHandler.BuildWhoWinText(whoWin, socketID);
-            scene.UIHandler.SetPlayerWinScoreText(scene.GameHandler.playerTotalWinScore);
+
+            let multiplier = 1
+            if(elementId_list.every(value => value === elementId_list[0])) {
+                multiplier = 2
+            }
+            if(inspriationPt_list.every(value => value === inspriationPt_list[0])) {
+                multiplier = 3
+            }
+            scene.UIHandler.SetPlayerWinScoreText(scene.GameHandler.playerTotalWinScore * multiplier);
         })
     }
 }

@@ -71,7 +71,6 @@ export default class InteractiveHandler {
             let cardType = "";
             switch(dropZone.name) {
                 case "dropZone1": //天
-                    // Check if matches the elements on the authorCard
                     if(gameObject.getData("id").includes("H")) {
                         isMatch = false;
                         cardType = "cardBack";
@@ -151,23 +150,19 @@ export default class InteractiveHandler {
                 gameObject.x = dropZone.x;
                 gameObject.y = dropZone.y;
 
+                console.log(dropZone)
+                dropZone.data.list.cards++
+                scene.input.setDraggable(gameObject, false)
+                scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType)
+                scene.socket.emit('dealOneCardInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID)
                 // calculatePoints does not affect dropZone 4
                 if(isMatch) {
                     console.log("gameObject.getData(points)" + gameObject.getData("points"))
-                    scene.input.setDraggable(gameObject, false);
-                    scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
+                    scene.socket.emit('setCardType', scene.socket.id, elementID, gameObject.getData("points"))
                     scene.socket.emit('calculatePoints', gameObject.getData("points") + authorBuffPoints, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
-                    scene.socket.emit('dealOneCardInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID);
-                    console.log(dropZone)
-                    dropZone.data.list.cards++
                 } else {
                     cardType === "cardBack" && gameObject.setTexture('H001B');
-                    scene.input.setDraggable(gameObject, false);
-                    scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
                     scene.socket.emit('calculatePoints', 0 + authorBuffPoints, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
-                    scene.socket.emit('dealOneCardInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID);
-                    console.log(dropZone)
-                    dropZone.data.list.cards++
                 }
                 scene.socket.emit('addCardCount', scene.socket.id, scene.GameHandler.opponentID, scene.GameHandler.currentRoomID);
             } 
