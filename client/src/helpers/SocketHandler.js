@@ -234,19 +234,24 @@ export default class SocketHandler {
 
         scene.socket.on('endRound', (socketID, isPlayerA) => {
             let whoWin = -1;
+            let win = false;
             let myPoint = scene.GameHandler.playerTotalPoints
             let opponentPoint = scene.GameHandler.opponentTotalPoints
             console.log("END ROUND")
             if(myPoint > opponentPoint) {
                 whoWin = isPlayerA ? 1 : 2;
+                win = true;
             } else if (myPoint < opponentPoint){ 
                 whoWin = isPlayerA ? 2 : 1;
             } else {
                 whoWin = 0
             }
-            if(isPlayerA) {
-                scene.UIHandler.BuildWhoWinText(whoWin, socketID);
+
+            if(win) {
+                scene.GameHandler.playerTotalWinScore += 8;
             }
+            scene.UIHandler.BuildWhoWinText(whoWin, socketID);
+            scene.UIHandler.SetPlayerWinScoreText(scene.GameHandler.playerTotalWinScore);
         })
     }
 }

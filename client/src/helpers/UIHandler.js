@@ -191,6 +191,14 @@ export default class UIHandler {
             }
         }
 
+        this.BuildPlayerWinScoreText = () => {
+            scene.winScoreText = scene.add.text(350, 500, "", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
+        }
+
+        this.SetPlayerWinScoreText = (totalWinScore) => {
+            scene.winScoreText.text = '總分: ' + totalWinScore;
+        }
+
         // Main
         this.BuildPlayArea = () => {
             console.log("BuildPlayArea");
@@ -200,6 +208,7 @@ export default class UIHandler {
             this.BuildPlayerTurnText();
             this.BuildGameText(); 
             this.BuildRollDiceText();
+            this.BuildPlayerWinScoreText();
         }
 
         this.BuildLobby = () => {
