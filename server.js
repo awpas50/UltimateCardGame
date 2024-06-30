@@ -110,6 +110,8 @@ io.on('connection', function(socket) {
         roomId: {},
         inDeck: [],
         inHand: [],
+        inSceneType: [],
+        inSceneInspriationPt: [],
         inRubbishBin: [],
 
         inDeck_WCard: [],
@@ -201,6 +203,11 @@ io.on('connection', function(socket) {
         io.to(roomId).emit('dealOneCardInScene', socketId, players[socketId].inHand, cardIndex);
     });
 
+    socket.on('setCardType', function (socketId, elementId, inspriationPt) {
+        players[socketId].inSceneType.add(elementId);
+        players[socketId].inSceneInspriationPt.add(inspriationPt);
+    });
+
     // Called in InteractiveHandler.js
     socket.on('calculatePoints', function(points, socketId, dropZoneID, roomId) {
         io.to(roomId).emit('calculatePoints', points, socketId, dropZoneID, roomId);
@@ -220,7 +227,7 @@ io.on('connection', function(socket) {
 
         if (players[socketID].cardCount >= 4 && players[opponentID].cardCount >= 4) {
             console.log("END");
-            io.to(roomId).emit('endRound', socketID, players[socketID].isPlayerA);
+            io.to(roomId).emit('endRound', socketID, players[socketID].isPlayerA, players[socketId].inSceneType, players[socketId].inSceneInspriationPt);
         }
     })
 

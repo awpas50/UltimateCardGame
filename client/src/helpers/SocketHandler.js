@@ -4,8 +4,8 @@ export default class SocketHandler {
     constructor(scene) {
         // Heroku URL
         // Default: localhost:3000 is where the server is.
-        //scene.socket = io('https://ultimate-card-game-f26046605e38.herokuapp.com');
-        scene.socket = io('http://localhost:3000/');
+        scene.socket = io('https://ultimate-card-game-f26046605e38.herokuapp.com');
+        //scene.socket = io('http://localhost:3000/');
 
         //Create or join a room
         scene.socket.on('connect', () => {
@@ -232,21 +232,34 @@ export default class SocketHandler {
             scene.GameHandler.getCurrentTurn();
         })
 
-        scene.socket.on('endRound', (socketID, isPlayerA) => {
+        scene.socket.on('endRound', (socketID, isPlayerA, elementId_list, inspriationPt_list) => {
             let whoWin = -1;
+            let win = false;
             let myPoint = scene.GameHandler.playerTotalPoints
             let opponentPoint = scene.GameHandler.opponentTotalPoints
             console.log("END ROUND")
             if(myPoint > opponentPoint) {
                 whoWin = isPlayerA ? 1 : 2;
+                win = true;
             } else if (myPoint < opponentPoint){ 
                 whoWin = isPlayerA ? 2 : 1;
             } else {
                 whoWin = 0
             }
-            if(isPlayerA) {
-                scene.UIHandler.BuildWhoWinText(whoWin, socketID);
+
+            if(win) {
+                scene.GameHandler.playerTotalWinScore += 8;
             }
+            scene.UIHandler.BuildWhoWinText(whoWin, socketID);
+
+            let multiplier = 1
+            if(elementId_list.every(value => value === elementId_list[0])) {
+                multiplier = 2
+            }
+            if(inspriationPt_list.every(value => value === inspriationPt_list[0])) {
+                multiplier = 3
+            }
+            scene.UIHandler.SetPlayerWinScoreText(scene.GameHandler.playerTotalWinScore * multiplier);
         })
     }
 }
