@@ -8,7 +8,7 @@ import UIHandler from "../helpers/UIHandler";
 import { InputText, TextArea } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 
 // 編號/名稱/等級/天/地/人屬性
-// 無屬性寫 ["火", "水", "木", "金", "土"]
+// 無屬性填 ["火", "水", "木", "金", "土"]
 
 // 火/水/木/金/土屬性加成
 // 例子: [0, 50, 0, -20, 0] 指水+50, 金-20.
@@ -43,7 +43,7 @@ export const WCard_Data_23246 = {
         person: ["火", "水"],
         authorBuffs: [0, 20, 0, 0, 0]},
 }
-// 編號/名稱/屬性/系列/靈感值
+// 靈感卡：編號/名稱/屬性/系列/靈感值
 export const ICard_Data_23246 = {
     "23246_I002": { ID: "23246_I002", name: "幻想", element: "水", series: "袁枚系列", points: 60 },
     "23246_I006": { ID: "23246_I006", name: "瞠視", element: "水", series: "袁枚系列", points: 50 },
@@ -185,7 +185,6 @@ export default class Game extends Phaser.Scene {
         this.load.image('BG', require('../../public/assets/Back/WoodBackground.jpg').default); 
 
         this.load.audio('BGM1', require('../sfx/BGM1.mp3').default);
-
         this.load.audio('flipCard1', require('../sfx/flipCard1.mp3').default);
         this.load.audio('flipCard2', require('../sfx/flipCard2.wav').default);
         this.load.audio('flipCard3', require('../sfx/flipCard3.wav').default);
@@ -226,10 +225,11 @@ export default class Game extends Phaser.Scene {
         this.GameHandler = new GameHandler(this);
         this.SocketHandler = new SocketHandler(this);
         this.UIHandler = new UIHandler(this);
-        this.UIHandler.inputText = this.UIHandler.BuildInputTextField(this.UIHandler.inputText);
-        console.log(this.UIHandler.inputText);
-        this.UIHandler.BuildLobby();
         this.InteractiveHandler = new InteractiveHandler(this);
+        
+        this.UIHandler.inputText = this.UIHandler.BuildInputTextField(this.UIHandler.inputText);
+        this.UIHandler.BuildLobby();
+        
         // let backgroundImage = this.add.image(0, 0, 'BG');
         // backgroundImage.setOrigin(0, 0);
         // backgroundImage.setDepth(0); // Set a depth level for the background
