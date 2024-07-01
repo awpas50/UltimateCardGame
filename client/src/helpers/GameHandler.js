@@ -119,6 +119,9 @@ export default class GameHandler {
         this.getPlayerTotalPoint = () => {
             return this.playerTotalPoints;
         }
+        this.getOpponentTotalPoint = () => {
+            return this.opponentTotalPoints;
+        }
 
         this.setPlayerTotalWinScore = () => {
             let multiplier = 1;

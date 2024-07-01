@@ -69,11 +69,17 @@ export default class UIHandler {
         }
 
         this.buildPlayerPointText = () => { // Leave it empty
-            scene.playerPointText = scene.add.text(350, 350, " ").setFontSize(20).setFontFamily("Trebuchet MS");
+            scene.playerPointText = scene.add.text(350, 550, " ").setFontSize(20).setFontFamily("Trebuchet MS");
+        }
+        this.buildOpponentPointText = () => { // Leave it empty
+            scene.opponentPointText = scene.add.text(350, 200, " ").setFontSize(20).setFontFamily("Trebuchet MS");
         }
 
         this.setPlayerPointText = (points) => {
             scene.playerPointText.text = '靈感值:' + points;
+        }
+        this.setOpponentPointText = (points) => {
+            scene.opponentPointText.text = '對方靈感值:' + points;
         }
 
         this.BuildGameText = () => {
@@ -112,7 +118,10 @@ export default class UIHandler {
             scene.rollDiceText1.text = '玩家1擲出:' + num1;
             scene.rollDiceText2.text = '玩家2擲出:' + num2;
         }
-
+        this.hideRollDiceText = () => {
+            scene.rollDiceText1.text = '';
+            scene.rollDiceText2.text = '';
+        }
         this.BuildRoomNumberText = () => {
             scene.roomNumberText = scene.add.text(440, 20, "房間編號: ").setFontSize(20).setFontFamily("Trebuchet MS");
         }

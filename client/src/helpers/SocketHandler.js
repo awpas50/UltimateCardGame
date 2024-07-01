@@ -4,8 +4,8 @@ export default class SocketHandler {
     constructor(scene) {
         // Heroku URL
         // Default: localhost:3000 is where the server is.
-        scene.socket = io('https://ultimate-card-game-f26046605e38.herokuapp.com');
-        //scene.socket = io('http://localhost:3000/');
+        //scene.socket = io('https://ultimate-card-game-f26046605e38.herokuapp.com');
+        scene.socket = io('http://localhost:3000/');
 
         //Create or join a room
         scene.socket.on('connect', () => {
@@ -31,6 +31,13 @@ export default class SocketHandler {
         scene.socket.on('setPlayerPointText', () => {
             let points = scene.GameHandler.getPlayerTotalPoint();
             scene.UIHandler.setPlayerPointText(points); 
+        })
+        scene.socket.on('buildOpponentPointText', () => {
+            scene.UIHandler.buildOpponentPointText(); 
+        })
+        scene.socket.on('setOpponentPointText', () => {
+            let points = scene.GameHandler.getOpponentTotalPoint();
+            scene.UIHandler.setOpponentPointText(points); 
         })
 
         scene.socket.on('playersInRoom', (players) => {
@@ -188,7 +195,6 @@ export default class SocketHandler {
                         scene.DeckHandler.InstantiateCard(189, 100, cardType, cardName, "opponentCard").setScale(scaleX, scaleY);
                         break;
                 }
-
             }
         })
         scene.socket.on('calculatePoints', (pointsString, socketId, dropZoneName, roomId, cardType) => {
@@ -253,6 +259,7 @@ export default class SocketHandler {
             scene.UIHandler.BuildWhoWinText(whoWin, socketID);
 
             let multiplier = 1
+            console.log("elementId_list: " + elementId_list)
             if(elementId_list.every(value => value === elementId_list[0])) {
                 multiplier = 2
             }
@@ -260,6 +267,15 @@ export default class SocketHandler {
                 multiplier = 3
             }
             scene.UIHandler.SetPlayerWinScoreText(scene.GameHandler.playerTotalWinScore * multiplier);
+
+            setTimeout(() => {
+                // Code to execute after the timeout
+                console.log("End round");
+                
+                // Example: Resetting the game state, showing a message, etc.
+                // scene.GameHandler.resetGame();
+                // scene.UIHandler.showMessage("Next round starting soon...");
+            }, 5000);
         })
     }
 }

@@ -5,7 +5,6 @@ const cors = require('cors');
 const serveStatic = require('serve-static');
 const shuffle = require('shuffle-array');
 let players = {};
-let readyCheck = 0;
 let playersInRooms = new Map(); // Map to store players in rooms
 let gameState = "Initializing";
 
@@ -128,8 +127,8 @@ io.on('connection', function(socket) {
     const objLength = Object.keys(players).length;
     console.log("Number of players in the server: " + objLength);
 
-    //socket.emit('buildPlayerTurnText');
     socket.emit('buildPlayerPointText');
+    socket.emit('buildOpponentPointText');
     socket.on('HelloWorld', function() {
         console.log(players);
     })
@@ -204,31 +203,34 @@ io.on('connection', function(socket) {
     });
 
     socket.on('setCardType', function (socketId, elementId, inspriationPt) {
-        players[socketId].inSceneType.add(elementId);
-        players[socketId].inSceneInspriationPt.add(inspriationPt);
+        players[socketId].inSceneType.push(elementId);
+        players[socketId].inSceneInspriationPt.push(inspriationPt);
     });
 
     // Called in InteractiveHandler.js
-    socket.on('calculatePoints', function(points, socketId, dropZoneID, roomId) {
-        io.to(roomId).emit('calculatePoints', points, socketId, dropZoneID, roomId);
+    socket.on('calculatePoints', function(points, socketId, dropZoneId, roomId) {
+        io.to(roomId).emit('calculatePoints', points, socketId, dropZoneId, roomId);
         socket.emit('setPlayerPointText');
+        socket.emit('setOpponentPointText');
     });
     
-    socket.on('cardPlayed', function (cardName, socketId, dropZoneID, roomId, cardType) {
-        io.to(roomId).emit('cardPlayed', cardName, socketId, dropZoneID, roomId, cardType);
+    socket.on('cardPlayed', function (cardName, socketId, dropZoneId, roomId, cardType) {
+        io.to(roomId).emit('cardPlayed', cardName, socketId, dropZoneId, roomId, cardType);
         io.to(roomId).emit('changeTurn');
         io.to(roomId).emit('setPlayerTurnText');
     });
 
-    socket.on('addCardCount', function(socketID, opponentID, roomId) {
-        players[socketID].cardCount++;
-        console.log("players[socketID].cardCount: " + players[socketID].cardCount);
-        console.log("players[opponentID].cardCount: " + players[opponentID].cardCount);
+    socket.on('addCardCount', function(socketId, opponentId, roomId) {
+        players[socketId].cardCount++;
+        console.log("players[socketId].cardCount: " + players[socketId].cardCount);
+        console.log("players[opponentId].cardCount: " + players[opponentId].cardCount);
 
-        if (players[socketID].cardCount >= 4 && players[opponentID].cardCount >= 4) {
+        if (players[socketId].cardCount >= 4 && players[opponentId].cardCount >= 4) {
             console.log("END");
-            io.to(roomId).emit('endRound', socketID, players[socketID].isPlayerA, players[socketId].inSceneType, players[socketId].inSceneInspriationPt);
+            io.to(roomId).emit('endRound', socketId, players[socketId].isPlayerA, players[socketId].inSceneType, players[socketId].inSceneInspriationPt);
         }
+
+        console.log(players)
     })
 
     socket.on('disconnect', function () {
