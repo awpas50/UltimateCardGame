@@ -226,7 +226,8 @@ io.on('connection', function(socket) {
         console.log("players[opponentId].cardCount: " + players[opponentId].cardCount);
 
         if (players[socketId].cardCount >= 4 && players[opponentId].cardCount >= 4) {
-            console.log("END");
+            socket.emit('setPlayerPointText');
+            socket.emit('setOpponentPointText');
             io.to(roomId).emit('endRound', socketId, players[socketId].isPlayerA, players[socketId].inSceneType, players[socketId].inSceneInspriationPt);
         }
 

@@ -109,11 +109,10 @@ export default class GameHandler {
 
         this.setPlayerTotalPoint = () => {
             this.playerTotalPoints = this.playerSkyPoint + this.playerGroundPoint + this.playerPersonPoint;
-            console.log("Player: " + this.playerTotalPoints + " " + "Opponent: " + this.opponentTotalPoints);
+            
         }
         this.setOpponentTotalPoint = () => {
             this.opponentTotalPoints = this.opponentSkyPoint + this.opponentGroundPoint + this.opponentPersonPoint;
-            console.log("Player: " + this.playerTotalPoints + " " + "Opponent: " + this.opponentTotalPoints);
         }
 
         this.getPlayerTotalPoint = () => {

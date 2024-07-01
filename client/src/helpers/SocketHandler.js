@@ -173,10 +173,7 @@ export default class SocketHandler {
         // Called in server.js
         // Where does Player 2 cards display in Player 1 scene??
         scene.socket.on('cardPlayed', (cardName, socketId, dropZoneName, roomId, cardType) => {
-            console.log("cardName:", cardName);
-            console.log("socketId:", socketId);
-            console.log("dropZoneID:", dropZoneName);
-            console.log("cardType: " + cardType);
+            console.log("cardName: " + cardName + " socketId:" + socketId + " dropZoneID:" + dropZoneName + " cardType: " + cardType)
             if (socketId !== scene.socket.id) {
                 scene.GameHandler.opponentHand.shift().destroy(); 
                 const scaleX = 0.26;
@@ -231,6 +228,7 @@ export default class SocketHandler {
             }
             scene.GameHandler.setPlayerTotalPoint();
             scene.GameHandler.setOpponentTotalPoint();
+            console.log("Player: " + scene.GameHandler.playerTotalPoints + " " + "Opponent: " + scene.GameHandler.opponentTotalPoints);
         })
 
         scene.socket.on('changeTurn', () => {
@@ -244,6 +242,7 @@ export default class SocketHandler {
             let myPoint = scene.GameHandler.playerTotalPoints
             let opponentPoint = scene.GameHandler.opponentTotalPoints
             console.log("END ROUND")
+            
             if(myPoint > opponentPoint) {
                 whoWin = isPlayerA ? 1 : 2;
                 win = true;
@@ -253,6 +252,9 @@ export default class SocketHandler {
                 whoWin = 0
             }
 
+            console.log("myPoint: " + myPoint + " opponentPoint: " + opponentPoint)
+            console.log("whoWin: " + whoWin + " isPlayerA: " + isPlayerA)
+
             if(win) {
                 scene.GameHandler.playerTotalWinScore += 8;
             }
@@ -260,6 +262,7 @@ export default class SocketHandler {
 
             let multiplier = 1
             console.log("elementId_list: " + elementId_list)
+            console.log("inspriationPt_list: " + inspriationPt_list)
             if(elementId_list.every(value => value === elementId_list[0])) {
                 multiplier = 2
             }
@@ -270,7 +273,6 @@ export default class SocketHandler {
 
             setTimeout(() => {
                 // Code to execute after the timeout
-                console.log("End round");
                 
                 // Example: Resetting the game state, showing a message, etc.
                 // scene.GameHandler.resetGame();
