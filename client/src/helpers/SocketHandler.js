@@ -10,7 +10,6 @@ export default class SocketHandler {
         //Create or join a room
         scene.socket.on('connect', () => {
             console.log('Connected!');
-            scene.socket.emit('HelloWorld');
         });
 
         //Called in server.js (socket.emit)
@@ -236,24 +235,24 @@ export default class SocketHandler {
             scene.GameHandler.getCurrentTurn();
         })
 
-        scene.socket.on('endRound', (socketID, isPlayerA, elementId_list, inspriationPt_list) => {
+        scene.socket.on('endRound', (socketID, elementId_list, inspriationPt_list) => {
             let whoWin = -1;
             let win = false;
             let myPoint = scene.GameHandler.playerTotalPoints
             let opponentPoint = scene.GameHandler.opponentTotalPoints
             console.log("END ROUND")
             
-            if(myPoint > opponentPoint) {
-                whoWin = isPlayerA ? 1 : 2;
-                win = true;
-            } else if (myPoint < opponentPoint){ 
-                whoWin = isPlayerA ? 2 : 1;
-            } else {
-                whoWin = 0
-            }
+            // if(myPoint > opponentPoint) {
+            //     whoWin = isPlayerA ? 1 : 2;
+            //     win = true;
+            // } else if (myPoint < opponentPoint){ 
+            //     whoWin = isPlayerA ? 2 : 1;
+            // } else {
+            //     whoWin = 0
+            // }
 
             console.log("myPoint: " + myPoint + " opponentPoint: " + opponentPoint)
-            console.log("whoWin: " + whoWin + " isPlayerA: " + isPlayerA)
+            //console.log("whoWin: " + whoWin + " isPlayerA: " + isPlayerA)
 
             if(win) {
                 scene.GameHandler.playerTotalWinScore += 8;

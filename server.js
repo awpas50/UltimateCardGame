@@ -5,7 +5,7 @@ const cors = require('cors');
 const serveStatic = require('serve-static');
 const shuffle = require('shuffle-array');
 let players = {};
-let playersInRooms = new Map(); // Map to store players in rooms
+let playersInRooms = new Map(); 
 let gameState = "Initializing";
 
 const fs = require('fs');
@@ -31,22 +31,20 @@ server.use(serveStatic(__dirname + "/client/dist"));
 
 io.on('connection', function(socket) {
     console.log('A user connected: ' + socket.id);
-
     // Handle room creation and joining
     socket.on('createRoom', (newRoomId) => {
         socket.join(newRoomId);
-        //players[socketId].roomId = socket.rooms;
+        players[socket.id].currentRoomNumber = newRoomId
+        socket.emit('buildPlayerNumberText', 1)
+        players[socket.id].playerName = 'A'
+
         console.log(`User ${socket.id} created and joined room ${newRoomId}`);
         console.log("Rooms: " + JSON.stringify(Array.from(socket.rooms)));
-        socket.emit('buildPlayerNumberText', 1);
 
         // Add player to the list of players in the room
         if (!playersInRooms.has(newRoomId)) {
             playersInRooms.set(newRoomId, new Array());
         }
-
-        players[socket.id].isPlayerA = true;
-        
         const keyToUpdate = newRoomId;
         const newItem = socket.id;
         // Get the array from the Map based on the key
@@ -57,6 +55,10 @@ io.on('connection', function(socket) {
         playersInRooms.set(keyToUpdate, arrayToUpdate);
         // Send the list of players in the room to all clients
         io.to(newRoomId).emit('playersInRoom', Array.from(playersInRooms.get(newRoomId)));
+
+        for (const [key, value] of playersInRooms.entries()) {
+            console.log(`Room ID: ${key}, Sockets: ${Array.from(value)}`);
+        }
     });
 
     socket.on('joinRoom', (roomId) => {
@@ -69,15 +71,14 @@ io.on('connection', function(socket) {
             return;
         } else {
             socket.join(roomId);
-            console.log(`User ${socket.id} joined room ${roomId}`);
             socket.emit('joinRoomSucceedSignal');
-            socket.emit('buildPlayerNumberText', 2);
+            players[socket.id].currentRoomNumber = roomId
+            socket.emit('buildPlayerNumberText', 2)
+            players[socket.id].playerName = 'B'
 
-            // Add player to the list of players in the room
-            // if (!playersInRooms.has(roomId)) {
-            //     playersInRooms.set(roomId, new Array());
-            // }
-            
+            console.log(`User ${socket.id} joined room ${roomId}`);
+            console.log("Rooms: " + JSON.stringify(Array.from(socket.rooms)));
+
             const keyToUpdate = roomId;
             const newItem = socket.id;
             // Get the array from the Map based on the key
@@ -91,6 +92,10 @@ io.on('connection', function(socket) {
             //   }
             // Send the list of players in the room to all clients
             io.to(roomId).emit('playersInRoom', Array.from(playersInRooms.get(roomId)));
+
+            for (const [key, value] of playersInRooms.entries()) {
+                console.log(`Room ID: ${key}, Sockets: ${Array.from(value)}`);
+            }
         }
     });
 
@@ -106,32 +111,29 @@ io.on('connection', function(socket) {
     let mixedArray = [...imageNamesICard, ...imageNamesHCard];
 
     players[socket.id] = {
-        roomId: {},
+        currentRoomNumber: '',
+        playerName: '', // 'A' or 'B'
+        isReady: false,
+        roundCount: 1,
         inDeck: [],
         inHand: [],
-        inSceneType: [],
-        inSceneInspriationPt: [],
+        
         inRubbishBin: [],
-
         inDeck_WCard: [],
         inHand_WCard: [],
         inRubbishBin_WCard: [],
 
         cardCount: 0,
-        isReady: false,
-        isPlayerA: false
+        inSceneElement: [],
+        inSceneInspriationPt: [],
+        totalInspriationPt: [],
+        totalScore: 0 // 60 to win
     }
-
-    const roomsArray = Array.from(socket.rooms);
 
     const objLength = Object.keys(players).length;
     console.log("Number of players in the server: " + objLength);
-
     socket.emit('buildPlayerPointText');
     socket.emit('buildOpponentPointText');
-    socket.on('HelloWorld', function() {
-        console.log(players);
-    })
 
     // Called in SocketHandler
     socket.on('dealDeck', function(socketId, roomId) {
@@ -140,16 +142,13 @@ io.on('connection', function(socket) {
         players[socketId].inDeck = shuffle(mixedArray);
         players[socketId].inDeck_WCard = shuffle(imageNamesWCard);
         console.log(players);
-        // if(Object.keys(players) < 2) {
-        //     return;
-        // }
         io.to(roomId).emit('changeGameState', 'Initializing'); 
     })
 
     // Called in UIHandler.js
     // populates the players[socketId].inHand array with elements from the players[socketId].inDeck array.
     // If the deck is empty, it shuffles and refills the deck before adding cards to the hand.
-    socket.on('dealCards', function (socketId, roomId, opponentID) { 
+    socket.on('dealCards', function (socketId, roomId, opponentId) { 
         console.log("dealCards: " + roomId);
         for (let i = 0; i < 6; i++) {
             // In JavaScript, you can freely assign different types of values to a variable or object property without declaring their types beforehand.
@@ -159,29 +158,30 @@ io.on('connection', function(socket) {
             }
             players[socketId].inHand.push(players[socketId].inDeck.shift());
         }
-
         if (players[socketId].inDeck_WCard.length === 0) {
             players[socketId].inDeck_WCard = shuffle(imageNamesWCard);
         }
         players[socketId].inHand_WCard.push(players[socketId].inDeck_WCard.shift());
+
         // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
         io.to(roomId).emit('addICardsHCardsInScene', socketId, players[socketId].inHand);
         io.to(roomId).emit('addWCardsInScene', socketId, players[socketId].inHand_WCard); 
-        
         socket.emit('setAuthorElements', players[socketId].inHand_WCard);
         io.to(roomId).emit('setAuthorRarity', socketId, players[socketId].inHand_WCard);
         
         players[socketId].isReady = true;
         
-        if (players[opponentID].isReady === true) {
+        if (players[opponentId].isReady === true) {
+             // Roll dice: generates a random number between 1 and 6
             gameState = "Ready";
-            let roll1 = Math.floor(Math.random() * 6) + 1; // Generates a random number between 1 and 6
+            let roll1 = Math.floor(Math.random() * 6) + 1;
             let roll2;
+            // Ensure roll2 is different from roll1
             do {
-                roll2 = Math.floor(Math.random() * 6) + 1; // Generates a random number between 1 and 6
-            } while (roll2 === roll1); // Ensure roll2 is different from roll1
-            io.to(roomId).emit('RollDice', socketId, roll1, roll2);
+                roll2 = Math.floor(Math.random() * 6) + 1;
+            } while (roll2 === roll1); 
 
+            io.to(roomId).emit('RollDice', socketId, roll1, roll2);
             io.to(roomId).emit('decideWhichPlayerfirstTurn', socketId, roll1, roll2);
             io.to(roomId).emit('changeGameState', "Ready");
             io.to(roomId).emit('setPlayerTurnText');
@@ -202,9 +202,10 @@ io.on('connection', function(socket) {
         io.to(roomId).emit('dealOneCardInScene', socketId, players[socketId].inHand, cardIndex);
     });
 
+    // Used for setting score multiplier at the end of the round
     socket.on('setCardType', function (socketId, elementId, inspriationPt) {
-        players[socketId].inSceneType.push(elementId);
-        players[socketId].inSceneInspriationPt.push(inspriationPt);
+        players[socketId].inSceneElement.push(elementId); // double scores if all elements match
+        players[socketId].inSceneInspriationPt.push(inspriationPt); // triple scores if all inspriation points match
     });
 
     // Called in InteractiveHandler.js
@@ -228,15 +229,15 @@ io.on('connection', function(socket) {
         if (players[socketId].cardCount >= 4 && players[opponentId].cardCount >= 4) {
             socket.emit('setPlayerPointText');
             socket.emit('setOpponentPointText');
-            io.to(roomId).emit('endRound', socketId, players[socketId].isPlayerA, players[socketId].inSceneType, players[socketId].inSceneInspriationPt);
+            if(players[socketId].playerName === 'A') {
+                io.to(roomId).emit('endRound', socketId, players[socketId].inSceneElement, players[socketId].inSceneInspriationPt);
+            }
         }
-
-        console.log(players)
     })
 
     socket.on('disconnect', function () {
         //socket.leave(socket.rooms[1]);
-        console.log('A user disconnected: ' + socket.id);
+        console.log('A user disconnected: ' + socket.id + ". Number of players in the server: " + objLength);
         delete players[socket.id];
     });
 })

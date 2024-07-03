@@ -4,7 +4,6 @@ import GameHandler from "../helpers/GameHandler";
 import InteractiveHandler from "../helpers/InteractiveHandler";
 import SocketHandler from "../helpers/SocketHandler";
 import UIHandler from "../helpers/UIHandler";
-
 import { InputText, TextArea } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 
 // 編號/名稱/等級/天/地/人屬性
@@ -115,7 +114,6 @@ export default class Game extends Phaser.Scene {
         })
     }
 
-    // before creation
     preload() {
         this.load.image('23246_W001', require('../../public/assets/23246/WCard/23246_W001.jpg').default);
         this.load.image('23246_W002', require('../../public/assets/23246/WCard/23246_W002.jpg').default);
@@ -190,13 +188,12 @@ export default class Game extends Phaser.Scene {
         this.load.audio('flipCard3', require('../sfx/flipCard3.wav').default);
         this.load.audio('dragCard', require('../sfx/dragCard.wav').default); 
     }
-    // just like void Start() in Unity
+
     create() {
         this.backgroundMusic = this.sound.add('BGM1');
         this.backgroundMusic.setLoop(true);
         this.backgroundMusic.play();
         this.backgroundMusic.setVolume(0.5);
-
         this.sound.add('flipCard1');
         this.sound.add('flipCard2');
         this.sound.add('flipCard3');
@@ -229,7 +226,7 @@ export default class Game extends Phaser.Scene {
         
         this.UIHandler.inputText = this.UIHandler.BuildInputTextField(this.UIHandler.inputText);
         this.UIHandler.BuildLobby();
-        
+
         // let backgroundImage = this.add.image(0, 0, 'BG');
         // backgroundImage.setOrigin(0, 0);
         // backgroundImage.setDepth(0); // Set a depth level for the background

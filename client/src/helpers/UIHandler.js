@@ -4,33 +4,20 @@ export default class UIHandler {
     constructor(scene) {
         this.zoneHandler = new ZoneHandler(scene);
         this.inputText = {};
-        //-----------------------------------------------------
+        // <------------------------------------ Zone ------------------------------------>
         this.BuildZones = () => {
             scene.dropZone1 = this.zoneHandler.renderZone(189, 458, 330 / 3.25, 430 / 3.25);
             scene.dropZone2 = this.zoneHandler.renderZone(90, 575, 330 / 3.25, 430 / 3.25);
             scene.dropZone3 = this.zoneHandler.renderZone(280, 575, 330 / 3.25, 430 / 3.25);
             scene.dropZone4 = this.zoneHandler.renderZone(189, 690, 330 / 3.25, 430 / 3.25);
-
             scene.dropZone1.setName("dropZone1");
             scene.dropZone2.setName("dropZone2");
             scene.dropZone3.setName("dropZone3");
             scene.dropZone4.setName("dropZone4");
         }
-
-        this.getDropZone1 = () => {
-            return this.scene.dropZone1.name;
-        }
-        this.getDropZone2 = () => {
-            return this.scene.dropZone2.name;
-        }
-        this.getDropZone3 = () => {
-            return this.scene.dropZone3.name; 
-        }
-
         this.BuildZoneOutline = () => {
             this.zoneHandler.renderOutlineGrid(220, 270, 330, 430);
         }
-
         this.BuildPlayerAreas = () => {
             scene.playerHandArea = scene.add.rectangle(200, 880, 350, 230);
             scene.playerHandArea.setStrokeStyle(4, 0xff69b4);
@@ -46,7 +33,7 @@ export default class UIHandler {
             scene.opponentRubbishBinArea = scene.add.rectangle(470, 112, 78, 115);
             scene.opponentRubbishBinArea.setStrokeStyle(4, 0x00ffff);
         }
-
+        // <------------------------------------ Room number (top right) ------------------------------------>
         this.buildPlayerNumberText = (playerNumber) => {
             scene.playerNumberText = scene.add.text(350, 250, "你是: 玩家 ").setFontSize(20).setFontFamily("Trebuchet MS");
             if(playerNumber == 1) {
@@ -55,11 +42,10 @@ export default class UIHandler {
                 scene.playerNumberText.text = "你是: 玩家2";
             }
         }
-
+        // <------------------------------------ Player turn ------------------------------------>
         this.BuildPlayerTurnText = () => { 
             scene.playerTurnText = scene.add.text(350, 300, "等待另一位玩家抽卡...").setFontSize(20).setFontFamily("Trebuchet MS");
         }
-
         this.setPlayerTurnText = (b) => {
             if(b === true) {
                 scene.playerTurnText.text = '你的回合';
@@ -67,30 +53,42 @@ export default class UIHandler {
                 scene.playerTurnText.text = '對方的回合';
             }
         }
-
-        this.buildPlayerPointText = () => { // Leave it empty
+        // <------------------------------------ Inpsriation points ------------------------------------>
+        this.buildPlayerPointText = () => {
             scene.playerPointText = scene.add.text(350, 550, " ").setFontSize(20).setFontFamily("Trebuchet MS");
         }
-        this.buildOpponentPointText = () => { // Leave it empty
+        this.buildOpponentPointText = () => {
             scene.opponentPointText = scene.add.text(350, 200, " ").setFontSize(20).setFontFamily("Trebuchet MS");
         }
-
         this.setPlayerPointText = (points) => {
             scene.playerPointText.text = '靈感值:' + points;
         }
         this.setOpponentPointText = (points) => {
             scene.opponentPointText.text = '對方靈感值:' + points;
         }
-
+        // <------------------------------------ Points (60 to win) ------------------------------------>
+        this.BuildWhoWinText = (whoWin, socketID) => {
+            if(whoWin == 1) {
+                scene.whoWinText = scene.add.text(350, 450, "玩家1勝利!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
+            } else if (whoWin == 2){ 
+                scene.whoWinText = scene.add.text(350, 450, "玩家2勝利!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
+            } else if (whoWin == 0){
+                scene.whoWinText = scene.add.text(350, 450, "平手!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
+            }
+        }
+        this.BuildPlayerWinScoreText = () => {
+            scene.winScoreText = scene.add.text(350, 500, "", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
+        }
+        this.SetPlayerWinScoreText = (totalWinScore) => {
+            scene.winScoreText.text = '總分: ' + totalWinScore;
+        }
+        // <------------------------------------ Draw card (to be removed) ------------------------------------>
         this.BuildGameText = () => {
-            // Let a variable called dealCardText, and this is a text. In Unity: Text dealCardText = new Text().....;
             scene.dealCardText = scene.add.text(350, 400, "點我抽卡").setFontSize(20).setFontFamily("Trebuchet MS");
-
             // OnPointerDown event
             scene.dealCardText.on('pointerdown', () => {
                 const RNG = Math.floor(Math.random() * 3) + 1;
                 scene.sound.play(`flipCard${RNG}`);
-
                 scene.socket.emit("dealCards", scene.socket.id, scene.GameHandler.currentRoomID, scene.GameHandler.opponentID);
                 scene.dealCardText.disableInteractive();
             })
@@ -102,14 +100,13 @@ export default class UIHandler {
                 scene.dealCardText.setColor('#00ffff');
             })
         }
-
         this.ActivateGameText = () => {
             if(scene.dealCardText != undefined || scene.dealCardText != null) {
                 scene.dealCardText.setInteractive();
                 scene.dealCardText.setColor('#00ffff');
             }
         }
-
+        // <------------------------------------ Roll Dice ------------------------------------>
         this.BuildRollDiceText = () => {
             scene.rollDiceText1 = scene.add.text(350, 560, " ").setFontSize(20).setFontFamily("Trebuchet MS");
             scene.rollDiceText2 = scene.add.text(350, 590, " ").setFontSize(20).setFontFamily("Trebuchet MS");
@@ -122,18 +119,16 @@ export default class UIHandler {
             scene.rollDiceText1.text = '';
             scene.rollDiceText2.text = '';
         }
+        // <------------------------------------ Room ------------------------------------>
         this.BuildRoomNumberText = () => {
             scene.roomNumberText = scene.add.text(440, 20, "房間編號: ").setFontSize(20).setFontFamily("Trebuchet MS");
         }
-
         this.BuildCreateRoomText = () => { 
             scene.createRoomText = scene.add.text(260, 380, "建立房間", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
             scene.createRoomText.setInteractive();
-
             scene.createRoomText.on('pointerdown', () => {
                 const RNG = Math.floor(Math.random() * 3) + 1;
                 scene.sound.play(`flipCard${RNG}`);
-
                 this.BuildPlayArea();
                 let randomRoomId = this.generateRandomRoomID();
                 scene.socket.emit('createRoom', randomRoomId);
@@ -141,7 +136,6 @@ export default class UIHandler {
                 scene.joinRoomText.visible = false;
                 scene.GameHandler.currentRoomID = randomRoomId;
                 scene.roomNumberText.text = "房間編號: " + randomRoomId;
-
                 this.inputText.visible = false;
                 this.HideInputTextDecation();
             })
@@ -153,7 +147,6 @@ export default class UIHandler {
                 scene.createRoomText.setColor('#00ffff');
             }) 
         }
-
         scene.socket.on('joinRoomSucceedSignal', () => {
             this.BuildPlayArea();
             scene.createRoomText.disableInteractive();
@@ -169,16 +162,13 @@ export default class UIHandler {
             this.inputText.destroy();
             this.HideInputTextDecation();
         });
-        
         this.BuildJoinRoomText = () => { 
             scene.joinRoomText = scene.add.text(260, 430, "加入房間", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
             scene.joinRoomText.setInteractive();
             scene.joinRoomText.on('pointerdown', () => {
                 const RNG = Math.floor(Math.random() * 3) + 1;
                 scene.sound.play(`flipCard${RNG}`);
-
                 scene.socket.emit('joinRoom', scene.UIHandler.GetInputTextContent(scene.UIHandler.inputText));
-                
                 // (Runs joinRoomSucceedSignal from server.js if success.)
             })
             // Card color
@@ -190,27 +180,10 @@ export default class UIHandler {
             })
         }
 
-        this.BuildWhoWinText = (whoWin, socketID) => {
-            if(whoWin == 1) {
-                scene.whoWinText = scene.add.text(350, 450, "玩家1勝利!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
-            } else if (whoWin == 2){ 
-                scene.whoWinText = scene.add.text(350, 450, "玩家2勝利!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
-            } else if (whoWin == 0){
-                scene.whoWinText = scene.add.text(350, 450, "平手!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
-            }
-        }
-
-        this.BuildPlayerWinScoreText = () => {
-            scene.winScoreText = scene.add.text(350, 500, "", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
-        }
-
-        this.SetPlayerWinScoreText = (totalWinScore) => {
-            scene.winScoreText.text = '總分: ' + totalWinScore;
-        }
+       
 
         // Main
         this.BuildPlayArea = () => {
-            console.log("BuildPlayArea");
             this.BuildZones();
             this.BuildZoneOutline();
             this.BuildPlayerAreas();
@@ -219,7 +192,6 @@ export default class UIHandler {
             this.BuildRollDiceText();
             this.BuildPlayerWinScoreText();
         }
-
         this.BuildLobby = () => {
             this.BuildInputTextDecation();
             this.BuildRoomNumberText();
@@ -228,13 +200,11 @@ export default class UIHandler {
         }
         // Main
         this.BuildInputTextField = (inputText) => { 
-            
             inputText = scene.add.text(330, 510, '', { fixedWidth: 150, fixedHeight: 36 });
             inputText.setOrigin(0.5, 0.5);
             inputText.setInteractive().on('pointerdown', () => {
                 const RNG = Math.floor(Math.random() * 3) + 1;
                 scene.sound.play(`flipCard${RNG}`);
-                
                 const editor = scene.rexUI.edit(inputText);
                 const elem = editor.inputText.node;
                 elem.style.top = '-10px';
@@ -244,21 +214,12 @@ export default class UIHandler {
         this.GetInputTextContent = (inputText) => {
             return inputText.text;
         }
-
         this.BuildInputTextDecation = () => {
             scene.inputTextRectangle = scene.rexUI.add.roundRectangle(300, 500, 100, 30, 0, 0x666666);
         }
         this.HideInputTextDecation = () => {
             scene.inputTextRectangle.setFillStyle(0x000000); 
         }
-
-        // const textMessage = getTextContent(inputText);
-        // console.log(textMessage); // Output: "123456" 
-
-        // this.getTextContent = (textObject) => {
-        //     return textObject.text;
-        // }
-
         this.generateRandomRoomID = () => {
             // Generate a random number between 0 and 999999 (inclusive)
             const randomNumber = Math.floor(Math.random() * 1000000);
