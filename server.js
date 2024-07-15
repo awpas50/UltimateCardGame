@@ -126,7 +126,7 @@ io.on('connection', function(socket) {
         cardCount: 0,
         inSceneElement: [],
         inSceneInspriationPt: [],
-        totalInspriationPt: [],
+        totalInspriationPt: 0,
         totalScore: 0 // 60 to win
     }
 
@@ -206,13 +206,15 @@ io.on('connection', function(socket) {
     socket.on('setCardType', function (socketId, elementId, inspriationPt) {
         players[socketId].inSceneElement.push(elementId); // double scores if all elements match
         players[socketId].inSceneInspriationPt.push(inspriationPt); // triple scores if all inspriation points match
+        // players[socketId].totalInspriationPt += inspriationPt // triple scores if all inspriation points match
     });
 
     // Called in InteractiveHandler.js
     socket.on('calculatePoints', function(points, socketId, dropZoneId, roomId) {
         io.to(roomId).emit('calculatePoints', points, socketId, dropZoneId, roomId);
-        socket.emit('setPlayerPointText');
-        socket.emit('setOpponentPointText');
+        io.to(roomId).emit('setPlayerPointText');
+        io.to(roomId).emit('setOpponentPointText');
+        
     });
     
     socket.on('cardPlayed', function (cardName, socketId, dropZoneId, roomId, cardType) {
@@ -221,17 +223,21 @@ io.on('connection', function(socket) {
         io.to(roomId).emit('setPlayerTurnText');
     });
 
+    socket.on('setPlayerPoint', function (socketId, playerTotalPoints) {
+        players[socketId].totalInspriationPt = playerTotalPoints
+    });
+
     socket.on('addCardCount', function(socketId, opponentId, roomId) {
         players[socketId].cardCount++;
         console.log("players[socketId].cardCount: " + players[socketId].cardCount);
         console.log("players[opponentId].cardCount: " + players[opponentId].cardCount);
+        console.log(players)
 
         if (players[socketId].cardCount >= 4 && players[opponentId].cardCount >= 4) {
-            socket.emit('setPlayerPointText');
-            socket.emit('setOpponentPointText');
-            if(players[socketId].playerName === 'A') {
-                io.to(roomId).emit('endRound', socketId, players[socketId].inSceneElement, players[socketId].inSceneInspriationPt);
-            }
+            io.to(roomId).emit('setPlayerPointText');
+            io.to(roomId).emit('setOpponentPointText');
+            endRound()
+            //io.to(roomId).emit('endRound', socketId, players[socketId].inSceneElement, players[socketId].inSceneInspriationPt);
         }
     })
 
@@ -247,9 +253,11 @@ http.listen(port, function() {
     console.log(`Server is running in ${process.env.NODE_ENV} mode`);
 })
 
-// Function to get image names in a folder
+function endRound() {
+    
+}
+
 function getImageNamesInFolder(folderPath) {
-    // Get the list of files in the folder
     const files = fs.readdirSync(folderPath);
 
     // Filter out only the image files (files with .jpg extension)
@@ -259,4 +267,6 @@ function getImageNamesInFolder(folderPath) {
 
     return imageNames;
 }
+
+
 

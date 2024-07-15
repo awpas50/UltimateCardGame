@@ -4,8 +4,8 @@ export default class SocketHandler {
     constructor(scene) {
         // Heroku URL
         // Default: localhost:3000 is where the server is.
-        scene.socket = io('https://ultimate-card-game-f26046605e38.herokuapp.com');
-        //scene.socket = io('http://localhost:3000/');
+        //scene.socket = io('https://ultimate-card-game-f26046605e38.herokuapp.com');
+        scene.socket = io('http://localhost:3000/');
 
         //Create or join a room
         scene.socket.on('connect', () => {
@@ -193,7 +193,7 @@ export default class SocketHandler {
                 }
             }
         })
-        scene.socket.on('calculatePoints', (pointsString, socketId, dropZoneName, roomId, cardType) => {
+        scene.socket.on('calculatePoints', (pointsString, socketId, dropZoneName) => {
             let points = parseInt(pointsString);
             if (socketId === scene.socket.id) {
                 switch(dropZoneName) {
@@ -225,9 +225,11 @@ export default class SocketHandler {
                         break;
                 }
             }
-            scene.GameHandler.setPlayerTotalPoint();
-            scene.GameHandler.setOpponentTotalPoint();
-            console.log("Player: " + scene.GameHandler.playerTotalPoints + " " + "Opponent: " + scene.GameHandler.opponentTotalPoints);
+            scene.GameHandler.setPlayerTotalPoint()
+            scene.GameHandler.setOpponentTotalPoint()
+            console.log(scene.GameHandler.playerTotalPoints)
+            scene.socket.emit('setPlayerPoint', socketId, scene.GameHandler.playerTotalPoints)
+            console.log("Player: " + scene.GameHandler.playerTotalPoints + " " + "Opponent: " + scene.GameHandler.opponentTotalPoints)
         })
 
         scene.socket.on('changeTurn', () => {

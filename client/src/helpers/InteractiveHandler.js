@@ -123,7 +123,7 @@ export default class InteractiveHandler {
             if (scene.GameHandler.isMyTurn && scene.GameHandler.gameState === "Ready" && dropZone.data.list.cards == 0) {
                 const RNG = Math.floor(Math.random() * 3) + 1;
                 scene.sound.play(`flipCard${RNG}`);
-                let authorBuffPoints = 0;
+                let authorBuffPts = 0;
                 let elementID = 99;
                 if(gameObject.getData("id").includes("I")) {
                     switch(gameObject.getData("element")) {
@@ -145,7 +145,7 @@ export default class InteractiveHandler {
                         default:
                             break;
                     }
-                    authorBuffPoints = scene.GameHandler.authorBuffs[elementID];
+                    authorBuffPts = scene.GameHandler.authorBuffs[elementID];
                 }
                 // 積分倍率計算(同屬雙倍,同靈感三倍)
                 // 蓋牌無法獲得積分加倍
@@ -162,19 +162,22 @@ export default class InteractiveHandler {
                 // calculatePoints does not affect dropZone 4
                 if(isMatch) {
                     console.log("gameObject.getData(points)" + gameObject.getData("points"))
+                    //scene.GameHandler.addAuthorBuffsPoints(authorBuffPts) 
                     scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
-                    scene.socket.emit('calculatePoints', gameObject.getData("points") + authorBuffPoints, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
+                    scene.socket.emit('calculatePoints', gameObject.getData("points") + authorBuffPts, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
+                     
                 } else {
                     cardType === "cardBack" && gameObject.setTexture('H001B');
+                    //scene.GameHandler.addAuthorBuffsPoints(authorBuffPts) 
                     scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
-                    scene.socket.emit('calculatePoints', 0 + authorBuffPoints, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
+                    scene.socket.emit('calculatePoints', 0 + authorBuffPts, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
                 }
-                scene.input.setDraggable(gameObject, false);
-                scene.socket.emit('dealOneCardInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID);
-                console.log(dropZone) 
-                scene.UIHandler.hideRollDiceText(); 
+                scene.input.setDraggable(gameObject, false)
+                scene.socket.emit('dealOneCardInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID)
+                scene.UIHandler.hideRollDiceText()
                 dropZone.data.list.cards++
-                scene.socket.emit('addCardCount', scene.socket.id, scene.GameHandler.opponentID, scene.GameHandler.currentRoomID);
+                console.log(scene.GameHandler.playerTotalPoints)
+                scene.socket.emit('addCardCount', scene.socket.id, scene.GameHandler.opponentID, scene.GameHandler.currentRoomID)
             } 
             else {
                 gameObject.x = gameObject.input.dragStartX;

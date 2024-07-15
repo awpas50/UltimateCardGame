@@ -26,8 +26,9 @@ export default class GameHandler {
         this.playerSkyElements = [];
         this.playerGroundElements = [];
         this.playerPersonElements = [];
-        //加成
+        //加成 [5種屬性]
         this.authorBuffs = [];
+        this.authorBuffPoint = 0;
         //天地人
         this.playerSkyPoint = 0;
         this.playerGroundPoint = 0;
@@ -64,6 +65,9 @@ export default class GameHandler {
 
         this.setAuthorBuffs = (authorCardName) => {
             this.authorBuffs = WCard_Data_23246[authorCardName].authorBuffs;
+        }
+        this.addAuthorBuffsPoints = (points) => {
+            this.authorBuffPoint += points;
         }
 
         this.setPlayerAuthorRarity = (authorCardName) => {
@@ -108,11 +112,11 @@ export default class GameHandler {
         }
 
         this.setPlayerTotalPoint = () => {
-            this.playerTotalPoints = this.playerSkyPoint + this.playerGroundPoint + this.playerPersonPoint;
+            this.playerTotalPoints = this.playerSkyPoint + this.playerGroundPoint + this.playerPersonPoint + this.authorBuffPoint;
             
         }
         this.setOpponentTotalPoint = () => {
-            this.opponentTotalPoints = this.opponentSkyPoint + this.opponentGroundPoint + this.opponentPersonPoint;
+            this.opponentTotalPoints = this.opponentSkyPoint + this.opponentGroundPoint + this.opponentPersonPoint + this.authorBuffPoint;
         }
 
         this.getPlayerTotalPoint = () => {
