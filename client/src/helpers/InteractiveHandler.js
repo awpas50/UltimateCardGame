@@ -173,7 +173,7 @@ export default class InteractiveHandler {
                     scene.socket.emit('calculatePoints', 0 + authorBuffPts, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
                 }
                 scene.input.setDraggable(gameObject, false)
-                scene.socket.emit('dealOneCardInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID)
+                scene.socket.emit('setCardsInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID)
                 scene.UIHandler.hideRollDiceText()
                 dropZone.data.list.cards++
                 console.log(scene.GameHandler.playerTotalPoints)

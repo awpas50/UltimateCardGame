@@ -117,15 +117,16 @@ io.on('connection', function(socket) {
         roundCount: 1,
         inDeck: [],
         inHand: [],
-        
+        inScene: [],
         inRubbishBin: [],
+
         inDeck_WCard: [],
-        inHand_WCard: [],
+        inScene_WCard: [],
         inRubbishBin_WCard: [],
 
+        inSceneElement: [], // for multiplier
+        inSceneInspriationPt: [], // for multiplier
         cardCount: 0,
-        inSceneElement: [],
-        inSceneInspriationPt: [],
         totalInspriationPt: 0,
         totalScore: 0 // 60 to win
     }
@@ -161,13 +162,13 @@ io.on('connection', function(socket) {
         if (players[socketId].inDeck_WCard.length === 0) {
             players[socketId].inDeck_WCard = shuffle(imageNamesWCard);
         }
-        players[socketId].inHand_WCard.push(players[socketId].inDeck_WCard.shift());
+        players[socketId].inScene_WCard.push(players[socketId].inDeck_WCard.shift());
 
         // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
         io.to(roomId).emit('addICardsHCardsInScene', socketId, players[socketId].inHand);
-        io.to(roomId).emit('addWCardsInScene', socketId, players[socketId].inHand_WCard); 
-        socket.emit('setAuthorElements', players[socketId].inHand_WCard);
-        io.to(roomId).emit('setAuthorRarity', socketId, players[socketId].inHand_WCard);
+        io.to(roomId).emit('addWCardsInScene', socketId, players[socketId].inScene_WCard); 
+        socket.emit('setAuthorElements', players[socketId].inScene_WCard);
+        io.to(roomId).emit('setAuthorRarity', socketId, players[socketId].inScene_WCard);
         
         players[socketId].isReady = true;
         
@@ -189,7 +190,9 @@ io.on('connection', function(socket) {
     });
 
     // Arguments: scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID
-    socket.on('dealOneCardInServer', function (socketId, cardName, roomId) {
+    socket.on('setCardsInServer', function (socketId, cardName, roomId) {
+        // player add current card 
+        players[socketId].inScene.push(cardName)
         // Player: check spot, remove card from spot, add card to spot
         // Opponent: Add 1 card back
         // Get index, for example, I001 is in index 3 than it will replace the 4th card in players[socketId].inHand
