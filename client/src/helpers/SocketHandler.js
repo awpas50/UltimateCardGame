@@ -64,18 +64,16 @@ export default class SocketHandler {
         });
 
         // Called in InteractiveHandler.js
-        scene.socket.on('addICardsHCardsInScene', (socketId, cards) => {
-            // checks if the socketId matches the local client's socket ID
+        scene.socket.on('addICardsHCardsInScene', (socketId, cardIdList) => {
             if (socketId === scene.socket.id) {
-                for (let i in cards) {
+                for (let i in cardIdList) {
                     //card[i]: card name
-                    // Use card name to retrieve card data
                     let card;
-                    if(cards[i].includes("I")) {
-                        card = scene.DeckHandler.InstantiateCard(55 + (i * 55), 780, "ICard", cards[i], "playerCard").setScale(0.26);
+                    if(cardIdList[i].includes("I")) {
+                        card = scene.DeckHandler.InstantiateCard(55 + (i * 55), 780, "ICard", cardIdList[i], "playerCard").setScale(0.26);
                     }
-                    if(cards[i].includes("H")) {
-                        card = scene.DeckHandler.InstantiateCard(55 + (i * 55), 780, "HCard", cards[i], "playerCard").setScale(0.26);
+                    if(cardIdList[i].includes("H")) {
+                        card = scene.DeckHandler.InstantiateCard(55 + (i * 55), 780, "HCard", cardIdList[i], "playerCard").setScale(0.26);
                     }
                     scene.GameHandler.playerHand.push(card);
                     // let testMessage = card.getData('test');
@@ -83,22 +81,13 @@ export default class SocketHandler {
                 } 
                 console.log(scene.GameHandler.playerHand);
             } else {
-                for (let i in cards) {
+                for (let i in cardIdList) {
                     let card = scene.GameHandler.opponentHand.push(scene.DeckHandler.InstantiateCard(85 + (i * 35), 0, "cardBack", "cardBack", "opponentCard").setScale(0.26));
                 }
             }
         })
 
-        scene.socket.on('addWCardsInScene', (socketId, card) => {
-            //Author card
-            if (socketId === scene.socket.id) {
-                scene.DeckHandler.InstantiateCard(189, 585, "WCard", card, "authorCard").setScale(0.26, 0.26); //Player side
-            } else {
-                scene.DeckHandler.InstantiateCard(189, 230, "WCard", card, "authorCard").setScale(0.26, -0.26); //Opposite side
-            }
-        })
-
-        // cardsToAdd: Array
+        // * cardsToAdd: Array * //
         scene.socket.on('dealOneCardInScene', (socketId, cardsToAdd, cardIndex) => {
             if (socketId === scene.socket.id) {
                 let card;
@@ -109,6 +98,18 @@ export default class SocketHandler {
                     card = scene.DeckHandler.InstantiateCard(55 + (cardIndex * 55), 780, "HCard", cardsToAdd[cardIndex], "playerCard").setScale(0.26);
                 }
                 scene.GameHandler.playerHand.push(card);
+            } else {
+                scene.GameHandler.opponentHand.push(scene.DeckHandler.InstantiateCard(85 + (cardIndex * 35), 0, "cardBack", "cardBack", "opponentCard").setScale(0.26));
+            }
+        })
+
+        // * card: Array * //
+        scene.socket.on('addWCardsInScene', (socketId, cardId) => {
+            //Author card
+            if (socketId === scene.socket.id) {
+                scene.DeckHandler.InstantiateCard(189, 585, "WCard", cardId, "authorCard").setScale(0.26, 0.26); //Player side
+            } else {
+                scene.DeckHandler.InstantiateCard(189, 230, "WCard", cardId, "authorCard").setScale(0.26, -0.26); //Opposite side
             }
         })
 
@@ -171,6 +172,7 @@ export default class SocketHandler {
 
         // Called in server.js
         // Where does Player 2 cards display in Player 1 scene??
+        // * cardName: String, socketId: string, dropZoneName: string, cardType: ICard/Wcard/HCard * //
         scene.socket.on('cardPlayed', (cardName, socketId, dropZoneName, roomId, cardType) => {
             console.log("cardName: " + cardName + " socketId:" + socketId + " dropZoneID:" + dropZoneName + " cardType: " + cardType)
             if (socketId !== scene.socket.id) {
@@ -193,6 +195,7 @@ export default class SocketHandler {
                 }
             }
         })
+        // * pointsString: String, socketId: string, dropZoneName: string * //
         scene.socket.on('calculatePoints', (pointsString, socketId, dropZoneName) => {
             let points = parseInt(pointsString);
             if (socketId === scene.socket.id) {
@@ -237,48 +240,15 @@ export default class SocketHandler {
             scene.GameHandler.getCurrentTurn();
         })
 
-        scene.socket.on('endRound', (socketID, elementId_list, inspriationPt_list) => {
-            let whoWin = -1;
-            let win = false;
-            let myPoint = scene.GameHandler.playerTotalPoints
-            let opponentPoint = scene.GameHandler.opponentTotalPoints
-            console.log("END ROUND")
-            
-            // if(myPoint > opponentPoint) {
-            //     whoWin = isPlayerA ? 1 : 2;
-            //     win = true;
-            // } else if (myPoint < opponentPoint){ 
-            //     whoWin = isPlayerA ? 2 : 1;
-            // } else {
-            //     whoWin = 0
-            // }
+        scene.socket.on('setPlayerWinText', (whoWin) => {
+            scene.UIHandler.BuildWhoWinText(whoWin)
+        })
 
-            console.log("myPoint: " + myPoint + " opponentPoint: " + opponentPoint)
-            //console.log("whoWin: " + whoWin + " isPlayerA: " + isPlayerA)
-
-            if(win) {
-                scene.GameHandler.playerTotalWinScore += 8;
+        scene.socket.on('setPlayerWinScoreText', (scores, whoWinSocketId) => {
+            if(whoWinSocketId === scene.socket.id) {
+                scene.GameHandler.playerTotalWinScore += scores
             }
-            scene.UIHandler.BuildWhoWinText(whoWin, socketID);
-
-            let multiplier = 1
-            console.log("elementId_list: " + elementId_list)
-            console.log("inspriationPt_list: " + inspriationPt_list)
-            if(elementId_list.every(value => value === elementId_list[0])) {
-                multiplier = 2
-            }
-            if(inspriationPt_list.every(value => value === inspriationPt_list[0])) {
-                multiplier = 3
-            }
-            scene.UIHandler.SetPlayerWinScoreText(scene.GameHandler.playerTotalWinScore * multiplier);
-
-            setTimeout(() => {
-                // Code to execute after the timeout
-                
-                // Example: Resetting the game state, showing a message, etc.
-                // scene.GameHandler.resetGame();
-                // scene.UIHandler.showMessage("Next round starting soon...");
-            }, 5000);
+            scene.UIHandler.SetPlayerWinScoreText(scene.GameHandler.playerTotalWinScore)
         })
     }
 }

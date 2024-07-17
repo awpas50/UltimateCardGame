@@ -204,7 +204,7 @@ io.on('connection', function(socket) {
         // Tell local to actually show one new card
         io.to(roomId).emit('dealOneCardInScene', socketId, players[socketId].inHand, cardIndex);
     });
-
+    
     // Used for setting score multiplier at the end of the round
     socket.on('setCardType', function (socketId, elementId, inspriationPt) {
         players[socketId].inSceneElement.push(elementId); // double scores if all elements match
@@ -239,7 +239,7 @@ io.on('connection', function(socket) {
         if (players[socketId].cardCount >= 4 && players[opponentId].cardCount >= 4) {
             io.to(roomId).emit('setPlayerPointText');
             io.to(roomId).emit('setOpponentPointText');
-            endRound()
+            endRound(roomId, socketId, opponentId)
             //io.to(roomId).emit('endRound', socketId, players[socketId].inSceneElement, players[socketId].inSceneInspriationPt);
         }
     })
@@ -256,7 +256,64 @@ http.listen(port, function() {
     console.log(`Server is running in ${process.env.NODE_ENV} mode`);
 })
 
-function endRound() {
+// * roomId: string * //
+function endRound(roomId, socketId, opponentId) {
+    let baseScore = 8
+    let multiplier = 1
+    let isOpponent = false
+
+    console.log('round end')
+    // should return values
+    console.log("socketId: " + socketId)
+    console.log("opponentId: " + opponentId)
+    console.log(playersInRooms.get(roomId))
+    let endRoundRoom = playersInRooms.get(roomId)
+    // * player1, player2: string (socket ID) *
+    let player1SocketId = endRoundRoom[0]
+    let player2SocketId = endRoundRoom[1]
+    let whoWinSocketId = ''
+    let whoWin = 0
+    
+    //check who win
+    if(players[player1SocketId].totalInspriationPt < players[player2SocketId].totalInspriationPt) {
+        console.log('End round: Player 1 wins')
+        whoWinSocketId = player1SocketId
+        whoWin = 1
+    }
+    else if(players[player1SocketId].totalInspriationPt > players[player2SocketId].totalInspriationPt) {
+        console.log('End round: Player 2 wins')
+        whoWinSocketId = player2SocketId
+        whoWin = 2
+    }
+    // **** strict type check
+    else if(players[player1SocketId].totalInspriationPt === players[player2SocketId].totalInspriationPt) {
+        console.log('End round: Draw')
+        whoWinSocketId = ''
+        whoWin = 0
+    }
+    // set win text (whoWin: Number)
+    io.to(roomId).emit('setPlayerWinText', whoWin)
+    // if has player win
+    if(whoWinSocketId !== '') {
+        // 同屬
+        if(players[whoWinSocketId].inSceneElement.every(value => value === players[whoWinSocketId].inSceneElement[0])) {
+            multiplier = 2
+        }
+        // 同靈感值
+        if(players[whoWinSocketId].inSceneInspriationPt.every(value => value === players[whoWinSocketId].inSceneInspriationPt[0])) {
+            multiplier = 3
+        }
+        // add scores
+        players[whoWinSocketId].totalScore += baseScore * multiplier
+        io.to(roomId).emit('setPlayerWinScoreText', players[whoWinSocketId].totalScore, whoWinSocketId)
+    }
+    else {
+        io.to(roomId).emit('setPlayerWinScoreText', 0, whoWinSocketId)
+    }
+    setTimeout(resetBattleField, 5000)
+}
+
+function resetBattleField() {
     
 }
 

@@ -67,7 +67,7 @@ export default class UIHandler {
             scene.opponentPointText.text = '對方靈感值:' + points;
         }
         // <------------------------------------ Points (60 to win) ------------------------------------>
-        this.BuildWhoWinText = (whoWin, socketID) => {
+        this.BuildWhoWinText = (whoWin) => {
             if(whoWin == 1) {
                 scene.whoWinText = scene.add.text(350, 450, "玩家1勝利!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" });
             } else if (whoWin == 2){ 
