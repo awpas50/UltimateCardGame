@@ -230,8 +230,6 @@ export default class SocketHandler {
             }
             scene.GameHandler.setPlayerTotalPoint()
             scene.GameHandler.setOpponentTotalPoint()
-            console.log(scene.GameHandler.playerTotalPoints)
-            scene.socket.emit('setPlayerPoint', socketId, scene.GameHandler.playerTotalPoints)
             console.log("Player: " + scene.GameHandler.playerTotalPoints + " " + "Opponent: " + scene.GameHandler.opponentTotalPoints)
         })
 

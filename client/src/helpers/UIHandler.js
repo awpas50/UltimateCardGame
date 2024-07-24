@@ -180,8 +180,6 @@ export default class UIHandler {
             })
         }
 
-       
-
         // Main
         this.BuildPlayArea = () => {
             this.BuildZones();

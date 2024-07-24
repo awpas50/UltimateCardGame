@@ -162,21 +162,20 @@ export default class InteractiveHandler {
                 // calculatePoints does not affect dropZone 4
                 if(isMatch) {
                     console.log("gameObject.getData(points)" + gameObject.getData("points"))
-                    //scene.GameHandler.addAuthorBuffsPoints(authorBuffPts) 
                     scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
                     scene.socket.emit('calculatePoints', gameObject.getData("points") + authorBuffPts, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
-                     
+                    //scene.socket.emit('setPlayerPoint', scene.socket.id, gameObject.getData("points") + authorBuffPts)
                 } else {
-                    cardType === "cardBack" && gameObject.setTexture('H001B');
-                    //scene.GameHandler.addAuthorBuffsPoints(authorBuffPts) 
+                    cardType === "cardBack" && gameObject.setTexture('H001B')
                     scene.socket.emit('cardPlayed', gameObject.getData("id"), scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID, cardType);
                     scene.socket.emit('calculatePoints', 0 + authorBuffPts, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID);
+                    //scene.socket.emit('setPlayerPoint', scene.socket.id, 0 + authorBuffPts)
                 }
                 scene.input.setDraggable(gameObject, false)
                 scene.socket.emit('setCardsInServer', scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID)
                 scene.UIHandler.hideRollDiceText()
                 dropZone.data.list.cards++
-                console.log(scene.GameHandler.playerTotalPoints)
+                scene.socket.emit('setAuthorBuff', scene.socket.id, authorBuffPts)
                 scene.socket.emit('addCardCount', scene.socket.id, scene.GameHandler.opponentID, scene.GameHandler.currentRoomID)
             } 
             else {

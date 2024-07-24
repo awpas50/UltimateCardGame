@@ -126,6 +126,7 @@ io.on('connection', function(socket) {
 
         inSceneElement: [], // for multiplier
         inSceneInspriationPt: [], // for multiplier
+        inSceneAuthorBoostPt: [],
         cardCount: 0,
         totalInspriationPt: 0,
         totalScore: 0 // 60 to win
@@ -139,7 +140,6 @@ io.on('connection', function(socket) {
     // Called in SocketHandler
     socket.on('dealDeck', function(socketId, roomId) {
         // imageNames: (Array of string) string[]
-        // shuffles an array of string here:
         players[socketId].inDeck = shuffle(mixedArray);
         players[socketId].inDeck_WCard = shuffle(imageNamesWCard);
         console.log(players);
@@ -191,10 +191,8 @@ io.on('connection', function(socket) {
 
     // Arguments: scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID
     socket.on('setCardsInServer', function (socketId, cardName, roomId) {
-        // player add current card 
         players[socketId].inScene.push(cardName)
-        // Player: check spot, remove card from spot, add card to spot
-        // Opponent: Add 1 card back
+        // Player: check spot, remove card from spot, add card to spot. Opponent: Add 1 card back
         // Get index, for example, I001 is in index 3 than it will replace the 4th card in players[socketId].inHand
         const cardIndex = players[socketId].inHand.indexOf(cardName);
         // Based on card index, replace old card with players[socketId].inDeck[0] as a new card
@@ -209,7 +207,7 @@ io.on('connection', function(socket) {
     socket.on('setCardType', function (socketId, elementId, inspriationPt) {
         players[socketId].inSceneElement.push(elementId); // double scores if all elements match
         players[socketId].inSceneInspriationPt.push(inspriationPt); // triple scores if all inspriation points match
-        // players[socketId].totalInspriationPt += inspriationPt // triple scores if all inspriation points match
+        // players[socketId].totalInspriationPt += inspriationPt
     });
 
     // Called in InteractiveHandler.js
@@ -217,7 +215,6 @@ io.on('connection', function(socket) {
         io.to(roomId).emit('calculatePoints', points, socketId, dropZoneId, roomId);
         io.to(roomId).emit('setPlayerPointText');
         io.to(roomId).emit('setOpponentPointText');
-        
     });
     
     socket.on('cardPlayed', function (cardName, socketId, dropZoneId, roomId, cardType) {
@@ -226,12 +223,17 @@ io.on('connection', function(socket) {
         io.to(roomId).emit('setPlayerTurnText');
     });
 
-    socket.on('setPlayerPoint', function (socketId, playerTotalPoints) {
-        players[socketId].totalInspriationPt = playerTotalPoints
-    });
+    // socket.on('setPlayerPoint', function (socketId, playerTotalPoints) {
+    //     players[socketId].totalInspriationPt = playerTotalPoints
+    // });
+
+    socket.on('setAuthorBuff', function (socketId, authorBuffPt) {
+        players[socketId].inSceneAuthorBoostPt.push(authorBuffPt)
+    })
 
     socket.on('addCardCount', function(socketId, opponentId, roomId) {
         players[socketId].cardCount++;
+        calculateTotalInspriationPts(socketId)
         console.log("players[socketId].cardCount: " + players[socketId].cardCount);
         console.log("players[opponentId].cardCount: " + players[opponentId].cardCount);
         console.log(players)
@@ -260,8 +262,6 @@ http.listen(port, function() {
 function endRound(roomId, socketId, opponentId) {
     let baseScore = 8
     let multiplier = 1
-    let isOpponent = false
-
     console.log('round end')
     // should return values
     console.log("socketId: " + socketId)
@@ -310,21 +310,44 @@ function endRound(roomId, socketId, opponentId) {
     else {
         io.to(roomId).emit('setPlayerWinScoreText', 0, whoWinSocketId)
     }
-    setTimeout(resetBattleField, 5000)
+    setTimeout(() => {
+        resetBattleField(endRoundRoom)
+    }, 5000)
 }
 
-function resetBattleField() {
-    
+// endRoundRoom: array (string)
+function resetBattleField(endRoundRoom) {
+    for(let i = 0; i < endRoundRoom.length; i++) {
+        players[endRoundRoom[i]].inSceneElement = []
+        players[endRoundRoom[i]].inSceneInspriationPt = []
+        players[endRoundRoom[i]].inSceneAuthorBoostPt = []
+        players[endRoundRoom[i]].totalInspriationPt = 0
+
+        players[endRoundRoom[i]].roundCount++
+    }
+    console.log(players)
+}
+
+//inSceneInspriationPt: []
+//inSceneAuthorBoostPt: []
+function calculateTotalInspriationPts(socketId) {
+    const sum1 = players[socketId].inSceneInspriationPt.reduce((accumulator, currentValue) => {
+        const val = currentValue === -1 ? 0 : currentValue
+        return accumulator + val
+    })
+    const sum2 = players[socketId].inSceneAuthorBoostPt.reduce((accumulator, currentValue) => {
+        const val = currentValue === -1 ? 0 : currentValue
+        return accumulator + val
+    })
+    players[socketId].totalInspriationPt = sum1 + sum2
 }
 
 function getImageNamesInFolder(folderPath) {
     const files = fs.readdirSync(folderPath);
-
     // Filter out only the image files (files with .jpg extension)
     const imageNames = files
         .filter(file => path.extname(file).toLowerCase() === '.jpg')
         .map(file => path.basename(file, '.jpg')); // Remove the .jpg extension
-
     return imageNames;
 }
 
