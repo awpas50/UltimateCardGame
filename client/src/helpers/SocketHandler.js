@@ -70,26 +70,31 @@ export default class SocketHandler {
                     let card
                     if (cardIdList[i].includes("I")) {
                         card = scene.DeckHandler.InstantiateCard(55 + i * 55, 780, "ICard", cardIdList[i], "playerCard").setScale(0.26)
+                        scene.CardStorage.ICardStorage.push(card)
                     }
                     if (cardIdList[i].includes("H")) {
                         card = scene.DeckHandler.InstantiateCard(55 + i * 55, 780, "HCard", cardIdList[i], "playerCard").setScale(0.26)
+                        scene.CardStorage.HCardStorage.push(card)
                     }
-                    scene.GameHandler.playerHand.push(card)
+                    // scene.GameHandler.playerHand.push(card)
                     // let testMessage = card.getData('test');
                     // console.log(testMessage); // This should output: "test message"
                 }
-                console.log(scene.GameHandler.playerHand)
+                // console.log(scene.GameHandler.playerHand)
             } else {
                 for (let i in cardIdList) {
-                    let card = scene.GameHandler.opponentHand.push(
-                        scene.DeckHandler.InstantiateCard(85 + i * 35, 0, "cardBack", "cardBack", "opponentCard").setScale(0.26)
-                    )
+                    let card = scene.DeckHandler.InstantiateCard(85 + i * 35, 0, "cardBack", "cardBack", "opponentCard").setScale(0.26)
+                    scene.CardStorage.opponentCardBackStorage.push(card)
                 }
             }
         })
 
+        scene.socket.on("deleteOneCardInHand", (socketId, cardIdToRemove) => {
+            // Test
+            // scene.GameHandler.playerHand[2].destroy()
+        })
         // * cardsToAdd: Array * //
-        scene.socket.on("dealOneCardInScene", (socketId, cardsToAdd, cardIndex) => {
+        scene.socket.on("dealOneCardInHand", (socketId, cardsToAdd, cardIndex) => {
             if (socketId === scene.socket.id) {
                 let card
                 if (cardsToAdd[cardIndex].includes("I")) {
@@ -110,11 +115,10 @@ export default class SocketHandler {
                         "playerCard"
                     ).setScale(0.26)
                 }
-                scene.GameHandler.playerHand.push(card)
+                // scene.GameHandler.playerHand.push(card)
             } else {
-                scene.GameHandler.opponentHand.push(
-                    scene.DeckHandler.InstantiateCard(85 + cardIndex * 35, 0, "cardBack", "cardBack", "opponentCard").setScale(0.26)
-                )
+                let card = scene.DeckHandler.InstantiateCard(85 + cardIndex * 35, 0, "cardBack", "cardBack", "opponentCard").setScale(0.26)
+                scene.CardStorage.opponentCardBackStorage.push(card)
             }
         })
 
@@ -189,7 +193,7 @@ export default class SocketHandler {
         scene.socket.on("cardPlayed", (cardName, socketId, dropZoneName, roomId, cardType) => {
             console.log("cardName: " + cardName + " socketId:" + socketId + " dropZoneID:" + dropZoneName + " cardType: " + cardType)
             if (socketId !== scene.socket.id) {
-                scene.GameHandler.opponentHand.shift().destroy()
+                scene.CardStorage.opponentCardBackStorage.shift().destroy()
                 const scaleX = 0.26
                 const scaleY = cardType === "cardBack" ? 0.26 : -0.26
                 switch (dropZoneName) {
@@ -259,6 +263,17 @@ export default class SocketHandler {
                 scene.GameHandler.playerTotalWinScore += scores
             }
             scene.UIHandler.SetPlayerWinScoreText(scene.GameHandler.playerTotalWinScore)
+        })
+
+        scene.socket.on("clearLocalBattleField", () => {
+            // scene.CardStorage.ICardStorage = []
+            scene.CardStorage.InSceneStorage = []
+            scene.CardStorage.HCardStorage = []
+            scene.CardStorage.WCardStorage = []
+            // Clear dropZone
+            for (let i = 0; i < scene.ZoneHandler.dropZoneList; i++) {
+                scene.ZoneHandler.dropZoneList[i].data.list.cards = 0
+            }
         })
     }
 }

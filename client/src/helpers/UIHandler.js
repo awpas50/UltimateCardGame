@@ -1,22 +1,23 @@
-import ZoneHandler from "./ZoneHandler"
-
 export default class UIHandler {
     constructor(scene) {
-        this.zoneHandler = new ZoneHandler(scene)
         this.inputText = {}
         // <------------------------------------ Zone ------------------------------------>
         this.BuildZones = () => {
-            scene.dropZone1 = this.zoneHandler.renderZone(189, 458, 330 / 3.25, 430 / 3.25)
-            scene.dropZone2 = this.zoneHandler.renderZone(90, 575, 330 / 3.25, 430 / 3.25)
-            scene.dropZone3 = this.zoneHandler.renderZone(280, 575, 330 / 3.25, 430 / 3.25)
-            scene.dropZone4 = this.zoneHandler.renderZone(189, 690, 330 / 3.25, 430 / 3.25)
-            scene.dropZone1.setName("dropZone1")
-            scene.dropZone2.setName("dropZone2")
-            scene.dropZone3.setName("dropZone3")
-            scene.dropZone4.setName("dropZone4")
+            const dropZoneConfigs = [
+                { x: 189, y: 458, width: 330 / 3.25, height: 430 / 3.25, name: "dropZone1" },
+                { x: 90, y: 575, width: 330 / 3.25, height: 430 / 3.25, name: "dropZone2" },
+                { x: 280, y: 575, width: 330 / 3.25, height: 430 / 3.25, name: "dropZone3" },
+                { x: 189, y: 690, width: 330 / 3.25, height: 430 / 3.25, name: "dropZone4" },
+            ]
+            dropZoneConfigs.forEach((config) => {
+                let dropZone = scene.ZoneHandler.renderZone(config.x, config.y, config.width, config.height)
+                dropZone.setName(config.name)
+                scene.ZoneHandler.dropZoneList.push(dropZone)
+            })
+            console.log(scene.ZoneHandler.dropZoneList)
         }
         this.BuildZoneOutline = () => {
-            this.zoneHandler.renderOutlineGrid(220, 270, 330, 430)
+            scene.ZoneHandler.renderOutlineGrid(220, 270, 330, 430)
         }
         this.BuildPlayerAreas = () => {
             scene.playerHandArea = scene.add.rectangle(200, 880, 350, 230)
@@ -89,7 +90,7 @@ export default class UIHandler {
             scene.dealCardText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
-                scene.socket.emit("dealCards", scene.socket.id, scene.GameHandler.currentRoomID, scene.GameHandler.opponentID)
+                scene.socket.emit("dealCardsFirstRound", scene.socket.id, scene.GameHandler.currentRoomID, scene.GameHandler.opponentID)
                 scene.dealCardText.disableInteractive()
             })
             // Control card color

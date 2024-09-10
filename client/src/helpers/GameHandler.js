@@ -11,7 +11,7 @@ export default class GameHandler {
         this.playerDeck = []
         this.opponentDeck = []
         this.playerHand = []
-        this.opponentHand = []
+        // this.opponentHand = []
 
         this.skyCardZoneName = ""
         this.groundCardZoneName = ""

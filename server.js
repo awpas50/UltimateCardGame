@@ -148,8 +148,8 @@ io.on("connection", function (socket) {
     // Called in UIHandler.js
     // populates the players[socketId].inHand array with elements from the players[socketId].inDeck array.
     // If the deck is empty, it shuffles and refills the deck before adding cards to the hand.
-    socket.on("dealCards", function (socketId, roomId, opponentId) {
-        console.log("dealCards: " + roomId)
+    socket.on("dealCardsFirstRound", function (socketId, roomId, opponentId) {
+        console.log("dealCardsFirstRound: " + roomId)
         for (let i = 0; i < 6; i++) {
             // In JavaScript, you can freely assign different types of values to a variable or object property without declaring their types beforehand.
             // It's completely legitimate to assign a shuffled array even if it was initially declared as an empty array.
@@ -188,6 +188,46 @@ io.on("connection", function (socket) {
         }
     })
 
+    socket.on("dealCardsSecondRound", function (socketId, roomId, opponentId) {
+        console.log("dealCardsSecondRound: " + roomId)
+        for (let i = 0; i < 6; i++) {
+            // In JavaScript, you can freely assign different types of values to a variable or object property without declaring their types beforehand.
+            // It's completely legitimate to assign a shuffled array even if it was initially declared as an empty array.
+            if (players[socketId].inDeck.length === 0) {
+                players[socketId].inDeck = shuffle(mixedArray)
+            }
+            players[socketId].inHand.push(players[socketId].inDeck.shift())
+        }
+        if (players[socketId].inDeck_WCard.length === 0) {
+            players[socketId].inDeck_WCard = shuffle(imageNamesWCard)
+        }
+        players[socketId].inScene_WCard.push(players[socketId].inDeck_WCard.shift())
+
+        // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
+        io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
+        io.to(roomId).emit("addWCardsInScene", socketId, players[socketId].inScene_WCard)
+        socket.emit("setAuthorElements", players[socketId].inScene_WCard)
+        io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
+
+        players[socketId].isReady = true
+
+        // if (players[opponentId].isReady === true) {
+        //     // Roll dice: generates a random number between 1 and 6
+        //     gameState = "Ready"
+        //     let roll1 = Math.floor(Math.random() * 6) + 1
+        //     let roll2
+        //     // Ensure roll2 is different from roll1
+        //     do {
+        //         roll2 = Math.floor(Math.random() * 6) + 1
+        //     } while (roll2 === roll1)
+
+        //     io.to(roomId).emit("RollDice", socketId, roll1, roll2)
+        //     io.to(roomId).emit("decideWhichPlayerfirstTurn", socketId, roll1, roll2)
+        //     io.to(roomId).emit("changeGameState", "Ready")
+        //     io.to(roomId).emit("setPlayerTurnText")
+        // }
+    })
+
     // Arguments: scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID
     socket.on("setCardsInServer", function (socketId, cardName, roomId) {
         players[socketId].inScene.push(cardName)
@@ -196,10 +236,12 @@ io.on("connection", function (socket) {
         const cardIndex = players[socketId].inHand.indexOf(cardName)
         // Based on card index, replace old card with players[socketId].inDeck[0] as a new card
         players[socketId].inHand.splice(cardIndex, 1, players[socketId].inDeck[0])
+        // Tell local to delete one card in hand
+        io.to(roomId).emit("deleteOneCardInHand", socketId)
         // inDeck delete 1 card
         players[socketId].inDeck.shift()
         // Tell local to actually show one new card
-        io.to(roomId).emit("dealOneCardInScene", socketId, players[socketId].inHand, cardIndex)
+        io.to(roomId).emit("dealOneCardInHand", socketId, players[socketId].inHand, cardIndex)
     })
 
     // Used for setting score multiplier at the end of the round
@@ -319,9 +361,11 @@ function resetBattleField(endRoundRoom) {
         players[endRoundRoom[i]].inSceneInspriationPt = []
         players[endRoundRoom[i]].inSceneAuthorBoostPt = []
         players[endRoundRoom[i]].totalInspriationPt = 0
-
         players[endRoundRoom[i]].roundCount++
     }
+
+    // Tell local to destroy cards in the scene
+    io.to(roomId).emit("clearLocalBattleField")
     console.log(players)
 }
 
@@ -331,11 +375,11 @@ function calculateTotalInspriationPts(socketId) {
     const sum1 = players[socketId].inSceneInspriationPt.reduce((accumulator, currentValue) => {
         const val = currentValue === -1 ? 0 : currentValue
         return accumulator + val
-    })
+    }, 0)
     const sum2 = players[socketId].inSceneAuthorBoostPt.reduce((accumulator, currentValue) => {
         const val = currentValue === -1 ? 0 : currentValue
         return accumulator + val
-    })
+    }, 0)
     players[socketId].totalInspriationPt = sum1 + sum2
 }
 

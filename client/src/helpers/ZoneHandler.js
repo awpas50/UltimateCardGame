@@ -1,5 +1,7 @@
 export default class ZoneHandler {
     constructor(scene) {
+        this.dropZoneList = []
+
         this.renderZone = (x, y, width, height) => {
             let dropZone = scene.add.zone(x, y, width, height).setRectangleDropZone(width, height)
             dropZone.setData({
