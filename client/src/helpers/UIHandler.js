@@ -84,7 +84,7 @@ export default class UIHandler {
             scene.winScoreText.text = "總分: " + totalWinScore
         }
         // <------------------------------------ Draw card (to be removed) ------------------------------------>
-        this.BuildGameText = () => {
+        this.BuildDealCardText = () => {
             scene.dealCardText = scene.add.text(350, 400, "點我抽卡").setFontSize(20).setFontFamily("Trebuchet MS")
             // OnPointerDown event
             scene.dealCardText.on("pointerdown", () => {
@@ -100,6 +100,9 @@ export default class UIHandler {
             scene.dealCardText.on("pointerout", () => {
                 scene.dealCardText.setColor("#00ffff")
             })
+        }
+        this.hideDealCardText = () => {
+            scene.dealCardText.text = ""
         }
         this.ActivateGameText = () => {
             if (scene.dealCardText != undefined || scene.dealCardText != null) {
@@ -187,12 +190,12 @@ export default class UIHandler {
             this.BuildZoneOutline()
             this.BuildPlayerAreas()
             this.BuildPlayerTurnText()
-            this.BuildGameText()
+            this.BuildDealCardText()
             this.BuildRollDiceText()
             this.BuildPlayerWinScoreText()
         }
         this.BuildLobby = () => {
-            this.BuildInputTextDecation()
+            this.BuildInputTextDecoration()
             this.BuildRoomNumberText()
             this.BuildCreateRoomText()
             this.BuildJoinRoomText()
@@ -213,7 +216,7 @@ export default class UIHandler {
         this.GetInputTextContent = (inputText) => {
             return inputText.text
         }
-        this.BuildInputTextDecation = () => {
+        this.BuildInputTextDecoration = () => {
             scene.inputTextRectangle = scene.rexUI.add.roundRectangle(300, 500, 100, 30, 0, 0x666666)
         }
         this.HideInputTextDecation = () => {

@@ -64,6 +64,7 @@ export default class InteractiveHandler {
         // 'drop' *** built-in function in Phaser 3
         // gameObject: Card
         scene.input.on("drop", (pointer, gameObject, dropZone) => {
+            console.log(typeof gameObject)
             let canGetPoints = false
             let cardType = ""
             // 是否符合屬性/卡牌類型? 不符合條件時卡牌須反轉, 並不能獲得靈感值
@@ -138,6 +139,7 @@ export default class InteractiveHandler {
                 scene.input.setDraggable(gameObject, false)
                 // UI
                 scene.UIHandler.hideRollDiceText()
+                scene.UIHandler.hideDealCardText()
                 // 音效
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)

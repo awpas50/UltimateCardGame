@@ -7,10 +7,24 @@ export default class CardStorage {
 
         // If items are removed in these arrays, the item in the scene will be removed as well.
         // type: Phaser3.GameObject.Image
-        this.ICardStorage = []
-        this.HCardStorage = []
-        this.WCardStorage = []
-        this.InSceneStorage = []
+        this.inHandStorage = []
+        this.inSceneStorage = []
+        this.wCardStorage = []
         this.opponentCardBackStorage = []
+
+        this.changeCardToAnotherStorage = (cardId, fromArray, toArray) => {
+            console.log("cardId: " + cardId)
+            console.log(fromArray[0].data.list.id)
+            console.log(fromArray[0].getData("id"))
+            const item = fromArray.find((gameObject) => gameObject.data.list.id === cardId)
+            console.log(item)
+            // const index = fromArray.indexOf(item)
+            // if (index !== -1) {
+            //     const [removedItem] = fromArray.splice(index, 1)
+            //     toArray.push(removedItem)
+            // }
+        }
+
+        this.deleteCard = (cardId, fromArray) => {}
     }
 }

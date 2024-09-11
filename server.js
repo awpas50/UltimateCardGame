@@ -208,8 +208,6 @@ io.on("connection", function (socket) {
         io.to(roomId).emit("addWCardsInScene", socketId, players[socketId].inScene_WCard)
         socket.emit("setAuthorElements", players[socketId].inScene_WCard)
         io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
-
-        players[socketId].isReady = true
     })
 
     // Arguments: scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID
@@ -218,14 +216,14 @@ io.on("connection", function (socket) {
         // Player: check spot, remove card from spot, add card to spot. Opponent: Add 1 card back
         // Get index, for example, I001 is in index 3 than it will replace the 4th card in players[socketId].inHand
         const cardIndex = players[socketId].inHand.indexOf(cardName)
+        // Tell local to delete one card in hand
+        io.to(roomId).emit("deleteOneCardInHand", socketId, players[socketId].inHand[cardIndex])
         // Based on card index, replace old card with players[socketId].inDeck[0] as a new card
         players[socketId].inHand.splice(cardIndex, 1, players[socketId].inDeck[0])
-        // Tell local to delete one card in hand
-        io.to(roomId).emit("deleteOneCardInHand", socketId)
         // inDeck delete 1 card
         players[socketId].inDeck.shift()
         // Tell local to actually show one new card
-        io.to(roomId).emit("dealOneCardInHand", socketId, players[socketId].inHand, cardIndex)
+        io.to(roomId).emit("dealOneCardInHand", socketId, players[socketId].inHand[cardIndex], cardIndex)
     })
 
     // Used for setting score multiplier at the end of the round
@@ -332,12 +330,12 @@ function endRound(roomId, socketId, opponentId) {
         io.to(roomId).emit("setPlayerWinScoreText", 0, whoWinSocketId)
     }
     setTimeout(() => {
-        resetBattleField(endRoundRoom)
+        resetBattleField(roomId, endRoundRoom)
     }, 5000)
 }
 
 // endRoundRoom: array (string)
-function resetBattleField(endRoundRoom) {
+function resetBattleField(roomId, endRoundRoom) {
     for (let i = 0; i < endRoundRoom.length; i++) {
         players[endRoundRoom[i]].inSceneElement = []
         players[endRoundRoom[i]].inSceneInspriationPt = []
