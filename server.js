@@ -188,8 +188,8 @@ io.on("connection", function (socket) {
         }
     })
 
-    socket.on("dealCardsSecondRound", function (socketId, roomId, opponentId) {
-        console.log("dealCardsSecondRound: " + roomId)
+    socket.on("dealCardsAnotherRound", function (socketId, roomId, opponentId) {
+        console.log("dealCardsAnotherRound: " + roomId)
         for (let i = 0; i < 6; i++) {
             // In JavaScript, you can freely assign different types of values to a variable or object property without declaring their types beforehand.
             // It's completely legitimate to assign a shuffled array even if it was initially declared as an empty array.
@@ -210,26 +210,10 @@ io.on("connection", function (socket) {
         io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
 
         players[socketId].isReady = true
-
-        // if (players[opponentId].isReady === true) {
-        //     // Roll dice: generates a random number between 1 and 6
-        //     gameState = "Ready"
-        //     let roll1 = Math.floor(Math.random() * 6) + 1
-        //     let roll2
-        //     // Ensure roll2 is different from roll1
-        //     do {
-        //         roll2 = Math.floor(Math.random() * 6) + 1
-        //     } while (roll2 === roll1)
-
-        //     io.to(roomId).emit("RollDice", socketId, roll1, roll2)
-        //     io.to(roomId).emit("decideWhichPlayerfirstTurn", socketId, roll1, roll2)
-        //     io.to(roomId).emit("changeGameState", "Ready")
-        //     io.to(roomId).emit("setPlayerTurnText")
-        // }
     })
 
     // Arguments: scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID
-    socket.on("setCardsInServer", function (socketId, cardName, roomId) {
+    socket.on("serverUpdateCardInHand", function (socketId, cardName, roomId) {
         players[socketId].inScene.push(cardName)
         // Player: check spot, remove card from spot, add card to spot. Opponent: Add 1 card back
         // Get index, for example, I001 is in index 3 than it will replace the 4th card in players[socketId].inHand
@@ -245,20 +229,20 @@ io.on("connection", function (socket) {
     })
 
     // Used for setting score multiplier at the end of the round
-    socket.on("setCardType", function (socketId, elementId, inspriationPt) {
+    socket.on("serverSetCardType", function (socketId, elementId, inspriationPt) {
         players[socketId].inSceneElement.push(elementId) // double scores if all elements match
         players[socketId].inSceneInspriationPt.push(inspriationPt) // triple scores if all inspriation points match
         // players[socketId].totalInspriationPt += inspriationPt
     })
 
     // Called in InteractiveHandler.js
-    socket.on("calculatePoints", function (points, socketId, dropZoneId, roomId) {
+    socket.on("serverUpdatePoints", function (points, socketId, dropZoneId, roomId) {
         io.to(roomId).emit("calculatePoints", points, socketId, dropZoneId, roomId)
         io.to(roomId).emit("setPlayerPointText")
         io.to(roomId).emit("setOpponentPointText")
     })
 
-    socket.on("cardPlayed", function (cardName, socketId, dropZoneId, roomId, cardType) {
+    socket.on("serverNotifyCardPlayed", function (cardName, socketId, dropZoneId, roomId, cardType) {
         io.to(roomId).emit("cardPlayed", cardName, socketId, dropZoneId, roomId, cardType)
         io.to(roomId).emit("changeTurn")
         io.to(roomId).emit("setPlayerTurnText")
@@ -268,11 +252,11 @@ io.on("connection", function (socket) {
     //     players[socketId].totalInspriationPt = playerTotalPoints
     // });
 
-    socket.on("setAuthorBuff", function (socketId, authorBuffPt) {
+    socket.on("serverUpdateAuthorBuff", function (socketId, authorBuffPt) {
         players[socketId].inSceneAuthorBoostPt.push(authorBuffPt)
     })
 
-    socket.on("addCardCount", function (socketId, opponentId, roomId) {
+    socket.on("serverUpdateCardCount", function (socketId, opponentId, roomId) {
         players[socketId].cardCount++
         calculateTotalInspriationPts(socketId)
         console.log("players[socketId].cardCount: " + players[socketId].cardCount)
@@ -283,12 +267,10 @@ io.on("connection", function (socket) {
             io.to(roomId).emit("setPlayerPointText")
             io.to(roomId).emit("setOpponentPointText")
             endRound(roomId, socketId, opponentId)
-            //io.to(roomId).emit('endRound', socketId, players[socketId].inSceneElement, players[socketId].inSceneInspriationPt);
         }
     })
 
     socket.on("disconnect", function () {
-        //socket.leave(socket.rooms[1]);
         console.log("A user disconnected: " + socket.id + ". Number of players in the server: " + objLength)
         delete players[socket.id]
     })
