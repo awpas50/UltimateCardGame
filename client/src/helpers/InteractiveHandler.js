@@ -139,7 +139,6 @@ export default class InteractiveHandler {
                 scene.input.setDraggable(gameObject, false)
                 // UI
                 scene.UIHandler.hideRollDiceText()
-                scene.UIHandler.hideDealCardText()
                 // 音效
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)

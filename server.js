@@ -141,7 +141,7 @@ io.on("connection", function (socket) {
         // imageNames: (Array of string) string[]
         players[socketId].inDeck = shuffle(mixedArray)
         players[socketId].inDeck_WCard = shuffle(imageNamesWCard)
-        console.log(players)
+        // console.log(players)
         io.to(roomId).emit("changeGameState", "Initializing")
     })
 
@@ -161,6 +161,7 @@ io.on("connection", function (socket) {
         if (players[socketId].inDeck_WCard.length === 0) {
             players[socketId].inDeck_WCard = shuffle(imageNamesWCard)
         }
+        players[socketId].inScene_WCard = []
         players[socketId].inScene_WCard.push(players[socketId].inDeck_WCard.shift())
 
         // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
@@ -188,7 +189,7 @@ io.on("connection", function (socket) {
         }
     })
 
-    socket.on("dealCardsAnotherRound", function (socketId, roomId, opponentId) {
+    socket.on("dealCardsAnotherRound", function (socketId, roomId) {
         console.log("dealCardsAnotherRound: " + roomId)
         // **** No need to deal cards again.
 
@@ -200,10 +201,6 @@ io.on("connection", function (socket) {
         //     }
         //     players[socketId].inHand.push(players[socketId].inDeck.shift())
         // }
-        // if (players[socketId].inDeck_WCard.length === 0) {
-        //     players[socketId].inDeck_WCard = shuffle(imageNamesWCard)
-        // }
-        // players[socketId].inScene_WCard.push(players[socketId].inDeck_WCard.shift())
 
         // // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
         // io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
@@ -283,7 +280,7 @@ http.listen(port, function () {
 
 // * roomId: string * //
 function endRound(roomId, socketId, opponentId) {
-    let baseScore = 8
+    const baseScore = 8
     let multiplier = 1
     console.log("round end")
     // should return values
@@ -298,11 +295,11 @@ function endRound(roomId, socketId, opponentId) {
     let whoWin = 0
 
     //check who win
-    if (players[player1SocketId].totalInspriationPt < players[player2SocketId].totalInspriationPt) {
+    if (players[player1SocketId].totalInspriationPt > players[player2SocketId].totalInspriationPt) {
         console.log("End round: Player 1 wins")
         whoWinSocketId = player1SocketId
         whoWin = 1
-    } else if (players[player1SocketId].totalInspriationPt > players[player2SocketId].totalInspriationPt) {
+    } else if (players[player1SocketId].totalInspriationPt < players[player2SocketId].totalInspriationPt) {
         console.log("End round: Player 2 wins")
         whoWinSocketId = player2SocketId
         whoWin = 2
@@ -343,7 +340,20 @@ function resetBattleField(roomId, endRoundRoom) {
         players[endRoundRoom[i]].inSceneInspriationPt = []
         players[endRoundRoom[i]].inSceneAuthorBoostPt = []
         players[endRoundRoom[i]].totalInspriationPt = 0
+        players[endRoundRoom[i]].cardCount = 0
         players[endRoundRoom[i]].roundCount++
+
+        // Move all cards in scene to rubbish bin
+        while (players[endRoundRoom[i]].inScene.length > 0) {
+            players[endRoundRoom[i]].inRubbishBin.push(players[endRoundRoom[i]].inScene.shift())
+        }
+
+        // Move previous WCard to rubbish
+        if (players[endRoundRoom[i]].inDeck_WCard.length === 0) {
+            players[endRoundRoom[i]].inDeck_WCard = shuffle(imageNamesWCard)
+        }
+        players[endRoundRoom[i]].inRubbishBin_WCard.push(players[endRoundRoom[i]].inScene_WCard.shift())
+        players[endRoundRoom[i]].inScene_WCard.push(players[endRoundRoom[i]].inDeck_WCard.shift())
     }
 
     // Tell local to destroy cards in the scene

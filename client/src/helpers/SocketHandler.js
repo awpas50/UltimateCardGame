@@ -115,7 +115,12 @@ export default class SocketHandler {
                 0.26,
                 isPlayer ? 0.26 : -0.26
             )
-            scene.CardStorage.wCardStorage.push(newCard)
+
+            if (isPlayer) {
+                scene.CardStorage.wCardStorage.push(newCard)
+            } else {
+                scene.CardStorage.opponentCardStorage.push(newCard)
+            }
         })
 
         scene.socket.on("setAuthorElements", (authorCardName) => {
@@ -180,22 +185,35 @@ export default class SocketHandler {
             console.log("cardName: " + cardName + " socketId:" + socketId + " dropZoneID:" + dropZoneName + " cardType: " + cardType)
             if (socketId !== scene.socket.id) {
                 scene.CardStorage.opponentCardBackStorage.shift().destroy()
+
                 const scaleX = 0.26
                 const scaleY = cardType === "cardBack" ? 0.26 : -0.26
+                let gameObject
                 switch (dropZoneName) {
                     case "dropZone1": //天
-                        scene.DeckHandler.InstantiateCard(189, 345, cardType, cardName, "opponentCard").setScale(scaleX, scaleY)
+                        gameObject = scene.DeckHandler.InstantiateCard(189, 345, cardType, cardName, "opponentCard").setScale(
+                            scaleX,
+                            scaleY
+                        )
                         break
                     case "dropZone2": //地
-                        scene.DeckHandler.InstantiateCard(90, 220, cardType, cardName, "opponentCard").setScale(scaleX, scaleY)
+                        gameObject = scene.DeckHandler.InstantiateCard(90, 220, cardType, cardName, "opponentCard").setScale(scaleX, scaleY)
                         break
                     case "dropZone3": //人
-                        scene.DeckHandler.InstantiateCard(280, 220, cardType, cardName, "opponentCard").setScale(scaleX, scaleY)
+                        gameObject = scene.DeckHandler.InstantiateCard(280, 220, cardType, cardName, "opponentCard").setScale(
+                            scaleX,
+                            scaleY
+                        )
                         break
                     case "dropZone4": //日
-                        scene.DeckHandler.InstantiateCard(189, 100, cardType, cardName, "opponentCard").setScale(scaleX, scaleY)
+                        gameObject = scene.DeckHandler.InstantiateCard(189, 100, cardType, cardName, "opponentCard").setScale(
+                            scaleX,
+                            scaleY
+                        )
                         break
                 }
+
+                scene.CardStorage.opponentCardStorage.push(gameObject)
             }
         })
         // * pointsString: String, socketId: string, dropZoneName: string * //
@@ -253,22 +271,28 @@ export default class SocketHandler {
 
         scene.socket.on("clearLocalBattleField", () => {
             console.log("clearLocalBattleField")
-            // scene.CardStorage.inSceneStorage = []
-            // scene.CardStorage.wCardStorage = []
-            scene.CardStorage.inSceneStorage.forEach(object => {
+            scene.CardStorage.inSceneStorage.forEach((object) => {
                 if (object && object.destroy) {
                     object.destroy()
                 }
             })
-            scene.CardStorage.wCardStorage.forEach(object => {
+            scene.CardStorage.wCardStorage.forEach((object) => {
+                if (object && object.destroy) {
+                    object.destroy()
+                }
+            })
+            scene.CardStorage.opponentCardStorage.forEach((object) => {
                 if (object && object.destroy) {
                     object.destroy()
                 }
             })
             // Clear dropZone
+            console.log(scene.ZoneHandler.dropZoneList)
             for (let i = 0; i < scene.ZoneHandler.dropZoneList; i++) {
                 scene.ZoneHandler.dropZoneList[i].data.list.cards = 0
             }
+
+            scene.socket.emit("dealCardsAnotherRound", scene.socket.id, scene.GameHandler.currentRoomID)
         })
     }
 }

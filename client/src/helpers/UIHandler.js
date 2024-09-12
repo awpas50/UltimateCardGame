@@ -92,6 +92,7 @@ export default class UIHandler {
                 scene.sound.play(`flipCard${RNG}`)
                 scene.socket.emit("dealCardsFirstRound", scene.socket.id, scene.GameHandler.currentRoomID, scene.GameHandler.opponentID)
                 scene.dealCardText.disableInteractive()
+                this.hideDealCardText()
             })
             // Control card color
             scene.dealCardText.on("pointerover", () => {
