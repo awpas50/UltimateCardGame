@@ -190,21 +190,23 @@ io.on("connection", function (socket) {
 
     socket.on("dealCardsAnotherRound", function (socketId, roomId, opponentId) {
         console.log("dealCardsAnotherRound: " + roomId)
-        for (let i = 0; i < 6; i++) {
-            // In JavaScript, you can freely assign different types of values to a variable or object property without declaring their types beforehand.
-            // It's completely legitimate to assign a shuffled array even if it was initially declared as an empty array.
-            if (players[socketId].inDeck.length === 0) {
-                players[socketId].inDeck = shuffle(mixedArray)
-            }
-            players[socketId].inHand.push(players[socketId].inDeck.shift())
-        }
-        if (players[socketId].inDeck_WCard.length === 0) {
-            players[socketId].inDeck_WCard = shuffle(imageNamesWCard)
-        }
-        players[socketId].inScene_WCard.push(players[socketId].inDeck_WCard.shift())
+        // **** No need to deal cards again.
 
-        // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
-        io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
+        // for (let i = 0; i < 6; i++) {
+        //     // In JavaScript, you can freely assign different types of values to a variable or object property without declaring their types beforehand.
+        //     // It's completely legitimate to assign a shuffled array even if it was initially declared as an empty array.
+        //     if (players[socketId].inDeck.length === 0) {
+        //         players[socketId].inDeck = shuffle(mixedArray)
+        //     }
+        //     players[socketId].inHand.push(players[socketId].inDeck.shift())
+        // }
+        // if (players[socketId].inDeck_WCard.length === 0) {
+        //     players[socketId].inDeck_WCard = shuffle(imageNamesWCard)
+        // }
+        // players[socketId].inScene_WCard.push(players[socketId].inDeck_WCard.shift())
+
+        // // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
+        // io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
         io.to(roomId).emit("addWCardsInScene", socketId, players[socketId].inScene_WCard)
         socket.emit("setAuthorElements", players[socketId].inScene_WCard)
         io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
@@ -241,7 +243,7 @@ io.on("connection", function (socket) {
     })
 
     socket.on("serverNotifyCardPlayed", function (cardName, socketId, dropZoneId, roomId, cardType) {
-        io.to(roomId).emit("cardPlayed", cardName, socketId, dropZoneId, roomId, cardType)
+        io.to(roomId).emit("localInstantiateCardBack", cardName, socketId, dropZoneId, cardType)
         io.to(roomId).emit("changeTurn")
         io.to(roomId).emit("setPlayerTurnText")
     })

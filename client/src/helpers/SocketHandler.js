@@ -176,7 +176,7 @@ export default class SocketHandler {
         // Called in server.js
         // Where does Player 2 cards display in Player 1 scene??
         // * cardName: String, socketId: string, dropZoneName: string, cardType: ICard/Wcard/HCard * //
-        scene.socket.on("cardPlayed", (cardName, socketId, dropZoneName, roomId, cardType) => {
+        scene.socket.on("localInstantiateCardBack", (cardName, socketId, dropZoneName, cardType) => {
             console.log("cardName: " + cardName + " socketId:" + socketId + " dropZoneID:" + dropZoneName + " cardType: " + cardType)
             if (socketId !== scene.socket.id) {
                 scene.CardStorage.opponentCardBackStorage.shift().destroy()
@@ -253,8 +253,18 @@ export default class SocketHandler {
 
         scene.socket.on("clearLocalBattleField", () => {
             console.log("clearLocalBattleField")
-            scene.CardStorage.inSceneStorage = []
-            scene.CardStorage.wCardStorage = []
+            // scene.CardStorage.inSceneStorage = []
+            // scene.CardStorage.wCardStorage = []
+            scene.CardStorage.inSceneStorage.forEach(object => {
+                if (object && object.destroy) {
+                    object.destroy()
+                }
+            })
+            scene.CardStorage.wCardStorage.forEach(object => {
+                if (object && object.destroy) {
+                    object.destroy()
+                }
+            })
             // Clear dropZone
             for (let i = 0; i < scene.ZoneHandler.dropZoneList; i++) {
                 scene.ZoneHandler.dropZoneList[i].data.list.cards = 0
