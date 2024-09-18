@@ -99,32 +99,32 @@ export default class UIHandler {
             scene.winScoreText.text = "總分: " + totalWinScore
         }
         // <------------------------------------ Draw card (to be removed) ------------------------------------>
-        this.BuildDealCardText = () => {
-            scene.dealCardText = scene.add.text(350, 400, "點我抽卡").setFontSize(20).setFontFamily("Trebuchet MS")
-            // OnPointerDown event
-            scene.dealCardText.on("pointerdown", () => {
-                const RNG = Math.floor(Math.random() * 3) + 1
-                scene.sound.play(`flipCard${RNG}`)
-                scene.socket.emit(
-                    "dealCardsFirstRound",
-                    scene.socket.id,
-                    scene.GameHandler.currentRoomID,
-                    scene.GameHandler.opponentID
-                )
-                scene.dealCardText.disableInteractive()
-                this.hideDealCardText()
-            })
-            // Control card color
-            scene.dealCardText.on("pointerover", () => {
-                scene.dealCardText.setColor("#fff5fa")
-            })
-            scene.dealCardText.on("pointerout", () => {
-                scene.dealCardText.setColor("#00ffff")
-            })
-        }
-        this.hideDealCardText = () => {
-            scene.dealCardText.text = ""
-        }
+        // this.BuildDealCardText = () => {
+        //     scene.dealCardText = scene.add.text(350, 400, "點我抽卡").setFontSize(20).setFontFamily("Trebuchet MS")
+        //     // OnPointerDown event
+        //     scene.dealCardText.on("pointerdown", () => {
+        //         const RNG = Math.floor(Math.random() * 3) + 1
+        //         scene.sound.play(`flipCard${RNG}`)
+        //         scene.socket.emit(
+        //             "dealCardsFirstRound",
+        //             scene.socket.id,
+        //             scene.GameHandler.currentRoomID,
+        //             scene.GameHandler.opponentID
+        //         )
+        //         scene.dealCardText.disableInteractive()
+        //         this.hideDealCardText()
+        //     })
+        //     // Control card color
+        //     scene.dealCardText.on("pointerover", () => {
+        //         scene.dealCardText.setColor("#fff5fa")
+        //     })
+        //     scene.dealCardText.on("pointerout", () => {
+        //         scene.dealCardText.setColor("#00ffff")
+        //     })
+        // }
+        // this.hideDealCardText = () => {
+        //     scene.dealCardText.text = ""
+        // }
         this.ActivateGameText = () => {
             if (scene.dealCardText != undefined || scene.dealCardText != null) {
                 scene.dealCardText.setInteractive()
@@ -184,7 +184,7 @@ export default class UIHandler {
 
             scene.GameHandler.currentRoomID = scene.UIHandler.GetInputTextContent(scene.UIHandler.inputText)
             console.log("Current Room ID: " + scene.GameHandler.currentRoomID)
-            scene.socket.emit("dealDeck", scene.socket.id, scene.GameHandler.currentRoomID)
+            // scene.socket.emit("dealDeck", scene.socket.id, scene.GameHandler.currentRoomID)
 
             scene.createRoomText.visible = false
             scene.joinRoomText.visible = false
@@ -203,6 +203,7 @@ export default class UIHandler {
                 scene.sound.play(`flipCard${RNG}`)
                 scene.socket.emit("joinRoom", scene.UIHandler.GetInputTextContent(scene.UIHandler.inputText))
                 // (Runs joinRoomSucceedSignal from server.js if success.)
+                // (Update: Also runs dealCardsFirstRound (in server) for both players)
             })
             // Card color
             scene.joinRoomText.on("pointerover", () => {
@@ -219,7 +220,7 @@ export default class UIHandler {
             this.BuildZoneOutline()
             this.BuildPlayerAreas()
             this.BuildPlayerTurnText()
-            this.BuildDealCardText()
+            // this.BuildDealCardText()
             this.BuildRollDiceText()
             this.BuildPlayerWinScoreText()
         }

@@ -48,6 +48,26 @@ export default class SocketHandler {
                 scene.UIHandler.ActivateGameText()
             }
         })
+        scene.socket.on("readyToStartGame", (socketId) => {
+            // 雙方玩家自動抽卡。其中一方會有延遲，如果指令同時進行可能會有問題
+            if (scene.socket.id === socketId) {
+                setTimeout(() => {
+                    scene.socket.emit(
+                        "dealCardsFirstRound",
+                        scene.socket.id,
+                        scene.GameHandler.currentRoomID,
+                        scene.GameHandler.opponentID
+                    )
+                }, 1000)
+            } else {
+                scene.socket.emit(
+                    "dealCardsFirstRound",
+                    scene.socket.id,
+                    scene.GameHandler.currentRoomID,
+                    scene.GameHandler.opponentID
+                )
+            }
+        })
 
         scene.socket.on("addICardsHCardsInScene", (socketId, cardIdList) => {
             if (socketId === scene.socket.id) {
@@ -148,43 +168,34 @@ export default class SocketHandler {
             }
         })
         scene.socket.on("RollDice", (socketId, roll1, roll2) => {
-            if (socketId === scene.socket.id) {
-                // Display the results
-                console.log("playerDiceValue: " + roll1)
-                console.log("opponentDiceValue: " + roll2)
+            const [playerDiceValue, opponentDiceValue] = socketId === scene.socket.id ? [roll1, roll2] : [roll2, roll1]
 
-                scene.GameHandler.playerDiceValue = roll1
-                scene.GameHandler.opponentDiceValue = roll2
-            } else {
-                // Flip the result
-                // Display the results
-                console.log("playerDiceValue: " + roll2)
-                console.log("opponentDiceValue: " + roll1)
+            // Display the results
+            console.log("playerDiceValue: " + playerDiceValue)
+            console.log("opponentDiceValue: " + opponentDiceValue)
 
-                scene.GameHandler.playerDiceValue = roll2
-                scene.GameHandler.opponentDiceValue = roll1
-            }
+            // Update GameHandler with the determined values
+            scene.GameHandler.playerDiceValue = playerDiceValue
+            scene.GameHandler.opponentDiceValue = opponentDiceValue
         })
 
         scene.socket.on("decideWhichPlayerfirstTurn", (socketId, roll1, roll2) => {
-            // 等級較高
-            if (scene.GameHandler.playerAuthorRarity > scene.GameHandler.opponentAuthorRarity) {
+            const { playerAuthorRarity, opponentAuthorRarity, playerDiceValue, opponentDiceValue } = scene.GameHandler
+            if (
+                // 1. 等級較高
+                playerAuthorRarity > opponentAuthorRarity ||
+                // 2. 等級一樣但擲骰勝利時成為先手
+                (playerAuthorRarity === opponentAuthorRarity && playerDiceValue > opponentDiceValue)
+            ) {
                 scene.GameHandler.changeTurn()
                 scene.GameHandler.getCurrentTurn()
             }
-            // 等級一樣
-            else if (scene.GameHandler.playerAuthorRarity === scene.GameHandler.opponentAuthorRarity) {
-                if (scene.GameHandler.playerDiceValue > scene.GameHandler.opponentDiceValue) {
-                    scene.GameHandler.changeTurn()
-                    scene.GameHandler.getCurrentTurn()
-                }
 
-                if (socketId === scene.socket.id) {
-                    scene.UIHandler.setRollDiceText(roll1, roll2)
-                } else {
-                    scene.UIHandler.setRollDiceText(roll2, roll1)
-                }
-            }
+            // 如果是玩家2 顯示數字需要反轉
+            scene.UIHandler.setRollDiceText(
+                socketId === scene.socket.id ? roll1 : roll2,
+                socketId === scene.socket.id ? roll2 : roll1
+            )
         })
 
         // Called in server.js
@@ -196,7 +207,6 @@ export default class SocketHandler {
             )
             if (socketId !== scene.socket.id) {
                 // scene.CardStorage.opponentCardBackStorage.shift().destroy()
-
                 const scaleX = 0.26
                 const scaleY = cardType === "cardBack" ? 0.26 : -0.26
                 let gameObject
@@ -287,6 +297,7 @@ export default class SocketHandler {
 
         scene.socket.on("clearLocalBattleField", () => {
             console.log("clearLocalBattleField")
+            // Destroy objects in all storage arrays
             scene.CardStorage.inSceneStorage.forEach((object) => {
                 if (object && object.destroy) {
                     object.destroy()

@@ -126,9 +126,7 @@ export default class InteractiveHandler {
                     scene.GameHandler.sunCardZoneName = gameObject.getData("id")
                     break
             }
-            if (cardType === "cardBack") {
-                gameObject.setTexture("H001B")
-            }
+
             // 卡牌移動到正確位置
             if (scene.GameHandler.isMyTurn && scene.GameHandler.gameState === "Ready" && dropZone.data.list.cards == 0) {
                 // 鎖定卡牌位置
@@ -141,7 +139,11 @@ export default class InteractiveHandler {
                 // 是否能獲得作者屬性加成?
                 let authorBuffPts = 0
                 let elementID = -1
-                // <?> 無屬性能不能獲得作者屬性加成? 待詢問
+                // 反轉卡牌判斷
+                if (cardType === "cardBack") {
+                    gameObject.setTexture("H001B")
+                }
+                // 作者屬性加成  (無屬性不能獲得)
                 if (gameObject.getData("id").includes("I")) {
                     const elementMap = {
                         火: 0,
@@ -149,11 +151,14 @@ export default class InteractiveHandler {
                         木: 2,
                         金: 3,
                         土: 4,
+                        無: 5,
                     }
-                    elementID = elementMap[gameObject.getData("element")] ?? -1 // Default to -1 if element not found
-                    authorBuffPts = scene.GameHandler.authorBuffs[elementID]
+                    elementID = elementMap[gameObject.getData("element")]
+
+                    const isVoid = elementID === 5
+                    authorBuffPts = isVoid ? 0 : scene.GameHandler.authorBuffs[elementID]
                 }
-                // 積分倍率計算(同屬雙倍,同靈感三倍)。蓋牌無法獲得積分加倍。-1表示無效積分計算。
+                // 積分倍率計算(同屬雙倍,同靈感三倍)。蓋牌無法獲得積分加倍。-1表示無效積分計算。5表示無屬性。
                 if (gameObject.getData("id").includes("I") && dropZone.name !== "dropZone4") {
                     // socketId, elementId, inspriationPt
                     scene.socket.emit(
