@@ -22,7 +22,7 @@ export default class UIHandler {
             )
         }
         this.buildPlayerAreas = () => {
-            const createStyledRectangle = (scene, config, strokeColor) => {
+            const createStyledRectangle = (config, strokeColor) => {
                 const rect = scene.add.rectangle(config.x, config.y, config.width, config.height)
                 rect.setStrokeStyle(4, strokeColor)
                 return rect
@@ -65,7 +65,7 @@ export default class UIHandler {
         // <------------------------------------ Inpsriation points ------------------------------------>
         this.buildPlayerPointText = () => {
             scene.playerPointText = scene.add
-                .text(PositionHandler.playerPointText.x, PositionHandler.opponentPointText.y, " ")
+                .text(PositionHandler.playerPointText.x, PositionHandler.playerPointText.y, " ")
                 .setFontSize(20)
                 .setFontFamily("Trebuchet MS")
         }
