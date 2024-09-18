@@ -192,10 +192,12 @@ export default class SocketHandler {
             }
 
             // 如果是玩家2 顯示數字需要反轉
-            scene.UIHandler.setRollDiceText(
-                socketId === scene.socket.id ? roll1 : roll2,
-                socketId === scene.socket.id ? roll2 : roll1
-            )
+            if (playerAuthorRarity === opponentAuthorRarity) {
+                scene.UIHandler.setRollDiceText(
+                    socketId === scene.socket.id ? roll1 : roll2,
+                    socketId === scene.socket.id ? roll2 : roll1
+                )
+            }
         })
 
         // Called in server.js

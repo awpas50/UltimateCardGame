@@ -1,42 +1,47 @@
+import Color from "./Color"
+import PositionHandler from "./PositionHandler"
+
 export default class UIHandler {
     constructor(scene) {
         this.inputText = {}
         // <------------------------------------ Zone ------------------------------------>
-        this.BuildZones = () => {
-            const dropZoneConfigs = [
-                { x: 189, y: 458, width: 330 / 3.25, height: 430 / 3.25, name: "dropZone1" },
-                { x: 90, y: 575, width: 330 / 3.25, height: 430 / 3.25, name: "dropZone2" },
-                { x: 280, y: 575, width: 330 / 3.25, height: 430 / 3.25, name: "dropZone3" },
-                { x: 189, y: 690, width: 330 / 3.25, height: 430 / 3.25, name: "dropZone4" },
-            ]
-            dropZoneConfigs.forEach((config) => {
+        this.buildZones = () => {
+            PositionHandler.dropZoneConfigs.forEach((config) => {
                 let dropZone = scene.ZoneHandler.renderZone(config.x, config.y, config.width, config.height)
                 dropZone.setName(config.name)
                 scene.ZoneHandler.dropZoneList.push(dropZone)
             })
             console.log(scene.ZoneHandler.dropZoneList)
         }
-        this.BuildZoneOutline = () => {
-            scene.ZoneHandler.renderOutlineGrid(220, 270, 330, 430)
+        this.buildZoneOutline = () => {
+            scene.ZoneHandler.renderOutlineGrid(
+                PositionHandler.outlineGrid.x,
+                PositionHandler.outlineGrid.y,
+                PositionHandler.outlineGrid.width,
+                PositionHandler.outlineGrid.height
+            )
         }
-        this.BuildPlayerAreas = () => {
-            scene.playerHandArea = scene.add.rectangle(200, 880, 350, 230)
-            scene.playerHandArea.setStrokeStyle(4, 0xff69b4)
-            scene.playerDeckArea = scene.add.rectangle(375, 695, 78, 115)
-            scene.playerDeckArea.setStrokeStyle(4, 0x00ffff)
-            scene.playerRubbishBinArea = scene.add.rectangle(470, 695, 78, 115)
-            scene.playerRubbishBinArea.setStrokeStyle(4, 0x00ffff)
+        this.buildPlayerAreas = () => {
+            const createStyledRectangle = (scene, config, strokeColor) => {
+                const rect = scene.add.rectangle(config.x, config.y, config.width, config.height)
+                rect.setStrokeStyle(4, strokeColor)
+                return rect
+            }
 
-            scene.opponentHandArea = scene.add.rectangle(200, -85, 350, 230)
-            scene.opponentHandArea.setStrokeStyle(4, 0xff69b4)
-            scene.opponentDeckArea = scene.add.rectangle(375, 112, 78, 115)
-            scene.opponentDeckArea.setStrokeStyle(4, 0x00ffff)
-            scene.opponentRubbishBinArea = scene.add.rectangle(470, 112, 78, 115)
-            scene.opponentRubbishBinArea.setStrokeStyle(4, 0x00ffff)
+            scene.playerHandArea = createStyledRectangle(PositionHandler.playerHandArea, Color.hotPink)
+            scene.playerDeckArea = createStyledRectangle(PositionHandler.playerDeckArea, Color.cyan)
+            scene.playerRubbishBinArea = createStyledRectangle(PositionHandler.playerRubbishBinArea, Color.cyan)
+
+            scene.opponentHandArea = createStyledRectangle(PositionHandler.opponentHandArea, Color.hotPink)
+            scene.opponentDeckArea = createStyledRectangle(PositionHandler.opponentDeckArea, Color.cyan)
+            scene.opponentRubbishBinArea = createStyledRectangle(PositionHandler.opponentRubbishBinArea, Color.cyan)
         }
         // <------------------------------------ Room number (top right) ------------------------------------>
         this.buildPlayerNumberText = (playerNumber) => {
-            scene.playerNumberText = scene.add.text(350, 250, "你是: 玩家 ").setFontSize(20).setFontFamily("Trebuchet MS")
+            scene.playerNumberText = scene.add
+                .text(PositionHandler.playerNumberText.x, PositionHandler.playerNumberText.y, "你是: 玩家 ")
+                .setFontSize(20)
+                .setFontFamily("Trebuchet MS")
             if (playerNumber == 1) {
                 scene.playerNumberText.text = "你是: 玩家1"
             } else {
@@ -44,8 +49,11 @@ export default class UIHandler {
             }
         }
         // <------------------------------------ Player turn ------------------------------------>
-        this.BuildPlayerTurnText = () => {
-            scene.playerTurnText = scene.add.text(350, 300, "等待另一位玩家抽卡...").setFontSize(20).setFontFamily("Trebuchet MS")
+        this.buildPlayerTurnText = () => {
+            scene.playerTurnText = scene.add
+                .text(PositionHandler.playerTurnText.x, PositionHandler.playerTurnText.y, "等待另一位玩家入場...")
+                .setFontSize(20)
+                .setFontFamily("Trebuchet MS")
         }
         this.setPlayerTurnText = (b) => {
             if (b === true) {
@@ -56,10 +64,16 @@ export default class UIHandler {
         }
         // <------------------------------------ Inpsriation points ------------------------------------>
         this.buildPlayerPointText = () => {
-            scene.playerPointText = scene.add.text(350, 550, " ").setFontSize(20).setFontFamily("Trebuchet MS")
+            scene.playerPointText = scene.add
+                .text(PositionHandler.playerPointText.x, PositionHandler.opponentPointText.y, " ")
+                .setFontSize(20)
+                .setFontFamily("Trebuchet MS")
         }
         this.buildOpponentPointText = () => {
-            scene.opponentPointText = scene.add.text(350, 200, " ").setFontSize(20).setFontFamily("Trebuchet MS")
+            scene.opponentPointText = scene.add
+                .text(PositionHandler.opponentPointText.x, PositionHandler.opponentPointText.y, " ")
+                .setFontSize(20)
+                .setFontFamily("Trebuchet MS")
         }
         this.setPlayerPointText = (points) => {
             scene.playerPointText.text = "靈感值:" + points
@@ -69,62 +83,31 @@ export default class UIHandler {
         }
         // <------------------------------------ Points (60 to win) ------------------------------------>
         this.BuildWhoWinText = (whoWin) => {
-            if (whoWin == 1) {
-                scene.whoWinText = scene.add.text(350, 450, "玩家1勝利!", {
-                    fontSize: 20,
-                    fontFamily: "Trebuchet MS",
-                    color: "#00ffff",
-                })
-            } else if (whoWin == 2) {
-                scene.whoWinText = scene.add.text(350, 450, "玩家2勝利!", {
-                    fontSize: 20,
-                    fontFamily: "Trebuchet MS",
-                    color: "#00ffff",
-                })
-            } else if (whoWin == 0) {
-                scene.whoWinText = scene.add.text(350, 450, "平手!", {
-                    fontSize: 20,
-                    fontFamily: "Trebuchet MS",
-                    color: "#00ffff",
-                })
+            const messages = {
+                1: "玩家1勝利!",
+                2: "玩家2勝利!",
+                0: "平手!",
             }
+
+            scene.whoWinText = scene.add.text(PositionHandler.whoWinText.x, PositionHandler.whoWinText.y, messages[whoWin], {
+                fontSize: 20,
+                fontFamily: "Trebuchet MS",
+                color: "#00ffff",
+            })
         }
         this.deleteWhoWinText = () => {
             scene.whoWinText.destroy()
         }
-        this.BuildPlayerWinScoreText = () => {
-            scene.winScoreText = scene.add.text(350, 500, "", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" })
+        this.buildPlayerWinScoreText = () => {
+            scene.winScoreText = scene.add.text(PositionHandler.winScoreText.x, PositionHandler.winScoreText.y, "", {
+                fontSize: 20,
+                fontFamily: "Trebuchet MS",
+                color: "#00ffff",
+            })
         }
         this.SetPlayerWinScoreText = (totalWinScore) => {
             scene.winScoreText.text = "總分: " + totalWinScore
         }
-        // <------------------------------------ Draw card (to be removed) ------------------------------------>
-        // this.BuildDealCardText = () => {
-        //     scene.dealCardText = scene.add.text(350, 400, "點我抽卡").setFontSize(20).setFontFamily("Trebuchet MS")
-        //     // OnPointerDown event
-        //     scene.dealCardText.on("pointerdown", () => {
-        //         const RNG = Math.floor(Math.random() * 3) + 1
-        //         scene.sound.play(`flipCard${RNG}`)
-        //         scene.socket.emit(
-        //             "dealCardsFirstRound",
-        //             scene.socket.id,
-        //             scene.GameHandler.currentRoomID,
-        //             scene.GameHandler.opponentID
-        //         )
-        //         scene.dealCardText.disableInteractive()
-        //         this.hideDealCardText()
-        //     })
-        //     // Control card color
-        //     scene.dealCardText.on("pointerover", () => {
-        //         scene.dealCardText.setColor("#fff5fa")
-        //     })
-        //     scene.dealCardText.on("pointerout", () => {
-        //         scene.dealCardText.setColor("#00ffff")
-        //     })
-        // }
-        // this.hideDealCardText = () => {
-        //     scene.dealCardText.text = ""
-        // }
         this.ActivateGameText = () => {
             if (scene.dealCardText != undefined || scene.dealCardText != null) {
                 scene.dealCardText.setInteractive()
@@ -132,9 +115,15 @@ export default class UIHandler {
             }
         }
         // <------------------------------------ Roll Dice ------------------------------------>
-        this.BuildRollDiceText = () => {
-            scene.rollDiceText1 = scene.add.text(350, 560, " ").setFontSize(20).setFontFamily("Trebuchet MS")
-            scene.rollDiceText2 = scene.add.text(350, 590, " ").setFontSize(20).setFontFamily("Trebuchet MS")
+        this.buildRollDiceText = () => {
+            scene.rollDiceText1 = scene.add
+                .text(PositionHandler.rollDiceText1.x, PositionHandler.rollDiceText1.y, " ")
+                .setFontSize(20)
+                .setFontFamily("Trebuchet MS")
+            scene.rollDiceText2 = scene.add
+                .text(PositionHandler.rollDiceText2.x, PositionHandler.rollDiceText2.y, " ")
+                .setFontSize(20)
+                .setFontFamily("Trebuchet MS")
         }
         this.setRollDiceText = (num1, num2) => {
             scene.rollDiceText1.text = "你擲出:" + num1
@@ -145,20 +134,28 @@ export default class UIHandler {
             scene.rollDiceText2.text = ""
         }
         // <------------------------------------ Room ------------------------------------>
-        this.BuildRoomNumberText = () => {
-            scene.roomNumberText = scene.add.text(440, 20, "房間編號: ").setFontSize(20).setFontFamily("Trebuchet MS")
+        this.buildRoomNumberText = () => {
+            scene.roomNumberText = scene.add
+                .text(PositionHandler.roomNumberText.x, PositionHandler.roomNumberText.y, "房間編號: ")
+                .setFontSize(20)
+                .setFontFamily("Trebuchet MS")
         }
-        this.BuildCreateRoomText = () => {
-            scene.createRoomText = scene.add.text(260, 380, "建立房間", {
-                fontSize: 20,
-                fontFamily: "Trebuchet MS",
-                color: "#00ffff",
-            })
+        this.buildCreateRoomText = () => {
+            scene.createRoomText = scene.add.text(
+                PositionHandler.createRoomText.x,
+                PositionHandler.createRoomText.y,
+                "建立房間",
+                {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                    color: "#00ffff",
+                }
+            )
             scene.createRoomText.setInteractive()
             scene.createRoomText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
-                this.BuildPlayArea()
+                this.buildPlayArea()
                 let randomRoomId = this.generateRandomRoomID()
                 scene.socket.emit("createRoom", randomRoomId)
                 scene.createRoomText.visible = false
@@ -166,7 +163,7 @@ export default class UIHandler {
                 scene.GameHandler.currentRoomID = randomRoomId
                 scene.roomNumberText.text = "房間編號: " + randomRoomId
                 this.inputText.visible = false
-                this.HideInputTextDecation()
+                this.hideInputTextDecoration()
             })
             // Card color
             scene.createRoomText.on("pointerover", () => {
@@ -177,22 +174,22 @@ export default class UIHandler {
             })
         }
         scene.socket.on("joinRoomSucceedSignal", () => {
-            this.BuildPlayArea()
+            this.buildPlayArea()
             scene.createRoomText.disableInteractive()
             scene.joinRoomText.disableInteractive()
-            scene.roomNumberText.text = "房間編號: " + scene.UIHandler.GetInputTextContent(scene.UIHandler.inputText)
+            scene.roomNumberText.text = "房間編號: " + this.getInputTextContent(this.inputText)
 
-            scene.GameHandler.currentRoomID = scene.UIHandler.GetInputTextContent(scene.UIHandler.inputText)
+            scene.GameHandler.currentRoomID = this.getInputTextContent(this.inputText)
             console.log("Current Room ID: " + scene.GameHandler.currentRoomID)
             // scene.socket.emit("dealDeck", scene.socket.id, scene.GameHandler.currentRoomID)
 
             scene.createRoomText.visible = false
             scene.joinRoomText.visible = false
             this.inputText.destroy()
-            this.HideInputTextDecation()
+            this.hideInputTextDecoration()
         })
-        this.BuildJoinRoomText = () => {
-            scene.joinRoomText = scene.add.text(260, 430, "加入房間", {
+        this.buildJoinRoomText = () => {
+            scene.joinRoomText = scene.add.text(PositionHandler.joinRoomText.x, PositionHandler.joinRoomText.y, "加入房間", {
                 fontSize: 20,
                 fontFamily: "Trebuchet MS",
                 color: "#00ffff",
@@ -201,7 +198,7 @@ export default class UIHandler {
             scene.joinRoomText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
-                scene.socket.emit("joinRoom", scene.UIHandler.GetInputTextContent(scene.UIHandler.inputText))
+                scene.socket.emit("joinRoom", this.getInputTextContent(this.inputText))
                 // (Runs joinRoomSucceedSignal from server.js if success.)
                 // (Update: Also runs dealCardsFirstRound (in server) for both players)
             })
@@ -215,24 +212,26 @@ export default class UIHandler {
         }
 
         // Main
-        this.BuildPlayArea = () => {
-            this.BuildZones()
-            this.BuildZoneOutline()
-            this.BuildPlayerAreas()
-            this.BuildPlayerTurnText()
-            // this.BuildDealCardText()
-            this.BuildRollDiceText()
-            this.BuildPlayerWinScoreText()
+        this.buildPlayArea = () => {
+            this.buildZones()
+            this.buildZoneOutline()
+            this.buildPlayerAreas()
+            this.buildPlayerTurnText()
+            this.buildRollDiceText()
+            this.buildPlayerWinScoreText()
         }
-        this.BuildLobby = () => {
-            this.BuildInputTextDecoration()
-            this.BuildRoomNumberText()
-            this.BuildCreateRoomText()
-            this.BuildJoinRoomText()
+        this.buildLobby = () => {
+            this.buildInputTextDecoration()
+            this.buildRoomNumberText()
+            this.buildCreateRoomText()
+            this.buildJoinRoomText()
         }
         // Main
-        this.BuildInputTextField = (inputText) => {
-            inputText = scene.add.text(330, 510, "", { fixedWidth: 150, fixedHeight: 36 })
+        this.buildInputTextField = (inputText) => {
+            inputText = scene.add.text(PositionHandler.inputText.x, PositionHandler.inputText.y, "", {
+                fixedWidth: 150,
+                fixedHeight: 36,
+            })
             inputText.setOrigin(0.5, 0.5)
             inputText.setInteractive().on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
@@ -243,13 +242,20 @@ export default class UIHandler {
             })
             return inputText
         }
-        this.GetInputTextContent = (inputText) => {
+        this.getInputTextContent = (inputText) => {
             return inputText.text
         }
-        this.BuildInputTextDecoration = () => {
-            scene.inputTextRectangle = scene.rexUI.add.roundRectangle(300, 500, 100, 30, 0, 0x666666)
+        this.buildInputTextDecoration = () => {
+            scene.inputTextRectangle = scene.rexUI.add.roundRectangle(
+                PositionHandler.inputTextRectangle.x,
+                PositionHandler.inputTextRectangle.y,
+                100,
+                30,
+                0,
+                0x666666
+            )
         }
-        this.HideInputTextDecation = () => {
+        this.hideInputTextDecoration = () => {
             scene.inputTextRectangle.setFillStyle(0x000000)
         }
         this.generateRandomRoomID = () => {

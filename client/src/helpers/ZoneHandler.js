@@ -1,3 +1,5 @@
+import Color from "./Color"
+
 export default class ZoneHandler {
     constructor(scene) {
         this.dropZoneList = []
@@ -18,7 +20,7 @@ export default class ZoneHandler {
         }
         // this.renderOutline = (dropZone) => {
         //     let dropZoneOutline = scene.add.graphics();
-        //     dropZoneOutline.lineStyle(4, 0xff69b4);
+        //     dropZoneOutline.lineStyle(4, Color.hotPink);
         //     dropZoneOutline.strokeRect(dropZone.x - dropZone.input.hitArea.width / 2,
         //                                 dropZone.y - dropZone.input.hitArea.height / 2,
         //                                 dropZone.input.hitArea.width,
@@ -33,7 +35,7 @@ export default class ZoneHandler {
             for (let i = 0; i < 3; i++) {
                 for (let j = 0; j < 6; j++) {
                     let dropZoneOutline = scene.add.graphics()
-                    dropZoneOutline.lineStyle(4, 0xff69b4)
+                    dropZoneOutline.lineStyle(4, Color.hotPink)
 
                     // Calculate the position for each rectangle in the grid
                     const xPos = x - width / 2 + i * (rectWidth + gap)
