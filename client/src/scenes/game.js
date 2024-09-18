@@ -246,8 +246,8 @@ export default class Game extends Phaser.Scene {
         this.UIHandler = new UIHandler(this)
         this.InteractiveHandler = new InteractiveHandler(this)
 
-        this.UIHandler.inputText = this.UIHandler.BuildInputTextField(this.UIHandler.inputText)
-        this.UIHandler.BuildLobby()
+        this.UIHandler.inputText = this.UIHandler.buildInputTextField(this.UIHandler.inputText)
+        this.UIHandler.buildLobby()
 
         // let backgroundImage = this.add.image(0, 0, 'BG');
         // backgroundImage.setOrigin(0, 0);
