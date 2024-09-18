@@ -240,7 +240,7 @@ io.on("connection", function (socket) {
     })
 
     socket.on("serverNotifyCardPlayed", function (cardName, socketId, dropZoneId, roomId, cardType) {
-        io.to(roomId).emit("localInstantiateCardBack", cardName, socketId, dropZoneId, cardType)
+        io.to(roomId).emit("localInstantiateOpponentCard", cardName, socketId, dropZoneId, cardType)
         io.to(roomId).emit("changeTurn")
         io.to(roomId).emit("setPlayerTurnText")
     })

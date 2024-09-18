@@ -111,10 +111,10 @@ export default class SocketHandler {
                 }
                 // scene.GameHandler.playerHand.push(card)
             } else {
-                let card = scene.DeckHandler.InstantiateCard(85 + index * 35, 0, "cardBack", "cardBack", "opponentCard").setScale(
-                    0.26
-                )
-                scene.CardStorage.opponentCardBackStorage.push(card)
+                // let card = scene.DeckHandler.InstantiateCard(85 + index * 35, 0, "cardBack", "cardBack", "opponentCard").setScale(
+                //     0.26
+                // )
+                // scene.CardStorage.opponentCardBackStorage.push(card)
             }
         })
 
@@ -190,12 +190,12 @@ export default class SocketHandler {
         // Called in server.js
         // Where does Player 2 cards display in Player 1 scene??
         // * cardName: String, socketId: string, dropZoneName: string, cardType: ICard/Wcard/HCard * //
-        scene.socket.on("localInstantiateCardBack", (cardName, socketId, dropZoneName, cardType) => {
+        scene.socket.on("localInstantiateOpponentCard", (cardName, socketId, dropZoneName, cardType) => {
             console.log(
                 "cardName: " + cardName + " socketId:" + socketId + " dropZoneID:" + dropZoneName + " cardType: " + cardType
             )
             if (socketId !== scene.socket.id) {
-                scene.CardStorage.opponentCardBackStorage.shift().destroy()
+                // scene.CardStorage.opponentCardBackStorage.shift().destroy()
 
                 const scaleX = 0.26
                 const scaleY = cardType === "cardBack" ? 0.26 : -0.26
