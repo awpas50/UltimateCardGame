@@ -95,6 +95,9 @@ io.on("connection", function (socket) {
             for (const [key, value] of playersInRooms.entries()) {
                 console.log(`Room ID: ${key}, Sockets: ${Array.from(value)}`)
             }
+            // imageNames: (Array of string) string[]
+            io.to(roomId).emit("changeGameState", "Initializing")
+            io.to(roomId).emit("readyToStartGame", players[socket.id])
         }
     })
 
@@ -135,15 +138,6 @@ io.on("connection", function (socket) {
     console.log("Number of players in the server: " + objLength)
     socket.emit("buildPlayerPointText")
     socket.emit("buildOpponentPointText")
-
-    // Called in SocketHandler
-    socket.on("dealDeck", function (socketId, roomId) {
-        // imageNames: (Array of string) string[]
-        players[socketId].inDeck = shuffle(mixedArray)
-        players[socketId].inDeck_WCard = shuffle(imageNamesWCard)
-        // console.log(players)
-        io.to(roomId).emit("changeGameState", "Initializing")
-    })
 
     // Called in UIHandler.js
     // populates the players[socketId].inHand array with elements from the players[socketId].inDeck array.
@@ -190,18 +184,7 @@ io.on("connection", function (socket) {
     })
 
     socket.on("dealCardsAnotherRound", function (socketId, roomId) {
-        console.log("dealCardsAnotherRound: " + roomId)
         // **** No need to deal cards again.
-
-        // for (let i = 0; i < 6; i++) {
-        //     // In JavaScript, you can freely assign different types of values to a variable or object property without declaring their types beforehand.
-        //     // It's completely legitimate to assign a shuffled array even if it was initially declared as an empty array.
-        //     if (players[socketId].inDeck.length === 0) {
-        //         players[socketId].inDeck = shuffle(mixedArray)
-        //     }
-        //     players[socketId].inHand.push(players[socketId].inDeck.shift())
-        // }
-
         // // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
         // io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
         io.to(roomId).emit("addWCardsInScene", socketId, players[socketId].inScene_WCard)
@@ -240,7 +223,7 @@ io.on("connection", function (socket) {
     })
 
     socket.on("serverNotifyCardPlayed", function (cardName, socketId, dropZoneId, roomId, cardType) {
-        io.to(roomId).emit("localInstantiateCardBack", cardName, socketId, dropZoneId, cardType)
+        io.to(roomId).emit("localInstantiateOpponentCard", cardName, socketId, dropZoneId, cardType)
         io.to(roomId).emit("changeTurn")
         io.to(roomId).emit("setPlayerTurnText")
     })

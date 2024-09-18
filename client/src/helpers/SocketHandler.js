@@ -4,8 +4,8 @@ export default class SocketHandler {
     constructor(scene) {
         // Heroku URL
         // Default: localhost:3000 is where the server is.
-        scene.socket = io("https://ultimate-card-game-f26046605e38.herokuapp.com")
-        //scene.socket = io("http://localhost:3000/")
+        // scene.socket = io("https://ultimate-card-game-f26046605e38.herokuapp.com")
+        scene.socket = io("http://localhost:3000/")
 
         //Create or join a room
         scene.socket.on("connect", () => {
@@ -46,6 +46,26 @@ export default class SocketHandler {
             scene.GameHandler.changeGameState(gameState)
             if (gameState === "Initializing") {
                 scene.UIHandler.ActivateGameText()
+            }
+        })
+        scene.socket.on("readyToStartGame", (socketId) => {
+            // 雙方玩家自動抽卡。其中一方會有延遲，如果指令同時進行可能會有問題
+            if (scene.socket.id === socketId) {
+                setTimeout(() => {
+                    scene.socket.emit(
+                        "dealCardsFirstRound",
+                        scene.socket.id,
+                        scene.GameHandler.currentRoomID,
+                        scene.GameHandler.opponentID
+                    )
+                }, 1000)
+            } else {
+                scene.socket.emit(
+                    "dealCardsFirstRound",
+                    scene.socket.id,
+                    scene.GameHandler.currentRoomID,
+                    scene.GameHandler.opponentID
+                )
             }
         })
 
@@ -111,10 +131,10 @@ export default class SocketHandler {
                 }
                 // scene.GameHandler.playerHand.push(card)
             } else {
-                let card = scene.DeckHandler.InstantiateCard(85 + index * 35, 0, "cardBack", "cardBack", "opponentCard").setScale(
-                    0.26
-                )
-                scene.CardStorage.opponentCardBackStorage.push(card)
+                // let card = scene.DeckHandler.InstantiateCard(85 + index * 35, 0, "cardBack", "cardBack", "opponentCard").setScale(
+                //     0.26
+                // )
+                // scene.CardStorage.opponentCardBackStorage.push(card)
             }
         })
 
@@ -148,55 +168,45 @@ export default class SocketHandler {
             }
         })
         scene.socket.on("RollDice", (socketId, roll1, roll2) => {
-            if (socketId === scene.socket.id) {
-                // Display the results
-                console.log("playerDiceValue: " + roll1)
-                console.log("opponentDiceValue: " + roll2)
+            const [playerDiceValue, opponentDiceValue] = socketId === scene.socket.id ? [roll1, roll2] : [roll2, roll1]
 
-                scene.GameHandler.playerDiceValue = roll1
-                scene.GameHandler.opponentDiceValue = roll2
-            } else {
-                // Flip the result
-                // Display the results
-                console.log("playerDiceValue: " + roll2)
-                console.log("opponentDiceValue: " + roll1)
+            // Display the results
+            console.log("playerDiceValue: " + playerDiceValue)
+            console.log("opponentDiceValue: " + opponentDiceValue)
 
-                scene.GameHandler.playerDiceValue = roll2
-                scene.GameHandler.opponentDiceValue = roll1
-            }
+            // Update GameHandler with the determined values
+            scene.GameHandler.playerDiceValue = playerDiceValue
+            scene.GameHandler.opponentDiceValue = opponentDiceValue
         })
 
         scene.socket.on("decideWhichPlayerfirstTurn", (socketId, roll1, roll2) => {
-            // 等級較高
-            if (scene.GameHandler.playerAuthorRarity > scene.GameHandler.opponentAuthorRarity) {
+            const { playerAuthorRarity, opponentAuthorRarity, playerDiceValue, opponentDiceValue } = scene.GameHandler
+            if (
+                // 1. 等級較高
+                playerAuthorRarity > opponentAuthorRarity ||
+                // 2. 等級一樣但擲骰勝利時成為先手
+                (playerAuthorRarity === opponentAuthorRarity && playerDiceValue > opponentDiceValue)
+            ) {
                 scene.GameHandler.changeTurn()
                 scene.GameHandler.getCurrentTurn()
             }
-            // 等級一樣
-            else if (scene.GameHandler.playerAuthorRarity === scene.GameHandler.opponentAuthorRarity) {
-                if (scene.GameHandler.playerDiceValue > scene.GameHandler.opponentDiceValue) {
-                    scene.GameHandler.changeTurn()
-                    scene.GameHandler.getCurrentTurn()
-                }
 
-                if (socketId === scene.socket.id) {
-                    scene.UIHandler.setRollDiceText(roll1, roll2)
-                } else {
-                    scene.UIHandler.setRollDiceText(roll2, roll1)
-                }
-            }
+            // 如果是玩家2 顯示數字需要反轉
+            scene.UIHandler.setRollDiceText(
+                socketId === scene.socket.id ? roll1 : roll2,
+                socketId === scene.socket.id ? roll2 : roll1
+            )
         })
 
         // Called in server.js
         // Where does Player 2 cards display in Player 1 scene??
         // * cardName: String, socketId: string, dropZoneName: string, cardType: ICard/Wcard/HCard * //
-        scene.socket.on("localInstantiateCardBack", (cardName, socketId, dropZoneName, cardType) => {
+        scene.socket.on("localInstantiateOpponentCard", (cardName, socketId, dropZoneName, cardType) => {
             console.log(
                 "cardName: " + cardName + " socketId:" + socketId + " dropZoneID:" + dropZoneName + " cardType: " + cardType
             )
             if (socketId !== scene.socket.id) {
-                scene.CardStorage.opponentCardBackStorage.shift().destroy()
-
+                // scene.CardStorage.opponentCardBackStorage.shift().destroy()
                 const scaleX = 0.26
                 const scaleY = cardType === "cardBack" ? 0.26 : -0.26
                 let gameObject
@@ -287,6 +297,7 @@ export default class SocketHandler {
 
         scene.socket.on("clearLocalBattleField", () => {
             console.log("clearLocalBattleField")
+            // Destroy objects in all storage arrays
             scene.CardStorage.inSceneStorage.forEach((object) => {
                 if (object && object.destroy) {
                     object.destroy()
