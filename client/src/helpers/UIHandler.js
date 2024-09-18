@@ -70,12 +70,27 @@ export default class UIHandler {
         // <------------------------------------ Points (60 to win) ------------------------------------>
         this.BuildWhoWinText = (whoWin) => {
             if (whoWin == 1) {
-                scene.whoWinText = scene.add.text(350, 450, "玩家1勝利!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" })
+                scene.whoWinText = scene.add.text(350, 450, "玩家1勝利!", {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                    color: "#00ffff",
+                })
             } else if (whoWin == 2) {
-                scene.whoWinText = scene.add.text(350, 450, "玩家2勝利!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" })
+                scene.whoWinText = scene.add.text(350, 450, "玩家2勝利!", {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                    color: "#00ffff",
+                })
             } else if (whoWin == 0) {
-                scene.whoWinText = scene.add.text(350, 450, "平手!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" })
+                scene.whoWinText = scene.add.text(350, 450, "平手!", {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                    color: "#00ffff",
+                })
             }
+        }
+        this.deleteWhoWinText = () => {
+            scene.whoWinText.destroy()
         }
         this.BuildPlayerWinScoreText = () => {
             scene.winScoreText = scene.add.text(350, 500, "", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" })
@@ -90,7 +105,12 @@ export default class UIHandler {
             scene.dealCardText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
-                scene.socket.emit("dealCardsFirstRound", scene.socket.id, scene.GameHandler.currentRoomID, scene.GameHandler.opponentID)
+                scene.socket.emit(
+                    "dealCardsFirstRound",
+                    scene.socket.id,
+                    scene.GameHandler.currentRoomID,
+                    scene.GameHandler.opponentID
+                )
                 scene.dealCardText.disableInteractive()
                 this.hideDealCardText()
             })
@@ -117,8 +137,8 @@ export default class UIHandler {
             scene.rollDiceText2 = scene.add.text(350, 590, " ").setFontSize(20).setFontFamily("Trebuchet MS")
         }
         this.setRollDiceText = (num1, num2) => {
-            scene.rollDiceText1.text = "玩家1擲出:" + num1
-            scene.rollDiceText2.text = "玩家2擲出:" + num2
+            scene.rollDiceText1.text = "你擲出:" + num1
+            scene.rollDiceText2.text = "對手擲出:" + num2
         }
         this.hideRollDiceText = () => {
             scene.rollDiceText1.text = ""
@@ -129,7 +149,11 @@ export default class UIHandler {
             scene.roomNumberText = scene.add.text(440, 20, "房間編號: ").setFontSize(20).setFontFamily("Trebuchet MS")
         }
         this.BuildCreateRoomText = () => {
-            scene.createRoomText = scene.add.text(260, 380, "建立房間", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" })
+            scene.createRoomText = scene.add.text(260, 380, "建立房間", {
+                fontSize: 20,
+                fontFamily: "Trebuchet MS",
+                color: "#00ffff",
+            })
             scene.createRoomText.setInteractive()
             scene.createRoomText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
@@ -168,7 +192,11 @@ export default class UIHandler {
             this.HideInputTextDecation()
         })
         this.BuildJoinRoomText = () => {
-            scene.joinRoomText = scene.add.text(260, 430, "加入房間", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" })
+            scene.joinRoomText = scene.add.text(260, 430, "加入房間", {
+                fontSize: 20,
+                fontFamily: "Trebuchet MS",
+                color: "#00ffff",
+            })
             scene.joinRoomText.setInteractive()
             scene.joinRoomText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1

@@ -115,7 +115,8 @@ export default class GameHandler {
             this.playerTotalPoints = this.playerSkyPoint + this.playerGroundPoint + this.playerPersonPoint + this.authorBuffPoint
         }
         this.setOpponentTotalPoint = () => {
-            this.opponentTotalPoints = this.opponentSkyPoint + this.opponentGroundPoint + this.opponentPersonPoint + this.authorBuffPoint
+            this.opponentTotalPoints =
+                this.opponentSkyPoint + this.opponentGroundPoint + this.opponentPersonPoint + this.authorBuffPoint
         }
 
         this.getPlayerTotalPoint = () => {
@@ -125,14 +126,14 @@ export default class GameHandler {
             return this.opponentTotalPoints
         }
 
-        this.setPlayerTotalWinScore = () => {
-            let multiplier = 1
-            this.playerTotalWinScore = this.baseTotalScoreWillGet * multiplier
-            console.log("Player Win Score: " + this.playerTotalWinScore + " " + "Opponent Win Score: " + this.opponentTotalWinScore)
-        }
-        this.setOpponentTotalWinScore = () => {
-            this.opponentTotalWinScore = this.opponentSkyPoint + this.opponentGroundPoint + this.opponentPersonPoint
-            console.log("Player Win Score: " + this.playerTotalWinScore + " " + "Opponent Win Score: " + this.opponentTotalWinScore)
-        }
+        // this.setPlayerTotalWinScore = () => {
+        //     let multiplier = 1
+        //     this.playerTotalWinScore = this.baseTotalScoreWillGet * multiplier
+        //     console.log("Player Win Score: " + this.playerTotalWinScore + " " + "Opponent Win Score: " + this.opponentTotalWinScore)
+        // }
+        // this.setOpponentTotalWinScore = () => {
+        //     this.opponentTotalWinScore = this.opponentSkyPoint + this.opponentGroundPoint + this.opponentPersonPoint
+        //     console.log("Player Win Score: " + this.playerTotalWinScore + " " + "Opponent Win Score: " + this.opponentTotalWinScore)
+        // }
     }
 }

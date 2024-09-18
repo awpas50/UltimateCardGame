@@ -4,16 +4,15 @@ export default class InteractiveHandler {
     constructor(scene) {
         // Section: Card preview
         // Create cardPreview on pointerdown
-
         let isCardPreviewActive = false
         this.cardPreview = null
 
         scene.input.on("pointerdown", (event, gameObjects) => {
             let pointer = scene.input.activePointer
             // Check if gameObject is defined
-            //console.log("isCardPreviewActive: " + isCardPreviewActive);
+            //console.log("isCardPreviewActive: " + isCardPreviewActive)
             // If not clicking anything gameObjects returns empty array, like this....... []
-            //console.log(gameObjects);
+            //console.log(gameObjects)
             if ((gameObjects.length == 0 || gameObjects[0].type === "Zone") && isCardPreviewActive && this.cardPreview !== null) {
                 this.cardPreview.setPosition(1250, 400)
                 this.isCardPreviewActive = false
@@ -64,7 +63,6 @@ export default class InteractiveHandler {
         // 'drop' *** built-in function in Phaser 3
         // gameObject: Card
         scene.input.on("drop", (pointer, gameObject, dropZone) => {
-            console.log(typeof gameObject)
             let canGetPoints = false
             let cardType = ""
             // 是否符合屬性/卡牌類型? 不符合條件時卡牌須反轉, 並不能獲得靈感值
@@ -137,8 +135,6 @@ export default class InteractiveHandler {
                 gameObject.x = dropZone.x
                 gameObject.y = dropZone.y
                 scene.input.setDraggable(gameObject, false)
-                // UI
-                scene.UIHandler.hideRollDiceText()
                 // 音效
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
@@ -186,11 +182,22 @@ export default class InteractiveHandler {
                     dropZone.name,
                     scene.GameHandler.currentRoomID
                 )
-                scene.socket.emit("serverUpdateCardInHand", scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID)
+                scene.socket.emit(
+                    "serverUpdateCardInHand",
+                    scene.socket.id,
+                    gameObject.getData("id"),
+                    scene.GameHandler.currentRoomID
+                )
                 scene.socket.emit("serverUpdateAuthorBuff", scene.socket.id, authorBuffPts)
+                scene.socket.emit("serverHideRollDiceText", scene.socket.id, scene.GameHandler.currentRoomID)
                 dropZone.data.list.cards++
                 // 同時檢查比賽是否結束
-                scene.socket.emit("serverUpdateCardCount", scene.socket.id, scene.GameHandler.opponentID, scene.GameHandler.currentRoomID)
+                scene.socket.emit(
+                    "serverUpdateCardCount",
+                    scene.socket.id,
+                    scene.GameHandler.opponentID,
+                    scene.GameHandler.currentRoomID
+                )
             } else {
                 gameObject.x = gameObject.input.dragStartX
                 gameObject.y = gameObject.input.dragStartY

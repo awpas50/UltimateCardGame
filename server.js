@@ -245,6 +245,10 @@ io.on("connection", function (socket) {
         io.to(roomId).emit("setPlayerTurnText")
     })
 
+    socket.on("serverHideRollDiceText", function (socketId, roomId) {
+        io.to(roomId).emit("hideRollDiceText", socketId, roomId)
+    })
+
     // socket.on('setPlayerPoint', function (socketId, playerTotalPoints) {
     //     players[socketId].totalInspriationPt = playerTotalPoints
     // });
@@ -319,10 +323,15 @@ function endRound(roomId, socketId, opponentId) {
             multiplier = 2
         }
         // 同靈感值
-        if (players[whoWinSocketId].inSceneInspriationPt.every((value) => value === players[whoWinSocketId].inSceneInspriationPt[0])) {
+        if (
+            players[whoWinSocketId].inSceneInspriationPt.every(
+                (value) => value === players[whoWinSocketId].inSceneInspriationPt[0]
+            )
+        ) {
             multiplier = 3
         }
         // add scores
+        console.log("Added: " + baseScore * multiplier)
         players[whoWinSocketId].totalScore += baseScore * multiplier
         io.to(roomId).emit("setPlayerWinScoreText", players[whoWinSocketId].totalScore, whoWinSocketId)
     } else {
@@ -348,10 +357,13 @@ function resetBattleField(roomId, endRoundRoom) {
             players[endRoundRoom[i]].inRubbishBin.push(players[endRoundRoom[i]].inScene.shift())
         }
 
-        // Move previous WCard to rubbish
         if (players[endRoundRoom[i]].inDeck_WCard.length === 0) {
-            players[endRoundRoom[i]].inDeck_WCard = shuffle(imageNamesWCard)
+            // Move all cards from inRubbishBin_WCard to inDeck_WCard in one go
+            players[endRoundRoom[i]].inDeck_WCard.push(...players[endRoundRoom[i]].inRubbishBin_WCard)
+            // Clear the inRubbishBin_WCard array
+            players[endRoundRoom[i]].inRubbishBin_WCard.length = 0
         }
+        // Move previous WCard to rubbish
         players[endRoundRoom[i]].inRubbishBin_WCard.push(players[endRoundRoom[i]].inScene_WCard.shift())
         players[endRoundRoom[i]].inScene_WCard.push(players[endRoundRoom[i]].inDeck_WCard.shift())
     }
@@ -378,6 +390,8 @@ function calculateTotalInspriationPts(socketId) {
 function getImageNamesInFolder(folderPath) {
     const files = fs.readdirSync(folderPath)
     // Filter out only the image files (files with .jpg extension)
-    const imageNames = files.filter((file) => path.extname(file).toLowerCase() === ".jpg").map((file) => path.basename(file, ".jpg")) // Remove the .jpg extension
+    const imageNames = files
+        .filter((file) => path.extname(file).toLowerCase() === ".jpg")
+        .map((file) => path.basename(file, ".jpg")) // Remove the .jpg extension
     return imageNames
 }

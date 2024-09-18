@@ -16,7 +16,6 @@ export default class CardStorage {
         this.changeCardToAnotherStorage = (cardId, fromArray, toArray) => {
             console.log("cardId: " + cardId)
             const item = fromArray.find((gameObject) => gameObject.data.list.id === cardId)
-            console.log(item)
             console.log(item.getData("id"))
             const index = fromArray.indexOf(item)
             if (index !== -1) {

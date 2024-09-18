@@ -4,8 +4,8 @@ export default class SocketHandler {
     constructor(scene) {
         // Heroku URL
         // Default: localhost:3000 is where the server is.
-        //scene.socket = io('https://ultimate-card-game-f26046605e38.herokuapp.com');
-        scene.socket = io("http://localhost:3000/")
+        scene.socket = io("https://ultimate-card-game-f26046605e38.herokuapp.com")
+        //scene.socket = io("http://localhost:3000/")
 
         //Create or join a room
         scene.socket.on("connect", () => {
@@ -39,9 +39,8 @@ export default class SocketHandler {
         scene.socket.on("buildPlayerNumberText", (playerNumber) => {
             scene.UIHandler.buildPlayerNumberText(playerNumber)
         })
-        scene.socket.on("firstTurn", () => {
-            scene.GameHandler.changeTurn()
-            scene.GameHandler.getCurrentTurn()
+        scene.socket.on("hideRollDiceText", () => {
+            scene.UIHandler.hideRollDiceText()
         })
         scene.socket.on("changeGameState", (gameState) => {
             scene.GameHandler.changeGameState(gameState)
@@ -56,13 +55,17 @@ export default class SocketHandler {
                 for (let i in cardIdList) {
                     let card
                     if (cardIdList[i].includes("I")) {
-                        card = scene.DeckHandler.InstantiateCard(55 + i * 55, 780, "ICard", cardIdList[i], "playerCard").setScale(0.26)
+                        card = scene.DeckHandler.InstantiateCard(55 + i * 55, 780, "ICard", cardIdList[i], "playerCard").setScale(
+                            0.26
+                        )
                         console.log(typeof card)
                         console.log(cardIdList[i])
                         scene.CardStorage.inHandStorage.push(card)
                     }
                     if (cardIdList[i].includes("H")) {
-                        card = scene.DeckHandler.InstantiateCard(55 + i * 55, 780, "HCard", cardIdList[i], "playerCard").setScale(0.26)
+                        card = scene.DeckHandler.InstantiateCard(55 + i * 55, 780, "HCard", cardIdList[i], "playerCard").setScale(
+                            0.26
+                        )
                         console.log(typeof card)
                         console.log(cardIdList[i])
                         scene.CardStorage.inHandStorage.push(card)
@@ -75,7 +78,9 @@ export default class SocketHandler {
             } else {
                 // 對手: 只會看到卡背
                 for (let i in cardIdList) {
-                    let card = scene.DeckHandler.InstantiateCard(85 + i * 35, 0, "cardBack", "cardBack", "opponentCard").setScale(0.26)
+                    let card = scene.DeckHandler.InstantiateCard(85 + i * 35, 0, "cardBack", "cardBack", "opponentCard").setScale(
+                        0.26
+                    )
                     scene.CardStorage.opponentCardBackStorage.push(card)
                 }
             }
@@ -99,12 +104,16 @@ export default class SocketHandler {
                 const cardType = cardId.includes("I") ? "ICard" : cardId.includes("H") ? "HCard" : null
 
                 if (cardType) {
-                    const card = scene.DeckHandler.InstantiateCard(55 + index * 55, 780, cardType, cardId, "playerCard").setScale(0.26)
+                    const card = scene.DeckHandler.InstantiateCard(55 + index * 55, 780, cardType, cardId, "playerCard").setScale(
+                        0.26
+                    )
                     scene.CardStorage.inHandStorage.push(card)
                 }
                 // scene.GameHandler.playerHand.push(card)
             } else {
-                let card = scene.DeckHandler.InstantiateCard(85 + index * 35, 0, "cardBack", "cardBack", "opponentCard").setScale(0.26)
+                let card = scene.DeckHandler.InstantiateCard(85 + index * 35, 0, "cardBack", "cardBack", "opponentCard").setScale(
+                    0.26
+                )
                 scene.CardStorage.opponentCardBackStorage.push(card)
             }
         })
@@ -182,7 +191,9 @@ export default class SocketHandler {
         // Where does Player 2 cards display in Player 1 scene??
         // * cardName: String, socketId: string, dropZoneName: string, cardType: ICard/Wcard/HCard * //
         scene.socket.on("localInstantiateCardBack", (cardName, socketId, dropZoneName, cardType) => {
-            console.log("cardName: " + cardName + " socketId:" + socketId + " dropZoneID:" + dropZoneName + " cardType: " + cardType)
+            console.log(
+                "cardName: " + cardName + " socketId:" + socketId + " dropZoneID:" + dropZoneName + " cardType: " + cardType
+            )
             if (socketId !== scene.socket.id) {
                 scene.CardStorage.opponentCardBackStorage.shift().destroy()
 
@@ -197,7 +208,10 @@ export default class SocketHandler {
                         )
                         break
                     case "dropZone2": //地
-                        gameObject = scene.DeckHandler.InstantiateCard(90, 220, cardType, cardName, "opponentCard").setScale(scaleX, scaleY)
+                        gameObject = scene.DeckHandler.InstantiateCard(90, 220, cardType, cardName, "opponentCard").setScale(
+                            scaleX,
+                            scaleY
+                        )
                         break
                     case "dropZone3": //人
                         gameObject = scene.DeckHandler.InstantiateCard(280, 220, cardType, cardName, "opponentCard").setScale(
@@ -250,7 +264,9 @@ export default class SocketHandler {
             }
             scene.GameHandler.setPlayerTotalPoint()
             scene.GameHandler.setOpponentTotalPoint()
-            console.log("Player: " + scene.GameHandler.playerTotalPoints + " " + "Opponent: " + scene.GameHandler.opponentTotalPoints)
+            console.log(
+                "Player: " + scene.GameHandler.playerTotalPoints + " " + "Opponent: " + scene.GameHandler.opponentTotalPoints
+            )
         })
 
         scene.socket.on("changeTurn", () => {
@@ -288,9 +304,20 @@ export default class SocketHandler {
             })
             // Clear dropZone
             console.log(scene.ZoneHandler.dropZoneList)
-            for (let i = 0; i < scene.ZoneHandler.dropZoneList; i++) {
+            for (let i = 0; i < scene.ZoneHandler.dropZoneList.length; i++) {
                 scene.ZoneHandler.dropZoneList[i].data.list.cards = 0
             }
+            // Clear i points
+            scene.GameHandler.setPlayerSkyPoint(0)
+            scene.GameHandler.setPlayerGroundPoint(0)
+            scene.GameHandler.setPlayerPersonPoint(0)
+            scene.GameHandler.setOpponentSkyPoint(0)
+            scene.GameHandler.setOpponentGroundPoint(0)
+            scene.GameHandler.setOpponentPersonPoint(0)
+            // UI
+            scene.UIHandler.deleteWhoWinText()
+            scene.UIHandler.setPlayerPointText()
+            scene.UIHandler.setOpponentPointText()
 
             scene.socket.emit("dealCardsAnotherRound", scene.socket.id, scene.GameHandler.currentRoomID)
         })

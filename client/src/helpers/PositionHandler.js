@@ -1,5 +1,3 @@
 export default class PositionHandler {
-    constructor(scene) {
-
-    }
+    constructor(scene) {}
 }
