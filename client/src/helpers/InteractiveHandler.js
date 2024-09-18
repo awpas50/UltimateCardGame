@@ -4,18 +4,15 @@ export default class InteractiveHandler {
     constructor(scene) {
         // Section: Card preview
         // Create cardPreview on pointerdown
-
         let isCardPreviewActive = false
-        //scene.cardPreview = scene.add.image(0, 0, "I001");
-        //scene.cardPreview.setVisible(false);
         this.cardPreview = null
 
         scene.input.on("pointerdown", (event, gameObjects) => {
             let pointer = scene.input.activePointer
             // Check if gameObject is defined
-            //console.log("isCardPreviewActive: " + isCardPreviewActive);
+            //console.log("isCardPreviewActive: " + isCardPreviewActive)
             // If not clicking anything gameObjects returns empty array, like this....... []
-            //console.log(gameObjects);
+            //console.log(gameObjects)
             if ((gameObjects.length == 0 || gameObjects[0].type === "Zone") && isCardPreviewActive && this.cardPreview !== null) {
                 this.cardPreview.setPosition(1250, 400)
                 this.isCardPreviewActive = false
@@ -66,143 +63,141 @@ export default class InteractiveHandler {
         // 'drop' *** built-in function in Phaser 3
         // gameObject: Card
         scene.input.on("drop", (pointer, gameObject, dropZone) => {
-            let isMatch = false
+            let canGetPoints = false
             let cardType = ""
+            // 是否符合屬性/卡牌類型? 不符合條件時卡牌須反轉, 並不能獲得靈感值
             switch (dropZone.name) {
                 case "dropZone1": //天
                     if (gameObject.getData("id").includes("H")) {
-                        isMatch = false
+                        canGetPoints = false
                         cardType = "cardBack"
                     } else if (
                         !gameObject.getData("id").includes("I") ||
                         !scene.GameHandler.playerSkyElements.includes(gameObject.getData("element"))
                     ) {
-                        isMatch = false
+                        canGetPoints = false
                         cardType = "cardBack"
                     } else {
-                        isMatch = true
+                        canGetPoints = true
                         cardType = "ICard"
                     }
                     scene.GameHandler.skyCardZoneName = gameObject.getData("id")
                     break
                 case "dropZone2": //地
                     if (gameObject.getData("id").includes("H")) {
-                        isMatch = false
+                        canGetPoints = false
                         cardType = "cardBack"
                     } else if (
                         !gameObject.getData("id").includes("I") ||
                         !scene.GameHandler.playerGroundElements.includes(gameObject.getData("element"))
                     ) {
-                        isMatch = false
+                        canGetPoints = false
                         cardType = "cardBack"
                     } else {
-                        isMatch = true
+                        canGetPoints = true
                         cardType = "ICard"
                     }
                     scene.GameHandler.groundCardZoneName = gameObject.getData("id")
                     break
                 case "dropZone3": //人
                     if (gameObject.getData("id").includes("H")) {
-                        isMatch = false
+                        canGetPoints = false
                         cardType = "cardBack"
                     } else if (
                         !gameObject.getData("id").includes("I") ||
                         !scene.GameHandler.playerPersonElements.includes(gameObject.getData("element"))
                     ) {
-                        isMatch = false
+                        canGetPoints = false
                         cardType = "cardBack"
                     } else {
-                        isMatch = true
+                        canGetPoints = true
                         cardType = "ICard"
                     }
                     scene.GameHandler.personCardZoneName = gameObject.getData("id")
                     break
                 case "dropZone4": //日
                     if (gameObject.getData("id").includes("I")) {
-                        isMatch = false
+                        canGetPoints = false
                         cardType = "cardBack"
                     } else if (gameObject.getData("id").includes("H")) {
-                        isMatch = false
+                        canGetPoints = false
                         cardType = "HCard"
                     }
                     scene.GameHandler.sunCardZoneName = gameObject.getData("id")
                     break
             }
+            if (cardType === "cardBack") {
+                gameObject.setTexture("H001B")
+            }
+            // 卡牌移動到正確位置
             if (scene.GameHandler.isMyTurn && scene.GameHandler.gameState === "Ready" && dropZone.data.list.cards == 0) {
-                const RNG = Math.floor(Math.random() * 3) + 1
-                scene.sound.play(`flipCard${RNG}`)
-                let authorBuffPts = 0
-                let elementID = 99
-                if (gameObject.getData("id").includes("I")) {
-                    switch (gameObject.getData("element")) {
-                        case "火":
-                            elementID = 0
-                            break
-                        case "水":
-                            elementID = 1
-                            break
-                        case "木":
-                            elementID = 2
-                            break
-                        case "金":
-                            elementID = 3
-                            break
-                        case "土":
-                            elementID = 4
-                            break
-                        default:
-                            break
-                    }
-                    authorBuffPts = scene.GameHandler.authorBuffs[elementID]
-                }
-                // 積分倍率計算(同屬雙倍,同靈感三倍)
-                // 蓋牌無法獲得積分加倍
-                if (gameObject.getData("id").includes("I") && dropZone.name !== "dropZone4") {
-                    if (isMatch) {
-                        scene.socket.emit("setCardType", scene.socket.id, elementID, gameObject.getData("points"))
-                    } else {
-                        scene.socket.emit("setCardType", scene.socket.id, -1, -1)
-                    }
-                }
+                // 鎖定卡牌位置
                 gameObject.x = dropZone.x
                 gameObject.y = dropZone.y
-
-                // calculatePoints does not affect dropZone 4
-                if (isMatch) {
-                    console.log("gameObject.getData(points)" + gameObject.getData("points"))
-                    scene.socket.emit(
-                        "cardPlayed",
-                        gameObject.getData("id"),
-                        scene.socket.id,
-                        dropZone.name,
-                        scene.GameHandler.currentRoomID,
-                        cardType
-                    )
-                    scene.socket.emit(
-                        "calculatePoints",
-                        gameObject.getData("points") + authorBuffPts,
-                        scene.socket.id,
-                        dropZone.name,
-                        scene.GameHandler.currentRoomID
-                    )
-                } else {
-                    cardType === "cardBack" && gameObject.setTexture("H001B")
-                    scene.socket.emit(
-                        "cardPlayed",
-                        gameObject.getData("id"),
-                        scene.socket.id,
-                        dropZone.name,
-                        scene.GameHandler.currentRoomID,
-                        cardType
-                    )
-                    scene.socket.emit("calculatePoints", 0 + authorBuffPts, scene.socket.id, dropZone.name, scene.GameHandler.currentRoomID)
-                }
                 scene.input.setDraggable(gameObject, false)
-                scene.socket.emit("setCardsInServer", scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID)
-                scene.UIHandler.hideRollDiceText()
+                // 音效
+                const RNG = Math.floor(Math.random() * 3) + 1
+                scene.sound.play(`flipCard${RNG}`)
+                // 是否能獲得作者屬性加成?
+                let authorBuffPts = 0
+                let elementID = -1
+                // <?> 無屬性能不能獲得作者屬性加成? 待詢問
+                if (gameObject.getData("id").includes("I")) {
+                    const elementMap = {
+                        火: 0,
+                        水: 1,
+                        木: 2,
+                        金: 3,
+                        土: 4,
+                    }
+                    elementID = elementMap[gameObject.getData("element")] ?? -1 // Default to -1 if element not found
+                    authorBuffPts = scene.GameHandler.authorBuffs[elementID]
+                }
+                // 積分倍率計算(同屬雙倍,同靈感三倍)。蓋牌無法獲得積分加倍。-1表示無效積分計算。
+                if (gameObject.getData("id").includes("I") && dropZone.name !== "dropZone4") {
+                    // socketId, elementId, inspriationPt
+                    scene.socket.emit(
+                        "serverSetCardType",
+                        scene.socket.id,
+                        canGetPoints ? elementID : -1,
+                        canGetPoints ? gameObject.getData("points") : -1
+                    )
+                }
+                // <?> 計算總得分。卡反轉時能獲得作者屬性加成嗎? 待詢問。
+                const totalPointsToUpdate = canGetPoints ? gameObject.getData("points") + authorBuffPts : 0
+                // 通知server更新雙方卡牌位置。server再call SocketHandler的cardPlayed。對方能見到你打出手牌。
+                scene.socket.emit(
+                    "serverNotifyCardPlayed",
+                    gameObject.getData("id"),
+                    scene.socket.id,
+                    dropZone.name,
+                    scene.GameHandler.currentRoomID,
+                    cardType
+                )
+                // 通知server再call SocketHandler的calculatePoints。
+                scene.socket.emit(
+                    "serverUpdatePoints",
+                    totalPointsToUpdate,
+                    scene.socket.id,
+                    dropZone.name,
+                    scene.GameHandler.currentRoomID
+                )
+                scene.socket.emit(
+                    "serverUpdateCardInHand",
+                    scene.socket.id,
+                    gameObject.getData("id"),
+                    scene.GameHandler.currentRoomID
+                )
+                scene.socket.emit("serverUpdateAuthorBuff", scene.socket.id, authorBuffPts)
+                scene.socket.emit("serverHideRollDiceText", scene.socket.id, scene.GameHandler.currentRoomID)
                 dropZone.data.list.cards++
-                scene.socket.emit("setAuthorBuff", scene.socket.id, authorBuffPts)
-                scene.socket.emit("addCardCount", scene.socket.id, scene.GameHandler.opponentID, scene.GameHandler.currentRoomID)
+                // 同時檢查比賽是否結束
+                scene.socket.emit(
+                    "serverUpdateCardCount",
+                    scene.socket.id,
+                    scene.GameHandler.opponentID,
+                    scene.GameHandler.currentRoomID
+                )
             } else {
                 gameObject.x = gameObject.input.dragStartX
                 gameObject.y = gameObject.input.dragStartY

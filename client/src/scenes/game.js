@@ -1,9 +1,10 @@
-import CardHandler from "../helpers/CardHandler"
+import CardStorage from "../helpers/CardStorage"
 import DeckHandler from "../helpers/DeckHandler"
 import GameHandler from "../helpers/GameHandler"
 import InteractiveHandler from "../helpers/InteractiveHandler"
 import SocketHandler from "../helpers/SocketHandler"
 import UIHandler from "../helpers/UIHandler"
+import ZoneHandler from "../helpers/ZoneHandler"
 import { InputText, TextArea } from "phaser3-rex-plugins/templates/ui/ui-components.js"
 
 // 編號/名稱/等級/天/地/人屬性
@@ -237,10 +238,11 @@ export default class Game extends Phaser.Scene {
         //     console.warn('Canvas element not found.');
         // }
 
-        this.CardHandler = new CardHandler()
+        this.CardStorage = new CardStorage(this)
         this.DeckHandler = new DeckHandler(this)
         this.GameHandler = new GameHandler(this)
         this.SocketHandler = new SocketHandler(this)
+        this.ZoneHandler = new ZoneHandler(this)
         this.UIHandler = new UIHandler(this)
         this.InteractiveHandler = new InteractiveHandler(this)
 

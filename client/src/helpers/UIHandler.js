@@ -1,22 +1,23 @@
-import ZoneHandler from "./ZoneHandler"
-
 export default class UIHandler {
     constructor(scene) {
-        this.zoneHandler = new ZoneHandler(scene)
         this.inputText = {}
         // <------------------------------------ Zone ------------------------------------>
         this.BuildZones = () => {
-            scene.dropZone1 = this.zoneHandler.renderZone(189, 458, 330 / 3.25, 430 / 3.25)
-            scene.dropZone2 = this.zoneHandler.renderZone(90, 575, 330 / 3.25, 430 / 3.25)
-            scene.dropZone3 = this.zoneHandler.renderZone(280, 575, 330 / 3.25, 430 / 3.25)
-            scene.dropZone4 = this.zoneHandler.renderZone(189, 690, 330 / 3.25, 430 / 3.25)
-            scene.dropZone1.setName("dropZone1")
-            scene.dropZone2.setName("dropZone2")
-            scene.dropZone3.setName("dropZone3")
-            scene.dropZone4.setName("dropZone4")
+            const dropZoneConfigs = [
+                { x: 189, y: 458, width: 330 / 3.25, height: 430 / 3.25, name: "dropZone1" },
+                { x: 90, y: 575, width: 330 / 3.25, height: 430 / 3.25, name: "dropZone2" },
+                { x: 280, y: 575, width: 330 / 3.25, height: 430 / 3.25, name: "dropZone3" },
+                { x: 189, y: 690, width: 330 / 3.25, height: 430 / 3.25, name: "dropZone4" },
+            ]
+            dropZoneConfigs.forEach((config) => {
+                let dropZone = scene.ZoneHandler.renderZone(config.x, config.y, config.width, config.height)
+                dropZone.setName(config.name)
+                scene.ZoneHandler.dropZoneList.push(dropZone)
+            })
+            console.log(scene.ZoneHandler.dropZoneList)
         }
         this.BuildZoneOutline = () => {
-            this.zoneHandler.renderOutlineGrid(220, 270, 330, 430)
+            scene.ZoneHandler.renderOutlineGrid(220, 270, 330, 430)
         }
         this.BuildPlayerAreas = () => {
             scene.playerHandArea = scene.add.rectangle(200, 880, 350, 230)
@@ -69,12 +70,27 @@ export default class UIHandler {
         // <------------------------------------ Points (60 to win) ------------------------------------>
         this.BuildWhoWinText = (whoWin) => {
             if (whoWin == 1) {
-                scene.whoWinText = scene.add.text(350, 450, "玩家1勝利!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" })
+                scene.whoWinText = scene.add.text(350, 450, "玩家1勝利!", {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                    color: "#00ffff",
+                })
             } else if (whoWin == 2) {
-                scene.whoWinText = scene.add.text(350, 450, "玩家2勝利!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" })
+                scene.whoWinText = scene.add.text(350, 450, "玩家2勝利!", {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                    color: "#00ffff",
+                })
             } else if (whoWin == 0) {
-                scene.whoWinText = scene.add.text(350, 450, "平手!", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" })
+                scene.whoWinText = scene.add.text(350, 450, "平手!", {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                    color: "#00ffff",
+                })
             }
+        }
+        this.deleteWhoWinText = () => {
+            scene.whoWinText.destroy()
         }
         this.BuildPlayerWinScoreText = () => {
             scene.winScoreText = scene.add.text(350, 500, "", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" })
@@ -83,14 +99,20 @@ export default class UIHandler {
             scene.winScoreText.text = "總分: " + totalWinScore
         }
         // <------------------------------------ Draw card (to be removed) ------------------------------------>
-        this.BuildGameText = () => {
+        this.BuildDealCardText = () => {
             scene.dealCardText = scene.add.text(350, 400, "點我抽卡").setFontSize(20).setFontFamily("Trebuchet MS")
             // OnPointerDown event
             scene.dealCardText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
-                scene.socket.emit("dealCards", scene.socket.id, scene.GameHandler.currentRoomID, scene.GameHandler.opponentID)
+                scene.socket.emit(
+                    "dealCardsFirstRound",
+                    scene.socket.id,
+                    scene.GameHandler.currentRoomID,
+                    scene.GameHandler.opponentID
+                )
                 scene.dealCardText.disableInteractive()
+                this.hideDealCardText()
             })
             // Control card color
             scene.dealCardText.on("pointerover", () => {
@@ -99,6 +121,9 @@ export default class UIHandler {
             scene.dealCardText.on("pointerout", () => {
                 scene.dealCardText.setColor("#00ffff")
             })
+        }
+        this.hideDealCardText = () => {
+            scene.dealCardText.text = ""
         }
         this.ActivateGameText = () => {
             if (scene.dealCardText != undefined || scene.dealCardText != null) {
@@ -112,8 +137,8 @@ export default class UIHandler {
             scene.rollDiceText2 = scene.add.text(350, 590, " ").setFontSize(20).setFontFamily("Trebuchet MS")
         }
         this.setRollDiceText = (num1, num2) => {
-            scene.rollDiceText1.text = "玩家1擲出:" + num1
-            scene.rollDiceText2.text = "玩家2擲出:" + num2
+            scene.rollDiceText1.text = "你擲出:" + num1
+            scene.rollDiceText2.text = "對手擲出:" + num2
         }
         this.hideRollDiceText = () => {
             scene.rollDiceText1.text = ""
@@ -124,7 +149,11 @@ export default class UIHandler {
             scene.roomNumberText = scene.add.text(440, 20, "房間編號: ").setFontSize(20).setFontFamily("Trebuchet MS")
         }
         this.BuildCreateRoomText = () => {
-            scene.createRoomText = scene.add.text(260, 380, "建立房間", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" })
+            scene.createRoomText = scene.add.text(260, 380, "建立房間", {
+                fontSize: 20,
+                fontFamily: "Trebuchet MS",
+                color: "#00ffff",
+            })
             scene.createRoomText.setInteractive()
             scene.createRoomText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
@@ -163,7 +192,11 @@ export default class UIHandler {
             this.HideInputTextDecation()
         })
         this.BuildJoinRoomText = () => {
-            scene.joinRoomText = scene.add.text(260, 430, "加入房間", { fontSize: 20, fontFamily: "Trebuchet MS", color: "#00ffff" })
+            scene.joinRoomText = scene.add.text(260, 430, "加入房間", {
+                fontSize: 20,
+                fontFamily: "Trebuchet MS",
+                color: "#00ffff",
+            })
             scene.joinRoomText.setInteractive()
             scene.joinRoomText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
@@ -186,12 +219,12 @@ export default class UIHandler {
             this.BuildZoneOutline()
             this.BuildPlayerAreas()
             this.BuildPlayerTurnText()
-            this.BuildGameText()
+            this.BuildDealCardText()
             this.BuildRollDiceText()
             this.BuildPlayerWinScoreText()
         }
         this.BuildLobby = () => {
-            this.BuildInputTextDecation()
+            this.BuildInputTextDecoration()
             this.BuildRoomNumberText()
             this.BuildCreateRoomText()
             this.BuildJoinRoomText()
@@ -212,7 +245,7 @@ export default class UIHandler {
         this.GetInputTextContent = (inputText) => {
             return inputText.text
         }
-        this.BuildInputTextDecation = () => {
+        this.BuildInputTextDecoration = () => {
             scene.inputTextRectangle = scene.rexUI.add.roundRectangle(300, 500, 100, 30, 0, 0x666666)
         }
         this.HideInputTextDecation = () => {

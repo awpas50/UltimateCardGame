@@ -141,15 +141,15 @@ io.on("connection", function (socket) {
         // imageNames: (Array of string) string[]
         players[socketId].inDeck = shuffle(mixedArray)
         players[socketId].inDeck_WCard = shuffle(imageNamesWCard)
-        console.log(players)
+        // console.log(players)
         io.to(roomId).emit("changeGameState", "Initializing")
     })
 
     // Called in UIHandler.js
     // populates the players[socketId].inHand array with elements from the players[socketId].inDeck array.
     // If the deck is empty, it shuffles and refills the deck before adding cards to the hand.
-    socket.on("dealCards", function (socketId, roomId, opponentId) {
-        console.log("dealCards: " + roomId)
+    socket.on("dealCardsFirstRound", function (socketId, roomId, opponentId) {
+        console.log("dealCardsFirstRound: " + roomId)
         for (let i = 0; i < 6; i++) {
             // In JavaScript, you can freely assign different types of values to a variable or object property without declaring their types beforehand.
             // It's completely legitimate to assign a shuffled array even if it was initially declared as an empty array.
@@ -161,6 +161,7 @@ io.on("connection", function (socket) {
         if (players[socketId].inDeck_WCard.length === 0) {
             players[socketId].inDeck_WCard = shuffle(imageNamesWCard)
         }
+        players[socketId].inScene_WCard = []
         players[socketId].inScene_WCard.push(players[socketId].inDeck_WCard.shift())
 
         // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
@@ -188,49 +189,75 @@ io.on("connection", function (socket) {
         }
     })
 
+    socket.on("dealCardsAnotherRound", function (socketId, roomId) {
+        console.log("dealCardsAnotherRound: " + roomId)
+        // **** No need to deal cards again.
+
+        // for (let i = 0; i < 6; i++) {
+        //     // In JavaScript, you can freely assign different types of values to a variable or object property without declaring their types beforehand.
+        //     // It's completely legitimate to assign a shuffled array even if it was initially declared as an empty array.
+        //     if (players[socketId].inDeck.length === 0) {
+        //         players[socketId].inDeck = shuffle(mixedArray)
+        //     }
+        //     players[socketId].inHand.push(players[socketId].inDeck.shift())
+        // }
+
+        // // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
+        // io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
+        io.to(roomId).emit("addWCardsInScene", socketId, players[socketId].inScene_WCard)
+        socket.emit("setAuthorElements", players[socketId].inScene_WCard)
+        io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
+    })
+
     // Arguments: scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID
-    socket.on("setCardsInServer", function (socketId, cardName, roomId) {
+    socket.on("serverUpdateCardInHand", function (socketId, cardName, roomId) {
         players[socketId].inScene.push(cardName)
         // Player: check spot, remove card from spot, add card to spot. Opponent: Add 1 card back
         // Get index, for example, I001 is in index 3 than it will replace the 4th card in players[socketId].inHand
         const cardIndex = players[socketId].inHand.indexOf(cardName)
+        // Tell local to delete one card in hand
+        io.to(roomId).emit("deleteOneCardInHand", socketId, players[socketId].inHand[cardIndex])
         // Based on card index, replace old card with players[socketId].inDeck[0] as a new card
         players[socketId].inHand.splice(cardIndex, 1, players[socketId].inDeck[0])
         // inDeck delete 1 card
         players[socketId].inDeck.shift()
         // Tell local to actually show one new card
-        io.to(roomId).emit("dealOneCardInScene", socketId, players[socketId].inHand, cardIndex)
+        io.to(roomId).emit("dealOneCardInHand", socketId, players[socketId].inHand[cardIndex], cardIndex)
     })
 
     // Used for setting score multiplier at the end of the round
-    socket.on("setCardType", function (socketId, elementId, inspriationPt) {
+    socket.on("serverSetCardType", function (socketId, elementId, inspriationPt) {
         players[socketId].inSceneElement.push(elementId) // double scores if all elements match
         players[socketId].inSceneInspriationPt.push(inspriationPt) // triple scores if all inspriation points match
         // players[socketId].totalInspriationPt += inspriationPt
     })
 
     // Called in InteractiveHandler.js
-    socket.on("calculatePoints", function (points, socketId, dropZoneId, roomId) {
+    socket.on("serverUpdatePoints", function (points, socketId, dropZoneId, roomId) {
         io.to(roomId).emit("calculatePoints", points, socketId, dropZoneId, roomId)
         io.to(roomId).emit("setPlayerPointText")
         io.to(roomId).emit("setOpponentPointText")
     })
 
-    socket.on("cardPlayed", function (cardName, socketId, dropZoneId, roomId, cardType) {
-        io.to(roomId).emit("cardPlayed", cardName, socketId, dropZoneId, roomId, cardType)
+    socket.on("serverNotifyCardPlayed", function (cardName, socketId, dropZoneId, roomId, cardType) {
+        io.to(roomId).emit("localInstantiateCardBack", cardName, socketId, dropZoneId, cardType)
         io.to(roomId).emit("changeTurn")
         io.to(roomId).emit("setPlayerTurnText")
+    })
+
+    socket.on("serverHideRollDiceText", function (socketId, roomId) {
+        io.to(roomId).emit("hideRollDiceText", socketId, roomId)
     })
 
     // socket.on('setPlayerPoint', function (socketId, playerTotalPoints) {
     //     players[socketId].totalInspriationPt = playerTotalPoints
     // });
 
-    socket.on("setAuthorBuff", function (socketId, authorBuffPt) {
+    socket.on("serverUpdateAuthorBuff", function (socketId, authorBuffPt) {
         players[socketId].inSceneAuthorBoostPt.push(authorBuffPt)
     })
 
-    socket.on("addCardCount", function (socketId, opponentId, roomId) {
+    socket.on("serverUpdateCardCount", function (socketId, opponentId, roomId) {
         players[socketId].cardCount++
         calculateTotalInspriationPts(socketId)
         console.log("players[socketId].cardCount: " + players[socketId].cardCount)
@@ -241,12 +268,10 @@ io.on("connection", function (socket) {
             io.to(roomId).emit("setPlayerPointText")
             io.to(roomId).emit("setOpponentPointText")
             endRound(roomId, socketId, opponentId)
-            //io.to(roomId).emit('endRound', socketId, players[socketId].inSceneElement, players[socketId].inSceneInspriationPt);
         }
     })
 
     socket.on("disconnect", function () {
-        //socket.leave(socket.rooms[1]);
         console.log("A user disconnected: " + socket.id + ". Number of players in the server: " + objLength)
         delete players[socket.id]
     })
@@ -259,7 +284,7 @@ http.listen(port, function () {
 
 // * roomId: string * //
 function endRound(roomId, socketId, opponentId) {
-    let baseScore = 8
+    const baseScore = 8
     let multiplier = 1
     console.log("round end")
     // should return values
@@ -274,11 +299,11 @@ function endRound(roomId, socketId, opponentId) {
     let whoWin = 0
 
     //check who win
-    if (players[player1SocketId].totalInspriationPt < players[player2SocketId].totalInspriationPt) {
+    if (players[player1SocketId].totalInspriationPt > players[player2SocketId].totalInspriationPt) {
         console.log("End round: Player 1 wins")
         whoWinSocketId = player1SocketId
         whoWin = 1
-    } else if (players[player1SocketId].totalInspriationPt > players[player2SocketId].totalInspriationPt) {
+    } else if (players[player1SocketId].totalInspriationPt < players[player2SocketId].totalInspriationPt) {
         console.log("End round: Player 2 wins")
         whoWinSocketId = player2SocketId
         whoWin = 2
@@ -298,30 +323,53 @@ function endRound(roomId, socketId, opponentId) {
             multiplier = 2
         }
         // 同靈感值
-        if (players[whoWinSocketId].inSceneInspriationPt.every((value) => value === players[whoWinSocketId].inSceneInspriationPt[0])) {
+        if (
+            players[whoWinSocketId].inSceneInspriationPt.every(
+                (value) => value === players[whoWinSocketId].inSceneInspriationPt[0]
+            )
+        ) {
             multiplier = 3
         }
         // add scores
+        console.log("Added: " + baseScore * multiplier)
         players[whoWinSocketId].totalScore += baseScore * multiplier
         io.to(roomId).emit("setPlayerWinScoreText", players[whoWinSocketId].totalScore, whoWinSocketId)
     } else {
         io.to(roomId).emit("setPlayerWinScoreText", 0, whoWinSocketId)
     }
     setTimeout(() => {
-        resetBattleField(endRoundRoom)
+        resetBattleField(roomId, endRoundRoom)
     }, 5000)
 }
 
 // endRoundRoom: array (string)
-function resetBattleField(endRoundRoom) {
+function resetBattleField(roomId, endRoundRoom) {
     for (let i = 0; i < endRoundRoom.length; i++) {
         players[endRoundRoom[i]].inSceneElement = []
         players[endRoundRoom[i]].inSceneInspriationPt = []
         players[endRoundRoom[i]].inSceneAuthorBoostPt = []
         players[endRoundRoom[i]].totalInspriationPt = 0
-
+        players[endRoundRoom[i]].cardCount = 0
         players[endRoundRoom[i]].roundCount++
+
+        // Move all cards in scene to rubbish bin
+        while (players[endRoundRoom[i]].inScene.length > 0) {
+            players[endRoundRoom[i]].inRubbishBin.push(players[endRoundRoom[i]].inScene.shift())
+        }
+
+        if (players[endRoundRoom[i]].inDeck_WCard.length === 0) {
+            // Move all cards from inRubbishBin_WCard to inDeck_WCard in one go
+            players[endRoundRoom[i]].inDeck_WCard.push(...players[endRoundRoom[i]].inRubbishBin_WCard)
+            // Clear the inRubbishBin_WCard array
+            players[endRoundRoom[i]].inRubbishBin_WCard.length = 0
+        }
+        // Move previous WCard to rubbish
+        players[endRoundRoom[i]].inRubbishBin_WCard.push(players[endRoundRoom[i]].inScene_WCard.shift())
+        players[endRoundRoom[i]].inScene_WCard.push(players[endRoundRoom[i]].inDeck_WCard.shift())
     }
+
+    // Tell local to destroy cards in the scene
+    io.to(roomId).emit("clearLocalBattleField")
     console.log(players)
 }
 
@@ -331,17 +379,19 @@ function calculateTotalInspriationPts(socketId) {
     const sum1 = players[socketId].inSceneInspriationPt.reduce((accumulator, currentValue) => {
         const val = currentValue === -1 ? 0 : currentValue
         return accumulator + val
-    })
+    }, 0)
     const sum2 = players[socketId].inSceneAuthorBoostPt.reduce((accumulator, currentValue) => {
         const val = currentValue === -1 ? 0 : currentValue
         return accumulator + val
-    })
+    }, 0)
     players[socketId].totalInspriationPt = sum1 + sum2
 }
 
 function getImageNamesInFolder(folderPath) {
     const files = fs.readdirSync(folderPath)
     // Filter out only the image files (files with .jpg extension)
-    const imageNames = files.filter((file) => path.extname(file).toLowerCase() === ".jpg").map((file) => path.basename(file, ".jpg")) // Remove the .jpg extension
+    const imageNames = files
+        .filter((file) => path.extname(file).toLowerCase() === ".jpg")
+        .map((file) => path.basename(file, ".jpg")) // Remove the .jpg extension
     return imageNames
 }

@@ -1,66 +1,66 @@
-import {ICard_Data_23246, WCard_Data_23246} from "../scenes/game.js";
+import { ICard_Data_23246, WCard_Data_23246 } from "../scenes/game.js"
 
 export default class Card {
     constructor(scene) {
         this.render = (x, y, cardType, side) => {
-            let sprite;
-            let card;
-            if(side === 'playerCard') {
-                sprite = this.playerCardSprite;
+            let sprite
+            let card
+            if (side === "playerCard") {
+                sprite = this.playerCardSprite
+            } else {
+                sprite = this.opponentCardSprite
             }
-            else {
-                sprite = this.opponentCardSprite;
-            }
-            
+
             // add.image: Phaser 3 built-in code (x-coordinate, y-coordinate, image referenced by name in game.js)
-            if(cardType == "HCard") {
+            if (cardType == "HCard") {
                 card = scene.add.image(x, y, sprite).setInteractive().setData({
-                    "id": this.id,
-                    "element": "無",
-                    "side": side,
-                    "sprite": sprite,
-                }); 
-            }
-            if(cardType == "ICard") {
-                card = scene.add.image(x, y, sprite).setInteractive().setData({
-                    "id": this.id,
-                    "element": ICard_Data_23246[this.id].element,
-                    "series": ICard_Data_23246[this.id].series,
-                    "points": ICard_Data_23246[this.id].points,
+                    id: this.id,
+                    element: "無",
+                    points: -1,
 
-                    "side": side,
-                    "sprite": sprite,
-
-                    "test": "test message"
-                }); 
+                    side: side,
+                    sprite: sprite,
+                })
             }
-            if(cardType == "WCard") {
+            if (cardType == "ICard") {
                 card = scene.add.image(x, y, sprite).setInteractive().setData({
-                    "id": this.id,
-                    "side": side,
-                    "sprite": sprite,
+                    id: this.id,
+                    element: ICard_Data_23246[this.id].element,
+                    series: ICard_Data_23246[this.id].series,
+                    points: ICard_Data_23246[this.id].points,
 
-                    "rarity": WCard_Data_23246[this.id].rarity,
-                    "sky": WCard_Data_23246[this.id].sky,
-                    "ground": WCard_Data_23246[this.id].ground,
-                    "person": WCard_Data_23246[this.id].person,
-                    "authorBuffs": WCard_Data_23246[this.id].authorBuffs
-                }); 
+                    side: side,
+                    sprite: sprite,
+
+                    test: "test message",
+                })
             }
-            if(cardType == "cardBack") {
+            if (cardType == "WCard") {
                 card = scene.add.image(x, y, sprite).setInteractive().setData({
-                    "id": this.id,
-                    "side": side,
-                    "sprite": sprite
-                }); 
+                    id: this.id,
+                    side: side,
+                    sprite: sprite,
+
+                    rarity: WCard_Data_23246[this.id].rarity,
+                    sky: WCard_Data_23246[this.id].sky,
+                    ground: WCard_Data_23246[this.id].ground,
+                    person: WCard_Data_23246[this.id].person,
+                    authorBuffs: WCard_Data_23246[this.id].authorBuffs,
+                })
             }
-            
-            
-            if(side === 'playerCard') { 
-                scene.input.setDraggable(card);
+            if (cardType == "cardBack") {
+                card = scene.add.image(x, y, sprite).setInteractive().setData({
+                    id: this.id,
+                    side: side,
+                    sprite: sprite,
+                })
             }
-             
-            return card;
+
+            if (side === "playerCard") {
+                scene.input.setDraggable(card)
+            }
+
+            return card
         }
     }
 }
