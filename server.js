@@ -322,7 +322,7 @@ function endRound(roomId, socketId, opponentId) {
     }
     setTimeout(() => {
         resetBattleField(roomId, endRoundRoom)
-    }, 5000)
+    }, 8000)
 }
 
 // endRoundRoom: array (string)

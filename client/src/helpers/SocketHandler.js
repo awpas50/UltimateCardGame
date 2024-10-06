@@ -292,7 +292,7 @@ export default class SocketHandler {
 
         scene.socket.on("setPlayerWinScoreText", (scores, whoWinSocketId) => {
             if (whoWinSocketId === scene.socket.id) {
-                scene.GameHandler.playerTotalWinScore += scores
+                scene.GameHandler.playerTotalWinScore = scores
             }
             scene.UIHandler.SetPlayerWinScoreText(scene.GameHandler.playerTotalWinScore)
         })

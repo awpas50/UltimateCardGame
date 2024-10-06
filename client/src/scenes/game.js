@@ -136,71 +136,80 @@ export default class Game extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image("23246_W001", require("../../public/assets/23246/WCard/23246_W001.jpg").default)
-        this.load.image("23246_W002", require("../../public/assets/23246/WCard/23246_W002.jpg").default)
-        this.load.image("23246_W009", require("../../public/assets/23246/WCard/23246_W009.jpg").default)
-        this.load.image("23246_W010", require("../../public/assets/23246/WCard/23246_W010.jpg").default)
-        this.load.image("23246_W016", require("../../public/assets/23246/WCard/23246_W016.jpg").default)
+        const wCards = ["W001", "W002", "W009", "W010", "W016"]
+        const iCards = [
+            "I002",
+            "I006",
+            "I007",
+            "I008",
+            "I013",
+            "I019",
+            "I020",
+            "I021",
+            "I022",
+            "I024",
+            "I029",
+            "I030",
+            "I031",
+            "I034",
+            "I037",
+            "I039",
+            "I040",
+            "I045",
+            "I046",
+            "I047",
+            "I049",
+            "I051",
+            "I055",
+            "I059",
+            "I064",
+            "I068",
+            "I070",
+            "I071",
+            "I072",
+            "I074",
+            "I075",
+            "I076",
+            "I077",
+            "I079",
+            "I081",
+            "I082",
+            "I083",
+            "I084",
+        ]
+        const hCards = [
+            "H001",
+            "H013",
+            "H025",
+            "H034",
+            "H036",
+            "H042",
+            "H044",
+            "H045",
+            "H046",
+            "H049",
+            "H050",
+            "H051",
+            "H052",
+            "H054",
+            "H055",
+        ]
 
-        this.load.image("23246_I002", require("../../public/assets/23246/ICard/23246_I002.jpg").default)
-        this.load.image("23246_I006", require("../../public/assets/23246/ICard/23246_I006.jpg").default)
-        this.load.image("23246_I007", require("../../public/assets/23246/ICard/23246_I007.jpg").default)
-        this.load.image("23246_I008", require("../../public/assets/23246/ICard/23246_I008.jpg").default)
-        this.load.image("23246_I013", require("../../public/assets/23246/ICard/23246_I013.jpg").default)
-        this.load.image("23246_I019", require("../../public/assets/23246/ICard/23246_I019.jpg").default)
-        this.load.image("23246_I020", require("../../public/assets/23246/ICard/23246_I020.jpg").default)
-        this.load.image("23246_I021", require("../../public/assets/23246/ICard/23246_I021.jpg").default)
-        this.load.image("23246_I022", require("../../public/assets/23246/ICard/23246_I022.jpg").default)
-        this.load.image("23246_I024", require("../../public/assets/23246/ICard/23246_I024.jpg").default)
-        this.load.image("23246_I029", require("../../public/assets/23246/ICard/23246_I029.jpg").default)
-        this.load.image("23246_I030", require("../../public/assets/23246/ICard/23246_I030.jpg").default)
-        this.load.image("23246_I031", require("../../public/assets/23246/ICard/23246_I031.jpg").default)
-        this.load.image("23246_I034", require("../../public/assets/23246/ICard/23246_I034.jpg").default)
-        this.load.image("23246_I037", require("../../public/assets/23246/ICard/23246_I037.jpg").default)
-        this.load.image("23246_I039", require("../../public/assets/23246/ICard/23246_I039.jpg").default)
-        this.load.image("23246_I040", require("../../public/assets/23246/ICard/23246_I040.jpg").default)
-        this.load.image("23246_I045", require("../../public/assets/23246/ICard/23246_I045.jpg").default)
-        this.load.image("23246_I046", require("../../public/assets/23246/ICard/23246_I046.jpg").default)
-        this.load.image("23246_I047", require("../../public/assets/23246/ICard/23246_I047.jpg").default)
-        this.load.image("23246_I049", require("../../public/assets/23246/ICard/23246_I049.jpg").default)
-        this.load.image("23246_I051", require("../../public/assets/23246/ICard/23246_I051.jpg").default)
-        this.load.image("23246_I055", require("../../public/assets/23246/ICard/23246_I055.jpg").default)
-        this.load.image("23246_I059", require("../../public/assets/23246/ICard/23246_I059.jpg").default)
-        this.load.image("23246_I064", require("../../public/assets/23246/ICard/23246_I064.jpg").default)
-        this.load.image("23246_I068", require("../../public/assets/23246/ICard/23246_I068.jpg").default)
-        this.load.image("23246_I070", require("../../public/assets/23246/ICard/23246_I070.jpg").default)
-        this.load.image("23246_I071", require("../../public/assets/23246/ICard/23246_I071.jpg").default)
-        this.load.image("23246_I072", require("../../public/assets/23246/ICard/23246_I072.jpg").default)
-        this.load.image("23246_I074", require("../../public/assets/23246/ICard/23246_I074.jpg").default)
-        this.load.image("23246_I075", require("../../public/assets/23246/ICard/23246_I075.jpg").default)
-        this.load.image("23246_I076", require("../../public/assets/23246/ICard/23246_I076.jpg").default)
-        this.load.image("23246_I077", require("../../public/assets/23246/ICard/23246_I077.jpg").default)
-        this.load.image("23246_I079", require("../../public/assets/23246/ICard/23246_I079.jpg").default)
-        this.load.image("23246_I081", require("../../public/assets/23246/ICard/23246_I081.jpg").default)
-        this.load.image("23246_I082", require("../../public/assets/23246/ICard/23246_I082.jpg").default)
-        this.load.image("23246_I083", require("../../public/assets/23246/ICard/23246_I083.jpg").default)
-        this.load.image("23246_I084", require("../../public/assets/23246/ICard/23246_I084.jpg").default)
+        // Function to load images
+        const loadImages = (prefix, cardArray, path) => {
+            cardArray.forEach((card) => {
+                this.load.image(`${prefix}_${card}`, require(`../../public/assets/23246/${path}/${prefix}_${card}.jpg`).default)
+            })
+        }
 
-        this.load.image("23246_H001", require("../../public/assets/23246/HCard/23246_H001.jpg").default)
-        this.load.image("23246_H013", require("../../public/assets/23246/HCard/23246_H013.jpg").default)
-        this.load.image("23246_H025", require("../../public/assets/23246/HCard/23246_H025.jpg").default)
-        this.load.image("23246_H034", require("../../public/assets/23246/HCard/23246_H034.jpg").default)
-        this.load.image("23246_H036", require("../../public/assets/23246/HCard/23246_H036.jpg").default)
-        this.load.image("23246_H042", require("../../public/assets/23246/HCard/23246_H042.jpg").default)
-        this.load.image("23246_H044", require("../../public/assets/23246/HCard/23246_H044.jpg").default)
-        this.load.image("23246_H045", require("../../public/assets/23246/HCard/23246_H045.jpg").default)
-        this.load.image("23246_H046", require("../../public/assets/23246/HCard/23246_H046.jpg").default)
-        this.load.image("23246_H049", require("../../public/assets/23246/HCard/23246_H049.jpg").default)
-        this.load.image("23246_H050", require("../../public/assets/23246/HCard/23246_H050.jpg").default)
-        this.load.image("23246_H051", require("../../public/assets/23246/HCard/23246_H051.jpg").default)
-        this.load.image("23246_H052", require("../../public/assets/23246/HCard/23246_H052.jpg").default)
-        this.load.image("23246_H054", require("../../public/assets/23246/HCard/23246_H054.jpg").default)
-        this.load.image("23246_H055", require("../../public/assets/23246/HCard/23246_H055.jpg").default)
+        // Prefix / card number / path
+        loadImages("23246", wCards, "WCard")
+        loadImages("23246", iCards, "ICard")
+        loadImages("23246", hCards, "HCard")
 
         this.load.image("H001B", require("../../public/assets/Back/H001B.png").default)
         this.load.image("H001B_Filped", require("../../public/assets/Back/H001B_Filped.png").default)
         this.load.image("W001B", require("../../public/assets/Back/W001B.png").default)
-        this.load.image("Test1", require("../../public/assets/Back/Test1.jpg").default)
         this.load.image("BG", require("../../public/assets/Back/WoodBackground.jpg").default)
 
         this.load.audio("BGM1", require("../sfx/BGM1.mp3").default)
@@ -211,14 +220,14 @@ export default class Game extends Phaser.Scene {
     }
 
     create() {
-        // this.backgroundMusic = this.sound.add('BGM1');
-        // this.backgroundMusic.setLoop(true);
-        // this.backgroundMusic.play();
-        // this.backgroundMusic.setVolume(0.5);
-        this.sound.add("flipCard1")
-        this.sound.add("flipCard2")
-        this.sound.add("flipCard3")
-        this.sound.add("dragCard")
+        window.addEventListener("beforeunload", function (event) {
+            // Optional: Inform the user about unsaved changes
+            const confirmationMessage = "You have unsaved changes. Are you sure you want to leave?"
+            event.returnValue = confirmationMessage // Standard for most browsers
+            return confirmationMessage // For older browsers
+        })
+
+        this.setupSounds()
 
         this.cameras.main.roundPixels = true
         // Set scale mode
@@ -253,6 +262,18 @@ export default class Game extends Phaser.Scene {
         // backgroundImage.setOrigin(0, 0);
         // backgroundImage.setDepth(0); // Set a depth level for the background
         // backgroundImage.disableInteractive();
+    }
+
+    setupSounds = () => {
+        this.backgroundMusic = this.sound.add("BGM1")
+        this.backgroundMusic.setLoop(true)
+        this.backgroundMusic.play()
+        this.backgroundMusic.setVolume(0.5)
+
+        this.sound.add("flipCard1")
+        this.sound.add("flipCard2")
+        this.sound.add("flipCard3")
+        this.sound.add("dragCard")
     }
 
     update() {}

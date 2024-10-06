@@ -252,11 +252,11 @@ export default class UIHandler {
                 100,
                 30,
                 0,
-                0x666666
+                Color.dimGrey
             )
         }
         this.hideInputTextDecoration = () => {
-            scene.inputTextRectangle.setFillStyle(0x000000)
+            scene.inputTextRectangle.setFillStyle(Color.black)
         }
         this.generateRandomRoomID = () => {
             // Generate a random number between 0 and 999999 (inclusive)
