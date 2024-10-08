@@ -10,7 +10,7 @@ const config = {
         //width: clientWidth,
         //height: clientHeight,
         width: 600,
-        height: 825,
+        height: 1000,
     },
     parent: "phaser-container",
     dom: {

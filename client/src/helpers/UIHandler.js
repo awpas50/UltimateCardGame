@@ -99,14 +99,19 @@ export default class UIHandler {
             scene.whoWinText.destroy()
         }
         this.buildPlayerWinScoreText = () => {
-            scene.winScoreText = scene.add.text(PositionHandler.winScoreText.x, PositionHandler.winScoreText.y, "", {
-                fontSize: 20,
-                fontFamily: "Trebuchet MS",
-                color: "#00ffff",
-            })
+            scene.playerWinScoreText = scene.add.text(
+                PositionHandler.playerWinScoreText.x,
+                PositionHandler.playerWinScoreText.y,
+                "",
+                {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                    color: "#00ffff",
+                }
+            )
         }
         this.SetPlayerWinScoreText = (totalWinScore) => {
-            scene.winScoreText.text = "總分: " + totalWinScore
+            scene.playerWinScoreText.text = "總分: " + totalWinScore
         }
         this.ActivateGameText = () => {
             if (scene.dealCardText != undefined || scene.dealCardText != null) {
