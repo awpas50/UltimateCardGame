@@ -99,14 +99,19 @@ export default class UIHandler {
             scene.whoWinText.destroy()
         }
         this.buildPlayerWinScoreText = () => {
-            scene.winScoreText = scene.add.text(PositionHandler.winScoreText.x, PositionHandler.winScoreText.y, "", {
-                fontSize: 20,
-                fontFamily: "Trebuchet MS",
-                color: "#00ffff",
-            })
+            scene.playerWinScoreText = scene.add.text(
+                PositionHandler.playerWinScoreText.x,
+                PositionHandler.playerWinScoreText.y,
+                "",
+                {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                    color: "#00ffff",
+                }
+            )
         }
         this.SetPlayerWinScoreText = (totalWinScore) => {
-            scene.winScoreText.text = "總分: " + totalWinScore
+            scene.playerWinScoreText.text = "總分: " + totalWinScore
         }
         this.ActivateGameText = () => {
             if (scene.dealCardText != undefined || scene.dealCardText != null) {
@@ -252,11 +257,11 @@ export default class UIHandler {
                 100,
                 30,
                 0,
-                0x666666
+                Color.dimGrey
             )
         }
         this.hideInputTextDecoration = () => {
-            scene.inputTextRectangle.setFillStyle(0x000000)
+            scene.inputTextRectangle.setFillStyle(Color.black)
         }
         this.generateRandomRoomID = () => {
             // Generate a random number between 0 and 999999 (inclusive)
