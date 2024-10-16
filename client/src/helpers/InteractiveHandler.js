@@ -1,4 +1,6 @@
 import { ICard_Data_23246, WCard_Data_23246 } from "../scenes/game.js"
+import PositionHandler from "./PositionHandler.js"
+import ScaleHandler from "./ScaleHandler.js"
 
 export default class InteractiveHandler {
     constructor(scene) {
@@ -14,7 +16,7 @@ export default class InteractiveHandler {
             // If not clicking anything gameObjects returns empty array, like this....... []
             //console.log(gameObjects)
             if ((gameObjects.length == 0 || gameObjects[0].type === "Zone") && isCardPreviewActive && this.cardPreview !== null) {
-                this.cardPreview.setPosition(1250, 400)
+                this.cardPreview.setPosition(PositionHandler.cardPreviewStart.x, PositionHandler.cardPreviewStart.y)
                 this.isCardPreviewActive = false
             }
             if (!gameObjects || gameObjects.length == 0) {
@@ -24,10 +26,16 @@ export default class InteractiveHandler {
                 scene.sound.play("dragCard")
                 console.log(gameObjects[0].data)
                 if (this.cardPreview === null) {
-                    this.cardPreview = scene.add.image(750, 400, gameObjects[0].data.values.sprite).setScale(0.7, 0.7)
+                    this.cardPreview = scene.add
+                        .image(
+                            PositionHandler.cardPreviewEnd.x,
+                            PositionHandler.cardPreviewEnd.y,
+                            gameObjects[0].data.values.sprite
+                        )
+                        .setScale(ScaleHandler.cardPreview.scale)
                 } else {
-                    this.cardPreview.setTexture(gameObjects[0].data.values.sprite).setScale(0.7, 0.7)
-                    this.cardPreview.setPosition(750, 400)
+                    this.cardPreview.setTexture(gameObjects[0].data.values.sprite).setScale(ScaleHandler.cardPreview.scale)
+                    this.cardPreview.setPosition(PositionHandler.cardPreviewEnd.x, PositionHandler.cardPreviewEnd.y)
                 }
                 let tween = scene.tweens.add({
                     targets: this.cardPreview,
@@ -132,6 +140,10 @@ export default class InteractiveHandler {
                 // 鎖定卡牌位置
                 gameObject.x = dropZone.x
                 gameObject.y = dropZone.y
+                // 卡牌大小
+                gameObject.setScale(ScaleHandler.playerInSceneCard.scaleX, ScaleHandler.playerInSceneCard.scaleY)
+                // 重設角度
+                gameObject.setRotation(0)
                 scene.input.setDraggable(gameObject, false)
                 // 音效
                 const RNG = Math.floor(Math.random() * 3) + 1
@@ -168,8 +180,9 @@ export default class InteractiveHandler {
                         canGetPoints ? gameObject.getData("points") : -1
                     )
                 }
-                // <?> 計算總得分。卡反轉時能獲得作者屬性加成嗎? 待詢問。
-                const totalPointsToUpdate = canGetPoints ? gameObject.getData("points") + authorBuffPts : 0
+                // 計算總得分。卡反轉時能不能獲得作者屬性
+                const totalPointsToUpdate =
+                    canGetPoints && cardType !== "cardBack" ? gameObject.getData("points") + authorBuffPts : 0
                 // 通知server更新雙方卡牌位置。server再call SocketHandler的cardPlayed。對方能見到你打出手牌。
                 scene.socket.emit(
                     "serverNotifyCardPlayed",
@@ -216,7 +229,7 @@ export default class InteractiveHandler {
             const y = pointer.y
 
             // Show the coordinates on the console
-            //console.log(`Clicked at X: ${x}, Y: ${y}`);
+            console.log(`Clicked at X: ${Math.round(x)}, Y: ${Math.round(y)}`)
         })
     }
 }
