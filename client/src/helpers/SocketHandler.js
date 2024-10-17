@@ -1,4 +1,7 @@
 import io from "socket.io-client"
+import PositionHandler from "./PositionHandler"
+import ScaleHandler from "./ScaleHandler"
+import RotationHandler from "./RotationHandler"
 
 export default class SocketHandler {
     constructor(scene) {
@@ -75,17 +78,31 @@ export default class SocketHandler {
                 for (let i in cardIdList) {
                     let card
                     if (cardIdList[i].includes("I")) {
-                        card = scene.DeckHandler.InstantiateCard(55 + i * 55, 780, "ICard", cardIdList[i], "playerCard").setScale(
-                            0.26
+                        card = scene.DeckHandler.InstantiateCard(
+                            PositionHandler.playerCardInHandArea.x + i * PositionHandler.playerCardInHandArea.gap,
+                            PositionHandler.playerCardInHandArea.y + PositionHandler.playerCardInHandArea.waveEffectOffset[i],
+                            "ICard",
+                            cardIdList[i],
+                            "playerCard"
                         )
+                            .setScale(ScaleHandler.playerInHandCard.scaleX)
+                            .setRotation(RotationHandler.playerInHandCard[i] * (Math.PI / 180))
+                            .setDepth(i)
                         console.log(typeof card)
                         console.log(cardIdList[i])
                         scene.CardStorage.inHandStorage.push(card)
                     }
                     if (cardIdList[i].includes("H")) {
-                        card = scene.DeckHandler.InstantiateCard(55 + i * 55, 780, "HCard", cardIdList[i], "playerCard").setScale(
-                            0.26
+                        card = scene.DeckHandler.InstantiateCard(
+                            PositionHandler.playerCardInHandArea.x + i * PositionHandler.playerCardInHandArea.gap,
+                            PositionHandler.playerCardInHandArea.y + PositionHandler.playerCardInHandArea.waveEffectOffset[i],
+                            "HCard",
+                            cardIdList[i],
+                            "playerCard"
                         )
+                            .setScale(ScaleHandler.playerInHandCard.scaleX)
+                            .setRotation(RotationHandler.playerInHandCard[i] * (Math.PI / 180))
+                            .setDepth(i)
                         console.log(typeof card)
                         console.log(cardIdList[i])
                         scene.CardStorage.inHandStorage.push(card)
@@ -98,9 +115,13 @@ export default class SocketHandler {
             } else {
                 // 對手: 只會看到卡背
                 for (let i in cardIdList) {
-                    let card = scene.DeckHandler.InstantiateCard(85 + i * 35, 0, "cardBack", "cardBack", "opponentCard").setScale(
-                        0.26
-                    )
+                    let card = scene.DeckHandler.InstantiateCard(
+                        PositionHandler.opponentCardInHandArea.x + i * PositionHandler.opponentCardInHandArea.gap,
+                        PositionHandler.opponentCardInHandArea.y,
+                        "cardBack",
+                        "cardBack",
+                        "opponentCard"
+                    ).setScale(ScaleHandler.opponentCardBack.scaleY)
                     scene.CardStorage.opponentCardBackStorage.push(card)
                 }
             }
@@ -124,9 +145,16 @@ export default class SocketHandler {
                 const cardType = cardId.includes("I") ? "ICard" : cardId.includes("H") ? "HCard" : null
 
                 if (cardType) {
-                    const card = scene.DeckHandler.InstantiateCard(55 + index * 55, 780, cardType, cardId, "playerCard").setScale(
-                        0.26
+                    const card = scene.DeckHandler.InstantiateCard(
+                        PositionHandler.playerCardInHandArea.x + index * PositionHandler.playerCardInHandArea.gap,
+                        PositionHandler.playerCardInHandArea.y + PositionHandler.playerCardInHandArea.waveEffectOffset[index],
+                        cardType,
+                        cardId,
+                        "playerCard"
                     )
+                        .setScale(ScaleHandler.playerInHandCard.scaleX)
+                        .setRotation(RotationHandler.playerInHandCard[index] * (Math.PI / 180))
+                        .setDepth(index)
                     scene.CardStorage.inHandStorage.push(card)
                 }
                 // scene.GameHandler.playerHand.push(card)
@@ -140,9 +168,15 @@ export default class SocketHandler {
 
         scene.socket.on("addWCardsInScene", (socketId, cardId) => {
             const isPlayer = socketId === scene.socket.id
-            const newCard = scene.DeckHandler.InstantiateCard(189, isPlayer ? 585 : 230, "WCard", cardId, "authorCard").setScale(
-                0.26,
-                isPlayer ? 0.26 : -0.26
+            const newCard = scene.DeckHandler.InstantiateCard(
+                isPlayer ? PositionHandler.playerAuthorCard.x : PositionHandler.opponentAuthorCard.x,
+                isPlayer ? PositionHandler.playerAuthorCard.y : PositionHandler.opponentAuthorCard.y,
+                "WCard",
+                cardId,
+                "authorCard"
+            ).setScale(
+                isPlayer ? ScaleHandler.playerAuthorCard.scaleX : ScaleHandler.opponentAuthorCard.scaleX,
+                isPlayer ? ScaleHandler.playerAuthorCard.scaleY : ScaleHandler.opponentAuthorCard.scaleY
             )
 
             if (isPlayer) {
@@ -209,33 +243,46 @@ export default class SocketHandler {
             )
             if (socketId !== scene.socket.id) {
                 // scene.CardStorage.opponentCardBackStorage.shift().destroy()
-                const scaleX = 0.26
-                const scaleY = cardType === "cardBack" ? 0.26 : -0.26
+                const scaleX = ScaleHandler.opponentInHandCard.scaleX
+                const scaleY =
+                    cardType === "cardBack" ? ScaleHandler.opponentCardBack.scaleY : ScaleHandler.opponentInHandCard.scaleY
                 let gameObject
                 switch (dropZoneName) {
                     case "dropZone1": //天
-                        gameObject = scene.DeckHandler.InstantiateCard(189, 345, cardType, cardName, "opponentCard").setScale(
-                            scaleX,
-                            scaleY
-                        )
+                        gameObject = scene.DeckHandler.InstantiateCard(
+                            PositionHandler.opponentSkyCard.x,
+                            PositionHandler.opponentSkyCard.y,
+                            cardType,
+                            cardName,
+                            "opponentCard"
+                        ).setScale(scaleX, scaleY)
                         break
                     case "dropZone2": //地
-                        gameObject = scene.DeckHandler.InstantiateCard(90, 220, cardType, cardName, "opponentCard").setScale(
-                            scaleX,
-                            scaleY
-                        )
+                        gameObject = scene.DeckHandler.InstantiateCard(
+                            PositionHandler.opponentGroundCard.x,
+                            PositionHandler.opponentGroundCard.y,
+                            cardType,
+                            cardName,
+                            "opponentCard"
+                        ).setScale(scaleX, scaleY)
                         break
                     case "dropZone3": //人
-                        gameObject = scene.DeckHandler.InstantiateCard(280, 220, cardType, cardName, "opponentCard").setScale(
-                            scaleX,
-                            scaleY
-                        )
+                        gameObject = scene.DeckHandler.InstantiateCard(
+                            PositionHandler.opponentPersonCard.x,
+                            PositionHandler.opponentPersonCard.y,
+                            cardType,
+                            cardName,
+                            "opponentCard"
+                        ).setScale(scaleX, scaleY)
                         break
                     case "dropZone4": //日
-                        gameObject = scene.DeckHandler.InstantiateCard(189, 100, cardType, cardName, "opponentCard").setScale(
-                            scaleX,
-                            scaleY
-                        )
+                        gameObject = scene.DeckHandler.InstantiateCard(
+                            PositionHandler.opponentSunCard.x,
+                            PositionHandler.opponentSunCard.y,
+                            cardType,
+                            cardName,
+                            "opponentCard"
+                        ).setScale(scaleX, scaleY)
                         break
                 }
 
@@ -294,7 +341,14 @@ export default class SocketHandler {
             if (whoWinSocketId === scene.socket.id) {
                 scene.GameHandler.playerTotalWinScore = scores
             }
-            scene.UIHandler.SetPlayerWinScoreText(scene.GameHandler.playerTotalWinScore)
+            scene.UIHandler.setPlayerWinScoreText(scene.GameHandler.playerTotalWinScore)
+        })
+
+        scene.socket.on("setPlayerLoseScoreText", (scores, whoWinSocketId) => {
+            if (whoWinSocketId !== scene.socket.id) {
+                scene.GameHandler.opponentTotalWinScore = scores
+            }
+            scene.UIHandler.setOpponentWinScoreText(scene.GameHandler.opponentTotalWinScore)
         })
 
         scene.socket.on("clearLocalBattleField", () => {
@@ -327,10 +381,10 @@ export default class SocketHandler {
             scene.GameHandler.setOpponentSkyPoint(0)
             scene.GameHandler.setOpponentGroundPoint(0)
             scene.GameHandler.setOpponentPersonPoint(0)
+            scene.UIHandler.setPlayerPointText(0)
+            scene.UIHandler.setOpponentPointText(0)
             // UI
             scene.UIHandler.deleteWhoWinText()
-            scene.UIHandler.setPlayerPointText()
-            scene.UIHandler.setOpponentPointText()
 
             scene.socket.emit("dealCardsAnotherRound", scene.socket.id, scene.GameHandler.currentRoomID)
         })

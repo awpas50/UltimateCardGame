@@ -38,8 +38,8 @@ export default class ZoneHandler {
                     dropZoneOutline.lineStyle(4, Color.hotPink)
 
                     // Calculate the position for each rectangle in the grid
-                    const xPos = x - width / 2 + i * (rectWidth + gap)
-                    const yPos = y - height / 2 + j * (rectHeight + gap)
+                    const xPos = x + i * (rectWidth + gap)
+                    const yPos = y + j * (rectHeight + gap)
 
                     // Draw the stroke rectangle at the calculated position with smaller dimensions
                     dropZoneOutline.strokeRect(xPos, yPos, rectWidth, rectHeight)
