@@ -64,9 +64,11 @@ io.on("connection", function (socket) {
     socket.on("joinRoom", (roomId) => {
         if (!io.sockets.adapter.rooms.has(roomId)) {
             console.log(`Room ${roomId} does not exist!`)
+            socket.emit("joinRoomFailedSignal")
             return
         } else if (playersInRooms.has(roomId) && playersInRooms.get(roomId).length >= 2) {
             console.log(`Room ${roomId} is full!`)
+            socket.emit("joinRoomFullSignal")
             return
         } else {
             socket.join(roomId)
@@ -190,6 +192,19 @@ io.on("connection", function (socket) {
         io.to(roomId).emit("addWCardsInScene", socketId, players[socketId].inScene_WCard)
         socket.emit("setAuthorElements", players[socketId].inScene_WCard)
         io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
+
+        // Roll dice: generates a random number between 1 and 6
+        let roll1 = Math.floor(Math.random() * 6) + 1
+        let roll2
+        // Ensure roll2 is different from roll1
+        do {
+            roll2 = Math.floor(Math.random() * 6) + 1
+        } while (roll2 === roll1)
+
+        io.to(roomId).emit("RollDice", socketId, roll1, roll2)
+        io.to(roomId).emit("decideWhichPlayerfirstTurn", socketId, roll1, roll2)
+        io.to(roomId).emit("changeGameState", "Ready")
+        io.to(roomId).emit("setPlayerTurnText")
     })
 
     // Arguments: scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID
@@ -255,8 +270,8 @@ io.on("connection", function (socket) {
     })
 
     socket.on("disconnect", function () {
-        console.log("A user disconnected: " + socket.id + ". Number of players in the server: " + objLength)
         delete players[socket.id]
+        console.log("A user disconnected: " + socket.id + ". Number of players in the server: " + objLength)
     })
 })
 
@@ -279,22 +294,26 @@ function endRound(roomId, socketId, opponentId) {
     let player1SocketId = endRoundRoom[0]
     let player2SocketId = endRoundRoom[1]
     let whoWinSocketId = ""
+    let whoLoseSocketId = ""
     let whoWin = 0
 
     //check who win
     if (players[player1SocketId].totalInspriationPt > players[player2SocketId].totalInspriationPt) {
         console.log("End round: Player 1 wins")
         whoWinSocketId = player1SocketId
+        whoLoseSocketId = player2SocketId
         whoWin = 1
     } else if (players[player1SocketId].totalInspriationPt < players[player2SocketId].totalInspriationPt) {
         console.log("End round: Player 2 wins")
         whoWinSocketId = player2SocketId
+        whoLoseSocketId = player1SocketId
         whoWin = 2
     }
     // **** strict type check
     else if (players[player1SocketId].totalInspriationPt === players[player2SocketId].totalInspriationPt) {
         console.log("End round: Draw")
         whoWinSocketId = ""
+        whoLoseSocketId = ""
         whoWin = 0
     }
     // set win text (whoWin: Number)
@@ -317,8 +336,7 @@ function endRound(roomId, socketId, opponentId) {
         console.log("Added: " + baseScore * multiplier)
         players[whoWinSocketId].totalScore += baseScore * multiplier
         io.to(roomId).emit("setPlayerWinScoreText", players[whoWinSocketId].totalScore, whoWinSocketId)
-    } else {
-        io.to(roomId).emit("setPlayerWinScoreText", 0, whoWinSocketId)
+        io.to(roomId).emit("setPlayerLoseScoreText", players[whoWinSocketId].totalScore, whoWinSocketId)
     }
     setTimeout(() => {
         resetBattleField(roomId, endRoundRoom)

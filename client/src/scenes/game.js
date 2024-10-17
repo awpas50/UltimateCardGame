@@ -220,12 +220,12 @@ export default class Game extends Phaser.Scene {
     }
 
     create() {
-        window.addEventListener("beforeunload", function (event) {
-            // Optional: Inform the user about unsaved changes
-            const confirmationMessage = "You have unsaved changes. Are you sure you want to leave?"
-            event.returnValue = confirmationMessage // Standard for most browsers
-            return confirmationMessage // For older browsers
-        })
+        // window.addEventListener("beforeunload", function (event) {
+        //     // Optional: Inform the user about unsaved changes
+        //     const confirmationMessage = "You have unsaved changes. Are you sure you want to leave?"
+        //     event.returnValue = confirmationMessage // Standard for most browsers
+        //     return confirmationMessage // For older browsers
+        // })
 
         this.setupSounds()
 

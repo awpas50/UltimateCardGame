@@ -98,11 +98,11 @@ export default class UIHandler {
         this.deleteWhoWinText = () => {
             scene.whoWinText.destroy()
         }
-        this.buildPlayerWinScoreText = () => {
-            scene.playerWinScoreText = scene.add.text(
-                PositionHandler.playerWinScoreText.x,
-                PositionHandler.playerWinScoreText.y,
-                "",
+        this.buildOpponentWinScoreText = () => {
+            scene.opponentWinScoreText = scene.add.text(
+                PositionHandler.opponentWinScoreText.x,
+                PositionHandler.opponentWinScoreText.y,
+                "總分: 0",
                 {
                     fontSize: 20,
                     fontFamily: "Trebuchet MS",
@@ -110,7 +110,22 @@ export default class UIHandler {
                 }
             )
         }
-        this.SetPlayerWinScoreText = (totalWinScore) => {
+        this.setOpponentWinScoreText = (totalWinScore) => {
+            scene.opponentWinScoreText.text = "總分: " + totalWinScore
+        }
+        this.buildPlayerWinScoreText = () => {
+            scene.playerWinScoreText = scene.add.text(
+                PositionHandler.playerWinScoreText.x,
+                PositionHandler.playerWinScoreText.y,
+                "總分: 0",
+                {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                    color: "#00ffff",
+                }
+            )
+        }
+        this.setPlayerWinScoreText = (totalWinScore) => {
             scene.playerWinScoreText.text = "總分: " + totalWinScore
         }
         this.ActivateGameText = () => {
@@ -151,7 +166,7 @@ export default class UIHandler {
                     .writeText(scene.GameHandler.currentRoomID)
                     .then(() => {
                         console.log("Text copied to clipboard: " + scene.GameHandler.currentRoomID)
-                        alert("已複製房間編號 --> " + scene.GameHandler.currentRoomID) // Optional feedback for the user
+                        alert("已複製房間編號: " + scene.GameHandler.currentRoomID) // Optional feedback for the user
                     })
                     .catch((err) => {
                         console.error("Error copying text: ", err)
@@ -206,6 +221,12 @@ export default class UIHandler {
             this.inputText.destroy()
             this.hideInputTextDecoration()
         })
+        scene.socket.on("joinRoomFailedSignal", () => {
+            alert("房間不存在!")
+        })
+        scene.socket.on("joinRoomFullSignal", () => {
+            alert("房間已滿!")
+        })
         this.buildJoinRoomText = () => {
             scene.joinRoomText = scene.add.text(PositionHandler.joinRoomText.x, PositionHandler.joinRoomText.y, "加入房間", {
                 fontSize: 20,
@@ -237,6 +258,7 @@ export default class UIHandler {
             this.buildPlayerTurnText()
             this.buildRollDiceText()
             this.buildPlayerWinScoreText()
+            this.buildOpponentWinScoreText()
         }
         this.buildLobby = () => {
             this.buildInputTextDecoration()
@@ -250,6 +272,7 @@ export default class UIHandler {
                 fixedWidth: 150,
                 fixedHeight: 36,
             })
+            inputText.setDepth(10)
             inputText.setOrigin(0.5, 0.5)
             inputText.setInteractive().on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1

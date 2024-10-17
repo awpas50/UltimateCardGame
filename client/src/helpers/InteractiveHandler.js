@@ -7,6 +7,7 @@ export default class InteractiveHandler {
         // Section: Card preview
         // Create cardPreview on pointerdown
         let isCardPreviewActive = false
+        let zIndex = 0
         this.cardPreview = null
 
         scene.input.on("pointerdown", (event, gameObjects) => {
@@ -25,6 +26,8 @@ export default class InteractiveHandler {
             if (gameObjects[0].type === "Image" && gameObjects[0].data.list.id !== "cardBack") {
                 scene.sound.play("dragCard")
                 console.log(gameObjects[0].data)
+                zIndex = gameObjects[0].depth
+                console.log("zIndex: " + zIndex)
                 if (this.cardPreview === null) {
                     this.cardPreview = scene.add
                         .image(
@@ -64,6 +67,7 @@ export default class InteractiveHandler {
             if (!dropped) {
                 gameObject.x = gameObject.input.dragStartX
                 gameObject.y = gameObject.input.dragStartY
+                gameObject.setDepth(zIndex)
             }
         })
 

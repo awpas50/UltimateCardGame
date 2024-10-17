@@ -89,6 +89,7 @@ export default class SocketHandler {
                         )
                             .setScale(ScaleHandler.playerInHandCard.scaleX)
                             .setRotation(RotationHandler.playerInHandCard[i] * (Math.PI / 180))
+                            .setDepth(i)
                         console.log(typeof card)
                         console.log(cardIdList[i])
                         scene.CardStorage.inHandStorage.push(card)
@@ -103,6 +104,7 @@ export default class SocketHandler {
                         )
                             .setScale(ScaleHandler.playerInHandCard.scaleX)
                             .setRotation(RotationHandler.playerInHandCard[i] * (Math.PI / 180))
+                            .setDepth(i)
                         console.log(typeof card)
                         console.log(cardIdList[i])
                         scene.CardStorage.inHandStorage.push(card)
@@ -154,6 +156,7 @@ export default class SocketHandler {
                     )
                         .setScale(ScaleHandler.playerInHandCard.scaleX)
                         .setRotation(RotationHandler.playerInHandCard[index] * (Math.PI / 180))
+                        .setDepth(index)
                     scene.CardStorage.inHandStorage.push(card)
                 }
                 // scene.GameHandler.playerHand.push(card)
@@ -340,7 +343,14 @@ export default class SocketHandler {
             if (whoWinSocketId === scene.socket.id) {
                 scene.GameHandler.playerTotalWinScore = scores
             }
-            scene.UIHandler.SetPlayerWinScoreText(scene.GameHandler.playerTotalWinScore)
+            scene.UIHandler.setPlayerWinScoreText(scene.GameHandler.playerTotalWinScore)
+        })
+
+        scene.socket.on("setPlayerLoseScoreText", (scores, whoWinSocketId) => {
+            if (whoWinSocketId !== scene.socket.id) {
+                scene.GameHandler.opponentTotalWinScore = scores
+            }
+            scene.UIHandler.setOpponentWinScoreText(scene.GameHandler.opponentTotalWinScore)
         })
 
         scene.socket.on("clearLocalBattleField", () => {
@@ -373,10 +383,10 @@ export default class SocketHandler {
             scene.GameHandler.setOpponentSkyPoint(0)
             scene.GameHandler.setOpponentGroundPoint(0)
             scene.GameHandler.setOpponentPersonPoint(0)
+            scene.UIHandler.setPlayerPointText(0)
+            scene.UIHandler.setOpponentPointText(0)
             // UI
             scene.UIHandler.deleteWhoWinText()
-            scene.UIHandler.setPlayerPointText()
-            scene.UIHandler.setOpponentPointText()
 
             scene.socket.emit("dealCardsAnotherRound", scene.socket.id, scene.GameHandler.currentRoomID)
         })

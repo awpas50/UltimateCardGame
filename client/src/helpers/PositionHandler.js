@@ -7,16 +7,17 @@ export default class PositionHandler {
     static inputTextRectangle = { x: 300, y: 500 }
 
     // 對局資訊 (以位置排列)
+    static opponentWinScoreText = { x: 350, y: 250 } // (對方)總分
     static opponentPointText = { x: 350, y: 300 } // 靈感值: x
     static playerNumberText = { x: 350, y: 350 } // "你是: 玩家1 / 2
     static playerTurnText = { x: 350, y: 400 } // 你的回合 / 對方的回合
     static whoWinText = { x: 350, y: 550 } // 玩家1勝利 / 平手
-    static playerWinScoreText = { x: 350, y: 600 } // (玩家)總分
-    static playerPointText = { x: 350, y: 650 } // 靈感值: x
+    static playerPointText = { x: 350, y: 600 } // 靈感值: x
+    static playerWinScoreText = { x: 350, y: 650 } // (玩家)總分
 
     // 擲骰
-    static rollDiceText1 = { x: 350, y: 670 }
-    static rollDiceText2 = { x: 350, y: 700 }
+    static rollDiceText1 = { x: 350, y: 700 }
+    static rollDiceText2 = { x: 450, y: 700 }
 
     // 場景
     static outlineGrid = { x: 25, y: 100, width: 380, height: 470 }
@@ -52,7 +53,7 @@ export default class PositionHandler {
 
     //作者卡位置
     static playerAuthorCard = { x: 176, y: 670 }
-    static opponentAuthorCard = { x: 176, y: 280 }
+    static opponentAuthorCard = { x: 176, y: 286 }
 
     //預覽
     static cardPreviewStart = { x: 1250, y: 400 }
