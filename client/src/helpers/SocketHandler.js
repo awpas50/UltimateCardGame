@@ -339,15 +339,15 @@ export default class SocketHandler {
             scene.UIHandler.BuildWhoWinText(whoWin)
         })
 
-        scene.socket.on("setPlayerWinScoreText", (scores, whoWinSocketId) => {
-            if (whoWinSocketId === scene.socket.id) {
+        scene.socket.on("setPlayerWinScoreText", (scores, socketId) => {
+            if (socketId === scene.socket.id) {
                 scene.GameHandler.playerTotalWinScore = scores
             }
             scene.UIHandler.setPlayerWinScoreText(scene.GameHandler.playerTotalWinScore)
         })
 
-        scene.socket.on("setPlayerLoseScoreText", (scores, whoWinSocketId) => {
-            if (whoWinSocketId !== scene.socket.id) {
+        scene.socket.on("setPlayerLoseScoreText", (scores, socketId) => {
+            if (socketId !== scene.socket.id) {
                 scene.GameHandler.opponentTotalWinScore = scores
             }
             scene.UIHandler.setOpponentWinScoreText(scene.GameHandler.opponentTotalWinScore)
