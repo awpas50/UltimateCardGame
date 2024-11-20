@@ -174,15 +174,18 @@ export default class InteractiveHandler {
                     const isVoid = elementID === 5
                     authorBuffPts = isVoid ? 0 : scene.GameHandler.authorBuffs[elementID]
                 }
-                // 積分倍率計算(同屬雙倍,同靈感三倍)。蓋牌無法獲得積分加倍。-1表示無效積分計算。5表示無屬性。
+
                 if (gameObject.getData("id").includes("I") && dropZone.name !== "dropZone4") {
-                    // socketId, elementId, inspriationPt
+                    // 積分倍率計算(同屬雙倍,同靈感三倍)。蓋牌無法獲得積分加倍。null表示無效積分計算。5表示無屬性。
                     scene.socket.emit(
                         "serverSetCardType",
                         scene.socket.id,
-                        canGetPoints ? elementID : -1,
-                        canGetPoints ? gameObject.getData("points") : -1
+                        canGetPoints ? elementID : null,
+                        canGetPoints ? gameObject.getData("points") : null,
+                        canGetPoints ? gameObject.getData("series") : null
                     )
+                    // 作者屬性加成
+                    scene.socket.emit("serverUpdateAuthorBuff", scene.socket.id, authorBuffPts)
                 }
                 // 計算總得分。卡反轉時能不能獲得作者屬性
                 const totalPointsToUpdate =
@@ -210,7 +213,7 @@ export default class InteractiveHandler {
                     gameObject.getData("id"),
                     scene.GameHandler.currentRoomID
                 )
-                scene.socket.emit("serverUpdateAuthorBuff", scene.socket.id, authorBuffPts)
+
                 scene.socket.emit("serverHideRollDiceText", scene.socket.id, scene.GameHandler.currentRoomID)
                 dropZone.data.list.cards++
                 // 同時檢查比賽是否結束

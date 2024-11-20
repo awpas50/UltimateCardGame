@@ -36,7 +36,7 @@ io.on("connection", function (socket) {
         socket.join(newRoomId)
         players[socket.id].currentRoomNumber = newRoomId
         socket.emit("buildPlayerNumberText", 1)
-        players[socket.id].playerName = "A"
+        players[socket.id].playerName = 1
 
         console.log(`User ${socket.id} created and joined room ${newRoomId}`)
         console.log("Rooms: " + JSON.stringify(Array.from(socket.rooms)))
@@ -75,7 +75,7 @@ io.on("connection", function (socket) {
             socket.emit("joinRoomSucceedSignal")
             players[socket.id].currentRoomNumber = roomId
             socket.emit("buildPlayerNumberText", 2)
-            players[socket.id].playerName = "B"
+            players[socket.id].playerName = 2
 
             console.log(`User ${socket.id} joined room ${roomId}`)
             console.log("Rooms: " + JSON.stringify(Array.from(socket.rooms)))
@@ -116,7 +116,7 @@ io.on("connection", function (socket) {
 
     players[socket.id] = {
         currentRoomNumber: "",
-        playerName: "", // 'A' or 'B'
+        playerName: "", // 1 or 2
         isReady: false,
         roundCount: 1,
         inDeck: [],
@@ -128,8 +128,9 @@ io.on("connection", function (socket) {
         inScene_WCard: [],
         inRubbishBin_WCard: [],
 
-        inSceneElement: [], // for multiplier
-        inSceneInspriationPt: [], // for multiplier
+        inSceneElementCalculator: [], // for multiplier
+        inSceneIPointCalculator: [], // for multiplier
+        inSceneSeriesCalculator: [], // for multiplier
         inSceneAuthorBoostPt: [],
         cardCount: 0,
         totalInspriationPt: 0,
@@ -141,7 +142,6 @@ io.on("connection", function (socket) {
     socket.emit("buildPlayerPointText")
     socket.emit("buildOpponentPointText")
 
-    // Called in UIHandler.js
     // populates the players[socketId].inHand array with elements from the players[socketId].inDeck array.
     // If the deck is empty, it shuffles and refills the deck before adding cards to the hand.
     socket.on("dealCardsFirstRound", function (socketId, roomId, opponentId) {
@@ -203,7 +203,6 @@ io.on("connection", function (socket) {
 
         io.to(roomId).emit("RollDice", socketId, roll1, roll2)
         io.to(roomId).emit("decideWhichPlayerfirstTurn", socketId, roll1, roll2)
-        io.to(roomId).emit("changeGameState", "Ready")
         io.to(roomId).emit("setPlayerTurnText")
     })
 
@@ -224,9 +223,10 @@ io.on("connection", function (socket) {
     })
 
     // Used for setting score multiplier at the end of the round
-    socket.on("serverSetCardType", function (socketId, elementId, inspriationPt) {
-        players[socketId].inSceneElement.push(elementId) // double scores if all elements match
-        players[socketId].inSceneInspriationPt.push(inspriationPt) // triple scores if all inspriation points match
+    socket.on("serverSetCardType", function (socketId, elementId, inspriationPt, series) {
+        players[socketId].inSceneElementCalculator.push(elementId) // double scores if all elements match
+        players[socketId].inSceneIPointCalculator.push(inspriationPt) // triple scores if all inspriation points match
+        players[socketId].inSceneSeriesCalculator.push(series) // triple scores if all series match
         // players[socketId].totalInspriationPt += inspriationPt
     })
 
@@ -258,14 +258,12 @@ io.on("connection", function (socket) {
     socket.on("serverUpdateCardCount", function (socketId, opponentId, roomId) {
         players[socketId].cardCount++
         calculateTotalInspriationPts(socketId)
-        console.log("players[socketId].cardCount: " + players[socketId].cardCount)
-        console.log("players[opponentId].cardCount: " + players[opponentId].cardCount)
-        console.log(players)
+        console.log(`場上有${players[socketId].cardCount}+${players[opponentId].cardCount}張牌`)
 
         if (players[socketId].cardCount >= 4 && players[opponentId].cardCount >= 4) {
             io.to(roomId).emit("setPlayerPointText")
             io.to(roomId).emit("setOpponentPointText")
-            endRound(roomId, socketId, opponentId)
+            endRound(roomId)
         }
     })
 
@@ -281,63 +279,90 @@ http.listen(port, function () {
 })
 
 // * roomId: string * //
-function endRound(roomId, socketId, opponentId) {
+function endRound(roomId) {
+    const drawScore = 4
     const baseScore = 8
-    let multiplier = 1
-    console.log("round end")
-    // should return values
-    console.log("socketId: " + socketId)
-    console.log("opponentId: " + opponentId)
-    console.log(playersInRooms.get(roomId))
     let endRoundRoom = playersInRooms.get(roomId)
+    let whoWinSocketId = ""
+    let whoWin = 0
+    let shouldCheckIPoint = false
     // * player1, player2: string (socket ID) *
     let player1SocketId = endRoundRoom[0]
     let player2SocketId = endRoundRoom[1]
-    let whoWinSocketId = ""
-    let whoLoseSocketId = ""
-    let whoWin = 0
 
-    //check who win
-    if (players[player1SocketId].totalInspriationPt > players[player2SocketId].totalInspriationPt) {
-        console.log("End round: Player 1 wins")
-        whoWinSocketId = player1SocketId
-        whoLoseSocketId = player2SocketId
-        whoWin = 1
-    } else if (players[player1SocketId].totalInspriationPt < players[player2SocketId].totalInspriationPt) {
-        console.log("End round: Player 2 wins")
-        whoWinSocketId = player2SocketId
-        whoLoseSocketId = player1SocketId
-        whoWin = 2
+    const player1ScoreBeforeCalculation = players[player1SocketId].totalScore
+    const player2ScoreBeforeCalculation = players[player2SocketId].totalScore
+    const player1Multiplier = getMultiplier(player1SocketId, 1)
+    const player2Multiplier = getMultiplier(player2SocketId, 2)
+
+    console.log(playersInRooms.get(roomId))
+    console.log("player1SocketId: " + player1SocketId)
+    console.log("player2SocketId: " + player2SocketId)
+
+    // 有玩家做出組合,則檢查組合倍率
+    if (player1Multiplier !== 1 || player2Multiplier !== 1) {
+        // 有組合會勝於沒有組合。組合倍率較大取勝
+        console.log("有玩家做出組合")
+        if (player1Multiplier !== player2Multiplier) {
+            console.log(`目前對局結束,玩家${player1Multiplier > player2Multiplier ? 1 : 2}勝利`)
+            whoWinSocketId = player1Multiplier > player2Multiplier ? player1SocketId : player2SocketId
+            whoWin = player1Multiplier > player2Multiplier ? 1 : 2
+        } else {
+            console.log("雙方都有組合同時倍率一樣：比較靈感值")
+            shouldCheckIPoint = true
+        }
+    } else {
+        console.log("沒有玩家做出組合：比較靈感值")
+        shouldCheckIPoint = true
     }
-    // **** strict type check
-    else if (players[player1SocketId].totalInspriationPt === players[player2SocketId].totalInspriationPt) {
-        console.log("End round: Draw")
-        whoWinSocketId = ""
-        whoLoseSocketId = ""
-        whoWin = 0
+
+    // 沒有組合/組合倍率一樣，比較靈感值
+    if (shouldCheckIPoint) {
+        //check who win
+        const player1Points = players[player1SocketId].totalInspriationPt
+        const player2Points = players[player2SocketId].totalInspriationPt
+
+        if (player1Points > player2Points) {
+            console.log("目前對局結束,玩家1勝利")
+            whoWinSocketId = player1SocketId
+            whoWin = 1
+        } else if (player1Points < player2Points) {
+            console.log("目前對局結束,玩家2勝利")
+            whoWinSocketId = player2SocketId
+            whoWin = 2
+        } else {
+            console.log("目前對局結束,平手")
+            whoWinSocketId = ""
+            whoWin = 0
+        }
     }
+
     // set win text (whoWin: Number)
     io.to(roomId).emit("setPlayerWinText", whoWin)
-    // if has player win
-    if (whoWinSocketId !== "") {
-        // 同屬
-        if (players[whoWinSocketId].inSceneElement.every((value) => value === players[whoWinSocketId].inSceneElement[0])) {
-            multiplier = 2
+    // 有玩家勝出
+    if (whoWinSocketId === player1SocketId) {
+        console.log("玩家1獲得分數: " + baseScore * player1Multiplier)
+        players[player1SocketId].totalScore += baseScore * player1Multiplier
+        io.to(roomId).emit("setPlayerWinScoreText", players[player1SocketId].totalScore, player1SocketId)
+        io.to(roomId).emit("setPlayerLoseScoreText", players[player1SocketId].totalScore, player1SocketId)
+    } else if (whoWinSocketId === player2SocketId) {
+        console.log("玩家2獲得分數: " + baseScore * player2Multiplier)
+        players[player2SocketId].totalScore += baseScore * player2Multiplier
+        io.to(roomId).emit("setPlayerWinScoreText", players[player2SocketId].totalScore, player2SocketId)
+        io.to(roomId).emit("setPlayerLoseScoreText", players[player2SocketId].totalScore, player2SocketId)
+    } else {
+        console.log("雙方各拿4分。")
+        for (let i = 0; i < endRoundRoom.length; i++) {
+            players[endRoundRoom[i]].totalScore += drawScore
+            io.to(roomId).emit("setPlayerWinScoreText", players[endRoundRoom[i]].totalScore, endRoundRoom[i])
+            io.to(roomId).emit("setPlayerLoseScoreText", players[endRoundRoom[i]].totalScore, endRoundRoom[i])
         }
-        // 同靈感值
-        if (
-            players[whoWinSocketId].inSceneInspriationPt.every(
-                (value) => value === players[whoWinSocketId].inSceneInspriationPt[0]
-            )
-        ) {
-            multiplier = 3
-        }
-        // add scores
-        console.log("Added: " + baseScore * multiplier)
-        players[whoWinSocketId].totalScore += baseScore * multiplier
-        io.to(roomId).emit("setPlayerWinScoreText", players[whoWinSocketId].totalScore, whoWinSocketId)
-        io.to(roomId).emit("setPlayerLoseScoreText", players[whoWinSocketId].totalScore, whoWinSocketId)
     }
+
+    console.log(`玩家1總分: ${player1ScoreBeforeCalculation} >>> ${players[player1SocketId].totalScore}`)
+    console.log(`玩家2總分: ${player2ScoreBeforeCalculation} >>> ${players[player2SocketId].totalScore}`)
+    console.log(players)
+
     setTimeout(() => {
         resetBattleField(roomId, endRoundRoom)
     }, 8000)
@@ -346,8 +371,9 @@ function endRound(roomId, socketId, opponentId) {
 // endRoundRoom: array (string)
 function resetBattleField(roomId, endRoundRoom) {
     for (let i = 0; i < endRoundRoom.length; i++) {
-        players[endRoundRoom[i]].inSceneElement = []
-        players[endRoundRoom[i]].inSceneInspriationPt = []
+        players[endRoundRoom[i]].inSceneElementCalculator = []
+        players[endRoundRoom[i]].inSceneIPointCalculator = []
+        players[endRoundRoom[i]].inSceneSeriesCalculator = []
         players[endRoundRoom[i]].inSceneAuthorBoostPt = []
         players[endRoundRoom[i]].totalInspriationPt = 0
         players[endRoundRoom[i]].cardCount = 0
@@ -374,10 +400,10 @@ function resetBattleField(roomId, endRoundRoom) {
     console.log(players)
 }
 
-//inSceneInspriationPt: []
+//inSceneIPointCalculator: []
 //inSceneAuthorBoostPt: []
 function calculateTotalInspriationPts(socketId) {
-    const sum1 = players[socketId].inSceneInspriationPt.reduce((accumulator, currentValue) => {
+    const sum1 = players[socketId].inSceneIPointCalculator.reduce((accumulator, currentValue) => {
         const val = currentValue === -1 ? 0 : currentValue
         return accumulator + val
     }, 0)
@@ -386,6 +412,51 @@ function calculateTotalInspriationPts(socketId) {
         return accumulator + val
     }, 0)
     players[socketId].totalInspriationPt = sum1 + sum2
+    console.log(`靈感值:${players[socketId].inSceneIPointCalculator}, 作者屬性加成:${players[socketId].inSceneAuthorBoostPt}`)
+}
+
+// playerNumber: 1 or 2
+function getMultiplier(socketId, playerNumber) {
+    let multiplier = 1
+    let sameElement = false
+    let sameSeries = false
+    let sameIPoint = false
+    // 同屬
+    if (
+        players[socketId].inSceneElementCalculator.length === 3 &&
+        players[socketId].inSceneElementCalculator[0] != null &&
+        players[socketId].inSceneElementCalculator.every((value) => value === players[socketId].inSceneElementCalculator[0])
+    ) {
+        console.log(`玩家${playerNumber}做出組合：同屬`)
+        multiplier = 2
+        sameElement = true
+    }
+    // 同系列
+    if (
+        players[socketId].inSceneSeriesCalculator.length === 3 &&
+        players[socketId].inSceneSeriesCalculator[0] != null &&
+        players[socketId].inSceneSeriesCalculator.every((value) => value === players[socketId].inSceneSeriesCalculator[0])
+    ) {
+        console.log(`玩家${playerNumber}做出組合：同系列`)
+        multiplier = 3
+        sameSeries = true
+    }
+    // 同靈感值
+    if (
+        players[socketId].inSceneIPointCalculator.length === 3 &&
+        players[socketId].inSceneIPointCalculator[0] != null &&
+        players[socketId].inSceneIPointCalculator.every((value) => value === players[socketId].inSceneIPointCalculator[0])
+    ) {
+        console.log(`玩家${playerNumber}做出組合：同靈感值`)
+        multiplier = 3
+        sameIPoint = true
+    }
+    // 同屬 + 同靈感值
+    if (sameElement && sameIPoint) {
+        console.log(`玩家${playerNumber}做出組合：同屬 + 同靈感值`)
+        multiplier = 4
+    }
+    return multiplier
 }
 
 function getImageNamesInFolder(folderPath) {
