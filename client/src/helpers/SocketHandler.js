@@ -357,7 +357,7 @@ export default class SocketHandler {
             scene.UIHandler.setOpponentWinScoreText(scene.GameHandler.opponentTotalWinScore)
         })
 
-        scene.socket.on("clearLocalBattleField", (socketId) => {
+        scene.socket.on("clearLocalBattleField", (socketIdToStartLater) => {
             console.log("clearLocalBattleField")
             // Destroy objects in all storage arrays
             scene.CardStorage.inSceneStorage.forEach((object) => {
@@ -392,7 +392,7 @@ export default class SocketHandler {
             // UI
             scene.UIHandler.deleteWhoWinText()
 
-            if (scene.socket.id === socketId) {
+            if (scene.socket.id === socketIdToStartLater) {
                 setTimeout(() => {
                     scene.socket.emit(
                         "dealCardsAnotherRound",

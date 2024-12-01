@@ -207,10 +207,10 @@ export default class Game extends Phaser.Scene {
         loadImages("23246", iCards, "ICard")
         loadImages("23246", hCards, "HCard")
 
-        this.load.image("H001B", require("../../public/assets/Back/H001B.png").default)
-        this.load.image("H001B_Filped", require("../../public/assets/Back/H001B_Filped.png").default)
-        this.load.image("W001B", require("../../public/assets/Back/W001B.png").default)
-        this.load.image("BG", require("../../public/assets/Back/WoodBackground.jpg").default)
+        this.load.image("H001B", require("../../public/assets/Test/H001B.png").default)
+        this.load.image("H001B_Filped", require("../../public/assets/Test/H001B_Filped.png").default)
+        this.load.image("W001B", require("../../public/assets/Test/W001B.png").default)
+        this.load.image("BG", require("../../public/assets/Test/WoodBackground.jpg").default)
 
         this.load.audio("BGM1", require("../sfx/BGM1.mp3").default)
         this.load.audio("flipCard1", require("../sfx/flipCard1.mp3").default)
