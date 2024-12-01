@@ -128,12 +128,12 @@ export default class UIHandler {
         this.setPlayerWinScoreText = (totalWinScore) => {
             scene.playerWinScoreText.text = "總分: " + totalWinScore
         }
-        this.ActivateGameText = () => {
-            if (scene.dealCardText != undefined || scene.dealCardText != null) {
-                scene.dealCardText.setInteractive()
-                scene.dealCardText.setColor("#00ffff")
-            }
-        }
+        // this.ActivateGameText = () => {
+        //     if (scene.dealCardText != undefined || scene.dealCardText != null) {
+        //         scene.dealCardText.setInteractive()
+        //         scene.dealCardText.setColor("#00ffff")
+        //     }
+        // }
         // <------------------------------------ Roll Dice ------------------------------------>
         this.buildRollDiceText = () => {
             scene.rollDiceText1 = scene.add

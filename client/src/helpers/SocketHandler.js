@@ -49,12 +49,12 @@ export default class SocketHandler {
         })
         scene.socket.on("changeGameState", (gameState) => {
             scene.GameHandler.changeGameState(gameState)
-            if (gameState === "Initializing") {
-                scene.UIHandler.ActivateGameText()
-            }
+            // if (gameState === "Initializing") {
+            //     scene.UIHandler.ActivateGameText()
+            // }
         })
         scene.socket.on("readyToStartGame", (socketId) => {
-            // 雙方玩家自動抽卡。其中一方會有延遲，如果指令同時進行可能會有問題
+            // 雙方玩家自動抽卡。其中一方會有延遲，如果指令同時進行可能會出問題
             if (scene.socket.id === socketId) {
                 setTimeout(() => {
                     scene.socket.emit(
@@ -63,7 +63,7 @@ export default class SocketHandler {
                         scene.GameHandler.currentRoomID,
                         scene.GameHandler.opponentID
                     )
-                }, 1000)
+                }, 100)
             } else {
                 scene.socket.emit(
                     "dealCardsFirstRound",
@@ -223,8 +223,9 @@ export default class SocketHandler {
                 // 2. 等級一樣但擲骰勝利時成為先手
                 (playerAuthorRarity === opponentAuthorRarity && playerDiceValue > opponentDiceValue)
             ) {
-                scene.GameHandler.changeTurn()
-                scene.GameHandler.getCurrentTurn()
+                scene.GameHandler.setTurn(true)
+            } else {
+                scene.GameHandler.setTurn(false)
             }
 
             // 如果是玩家2 顯示數字需要反轉
@@ -330,9 +331,12 @@ export default class SocketHandler {
             )
         })
 
+        scene.socket.on("setTurn", (turn) => {
+            scene.GameHandler.setTurn(turn)
+        })
+
         scene.socket.on("changeTurn", () => {
             scene.GameHandler.changeTurn()
-            scene.GameHandler.getCurrentTurn()
         })
 
         scene.socket.on("setPlayerWinText", (whoWin) => {
@@ -353,7 +357,7 @@ export default class SocketHandler {
             scene.UIHandler.setOpponentWinScoreText(scene.GameHandler.opponentTotalWinScore)
         })
 
-        scene.socket.on("clearLocalBattleField", () => {
+        scene.socket.on("clearLocalBattleField", (socketId) => {
             console.log("clearLocalBattleField")
             // Destroy objects in all storage arrays
             scene.CardStorage.inSceneStorage.forEach((object) => {
@@ -388,7 +392,23 @@ export default class SocketHandler {
             // UI
             scene.UIHandler.deleteWhoWinText()
 
-            scene.socket.emit("dealCardsAnotherRound", scene.socket.id, scene.GameHandler.currentRoomID)
+            if (scene.socket.id === socketId) {
+                setTimeout(() => {
+                    scene.socket.emit(
+                        "dealCardsAnotherRound",
+                        scene.socket.id,
+                        scene.GameHandler.currentRoomID,
+                        scene.GameHandler.opponentID
+                    )
+                }, 100)
+            } else {
+                scene.socket.emit(
+                    "dealCardsAnotherRound",
+                    scene.socket.id,
+                    scene.GameHandler.currentRoomID,
+                    scene.GameHandler.opponentID
+                )
+            }
         })
     }
 }
