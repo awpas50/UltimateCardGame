@@ -177,7 +177,7 @@ io.on("connection", function (socket) {
             } while (roll2 === roll1)
 
             io.to(roomId).emit("RollDice", socketId, roll1, roll2)
-            io.to(roomId).emit("decideWhichPlayerfirstTurn", socketId, roll1, roll2)
+            io.to(roomId).emit("decideWhichPlayerFirstTurn", socketId, roll1, roll2)
             io.to(roomId).emit("changeGameState", "Ready")
             io.to(roomId).emit("setPlayerTurnText")
         }
@@ -204,7 +204,7 @@ io.on("connection", function (socket) {
             } while (roll2 === roll1)
 
             io.to(roomId).emit("RollDice", socketId, roll1, roll2)
-            io.to(roomId).emit("decideWhichPlayerfirstTurn", socketId, roll1, roll2)
+            io.to(roomId).emit("decideWhichPlayerFirstTurn", socketId, roll1, roll2)
             io.to(roomId).emit("changeGameState", "Ready")
             io.to(roomId).emit("setPlayerTurnText")
         }
@@ -241,6 +241,12 @@ io.on("connection", function (socket) {
         io.to(roomId).emit("setOpponentPointText")
     })
 
+    socket.on("serverUpdateScores", function (socketId, score, roomId) {
+        players[socketId].totalScore += score
+        io.to(roomId).emit("setPlayerWinScoreText", score, socketId)
+        io.to(roomId).emit("setPlayerLoseScoreText", score, socketId)
+    })
+
     socket.on("serverNotifyCardPlayed", function (cardName, socketId, dropZoneId, roomId, cardType) {
         io.to(roomId).emit("localInstantiateOpponentCard", cardName, socketId, dropZoneId, cardType)
         io.to(roomId).emit("changeTurn")
@@ -264,10 +270,16 @@ io.on("connection", function (socket) {
         calculateTotalInspriationPts(socketId)
         console.log(`場上有${players[socketId].cardCount}+${players[opponentId].cardCount}張牌`)
 
+        console.log(socketId)
+        console.log(opponentId)
+
         if (players[socketId].cardCount >= 4 && players[opponentId].cardCount >= 4) {
             io.to(roomId).emit("setPlayerPointText")
             io.to(roomId).emit("setOpponentPointText")
             endRound(roomId)
+        } else {
+            console.log(`開始下一回合，對手收到題目`)
+            io.to(roomId).emit("localInitQuestionCard", opponentId)
         }
     })
 

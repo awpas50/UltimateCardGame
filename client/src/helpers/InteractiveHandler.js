@@ -216,7 +216,7 @@ export default class InteractiveHandler {
 
                 scene.socket.emit("serverHideRollDiceText", scene.socket.id, scene.GameHandler.currentRoomID)
                 dropZone.data.list.cards++
-                // 同時檢查比賽是否結束
+                // 同時檢查比賽是否結束。如未結束，對方會得到一張題目卡。
                 scene.socket.emit(
                     "serverUpdateCardCount",
                     scene.socket.id,

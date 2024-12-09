@@ -20,7 +20,12 @@ export default class SocketHandler {
             console.log("Players in the room:", players)
             scene.GameHandler.currentPlayersInRoom = players
             scene.GameHandler.opponentID = players.filter((player) => player !== scene.socket.id)
-            console.log("opponentID:", scene.GameHandler.opponentID)
+
+            // Extract the string from the array
+            if (scene.GameHandler.opponentID.length === 1) {
+                scene.GameHandler.opponentID = scene.GameHandler.opponentID[0]
+                console.log("opponentID:", scene.GameHandler.opponentID)
+            }
         })
 
         scene.socket.on("setPlayerTurnText", () => {
@@ -215,7 +220,7 @@ export default class SocketHandler {
             scene.GameHandler.opponentDiceValue = opponentDiceValue
         })
 
-        scene.socket.on("decideWhichPlayerfirstTurn", (socketId, roll1, roll2) => {
+        scene.socket.on("decideWhichPlayerFirstTurn", (socketId, roll1, roll2) => {
             const { playerAuthorRarity, opponentAuthorRarity, playerDiceValue, opponentDiceValue } = scene.GameHandler
             if (
                 // 1. 等級較高
@@ -224,6 +229,7 @@ export default class SocketHandler {
                 (playerAuthorRarity === opponentAuthorRarity && playerDiceValue > opponentDiceValue)
             ) {
                 scene.GameHandler.setTurn(true)
+                scene.QuestionCardHandler.initQuestionCard()
             } else {
                 scene.GameHandler.setTurn(false)
             }
@@ -234,6 +240,15 @@ export default class SocketHandler {
                     socketId === scene.socket.id ? roll1 : roll2,
                     socketId === scene.socket.id ? roll2 : roll1
                 )
+            }
+        })
+
+        scene.socket.on("localInitQuestionCard", (socketId) => {
+            console.log("localInitQuestionCard")
+            console.log(socketId)
+            console.log(scene.socket.id)
+            if (socketId === scene.socket.id) {
+                scene.QuestionCardHandler.initQuestionCard()
             }
         })
 
