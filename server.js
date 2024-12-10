@@ -6,7 +6,6 @@ const serveStatic = require("serve-static")
 const shuffle = require("shuffle-array")
 let players = {}
 let playersInRooms = new Map()
-let gameState = "Initializing"
 
 const fs = require("fs")
 const path = require("path")
@@ -170,7 +169,6 @@ io.on("connection", function (socket) {
 
         if (players[opponentId].isReady === true) {
             // Roll dice: generates a random number between 1 and 6
-            gameState = "Ready"
             let roll1 = Math.floor(Math.random() * 6) + 1
             let roll2
             // Ensure roll2 is different from roll1
@@ -179,13 +177,14 @@ io.on("connection", function (socket) {
             } while (roll2 === roll1)
 
             io.to(roomId).emit("RollDice", socketId, roll1, roll2)
-            io.to(roomId).emit("decideWhichPlayerfirstTurn", socketId, roll1, roll2)
+            io.to(roomId).emit("decideWhichPlayerFirstTurn", socketId, roll1, roll2)
             io.to(roomId).emit("changeGameState", "Ready")
             io.to(roomId).emit("setPlayerTurnText")
         }
     })
 
-    socket.on("dealCardsAnotherRound", function (socketId, roomId) {
+    socket.on("dealCardsAnotherRound", function (socketId, roomId, opponentId) {
+        console.log("dealCardsAnotherRound")
         // **** No need to deal cards again.
         // // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
         // io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
@@ -193,17 +192,22 @@ io.on("connection", function (socket) {
         socket.emit("setAuthorElements", players[socketId].inScene_WCard)
         io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
 
-        // Roll dice: generates a random number between 1 and 6
-        let roll1 = Math.floor(Math.random() * 6) + 1
-        let roll2
-        // Ensure roll2 is different from roll1
-        do {
-            roll2 = Math.floor(Math.random() * 6) + 1
-        } while (roll2 === roll1)
+        players[socketId].isReady = true
 
-        io.to(roomId).emit("RollDice", socketId, roll1, roll2)
-        io.to(roomId).emit("decideWhichPlayerfirstTurn", socketId, roll1, roll2)
-        io.to(roomId).emit("setPlayerTurnText")
+        if (players[opponentId].isReady === true) {
+            // Roll dice: generates a random number between 1 and 6
+            let roll1 = Math.floor(Math.random() * 6) + 1
+            let roll2
+            // Ensure roll2 is different from roll1
+            do {
+                roll2 = Math.floor(Math.random() * 6) + 1
+            } while (roll2 === roll1)
+
+            io.to(roomId).emit("RollDice", socketId, roll1, roll2)
+            io.to(roomId).emit("decideWhichPlayerFirstTurn", socketId, roll1, roll2)
+            io.to(roomId).emit("changeGameState", "Ready")
+            io.to(roomId).emit("setPlayerTurnText")
+        }
     })
 
     // Arguments: scene.socket.id, gameObject.getData("id"), scene.GameHandler.currentRoomID
@@ -237,6 +241,12 @@ io.on("connection", function (socket) {
         io.to(roomId).emit("setOpponentPointText")
     })
 
+    socket.on("serverUpdateScores", function (socketId, score, roomId) {
+        players[socketId].totalScore += score
+        io.to(roomId).emit("setPlayerWinScoreText", score, socketId)
+        io.to(roomId).emit("setPlayerLoseScoreText", score, socketId)
+    })
+
     socket.on("serverNotifyCardPlayed", function (cardName, socketId, dropZoneId, roomId, cardType) {
         io.to(roomId).emit("localInstantiateOpponentCard", cardName, socketId, dropZoneId, cardType)
         io.to(roomId).emit("changeTurn")
@@ -260,10 +270,16 @@ io.on("connection", function (socket) {
         calculateTotalInspriationPts(socketId)
         console.log(`場上有${players[socketId].cardCount}+${players[opponentId].cardCount}張牌`)
 
+        console.log(socketId)
+        console.log(opponentId)
+
         if (players[socketId].cardCount >= 4 && players[opponentId].cardCount >= 4) {
             io.to(roomId).emit("setPlayerPointText")
             io.to(roomId).emit("setOpponentPointText")
             endRound(roomId)
+        } else {
+            console.log(`開始下一回合，對手收到題目`)
+            io.to(roomId).emit("localInitQuestionCard", opponentId)
         }
     })
 
@@ -337,9 +353,8 @@ function endRound(roomId) {
         }
     }
 
-    // set win text (whoWin: Number)
+    // 計分
     io.to(roomId).emit("setPlayerWinText", whoWin)
-    // 有玩家勝出
     if (whoWinSocketId === player1SocketId) {
         console.log("玩家1獲得分數: " + baseScore * player1Multiplier)
         players[player1SocketId].totalScore += baseScore * player1Multiplier
@@ -362,6 +377,11 @@ function endRound(roomId) {
     console.log(`玩家1總分: ${player1ScoreBeforeCalculation} >>> ${players[player1SocketId].totalScore}`)
     console.log(`玩家2總分: ${player2ScoreBeforeCalculation} >>> ${players[player2SocketId].totalScore}`)
     console.log(players)
+
+    // 防止玩家出牌
+    players[player1SocketId].isReady = false
+    players[player2SocketId].isReady = false
+    io.to(roomId).emit("changeGameState", "Initializing")
 
     setTimeout(() => {
         resetBattleField(roomId, endRoundRoom)
@@ -393,10 +413,12 @@ function resetBattleField(roomId, endRoundRoom) {
         // Move previous WCard to rubbish
         players[endRoundRoom[i]].inRubbishBin_WCard.push(players[endRoundRoom[i]].inScene_WCard.shift())
         players[endRoundRoom[i]].inScene_WCard.push(players[endRoundRoom[i]].inDeck_WCard.shift())
+        // Reset ready state
+        players[endRoundRoom[i]].isReady = false
     }
 
     // Tell local to destroy cards in the scene
-    io.to(roomId).emit("clearLocalBattleField")
+    io.to(roomId).emit("clearLocalBattleField", endRoundRoom[0])
     console.log(players)
 }
 

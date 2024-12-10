@@ -77,6 +77,11 @@ export default class GameHandler {
             this.opponentAuthorRarity = WCard_Data_23246[authorCardName].rarity
         }
 
+        this.setTurn = (turn) => {
+            this.isMyTurn = turn
+            console.log("isMyTurn: " + this.isMyTurn)
+        }
+
         this.changeTurn = () => {
             this.isMyTurn = !this.isMyTurn
             console.log("isMyTurn: " + this.isMyTurn)

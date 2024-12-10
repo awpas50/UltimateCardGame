@@ -2,9 +2,11 @@ import CardStorage from "../helpers/CardStorage"
 import DeckHandler from "../helpers/DeckHandler"
 import GameHandler from "../helpers/GameHandler"
 import InteractiveHandler from "../helpers/InteractiveHandler"
+import QuestionCardHandler from "../helpers/QuestionCardHandler"
 import SocketHandler from "../helpers/SocketHandler"
 import UIHandler from "../helpers/UIHandler"
 import ZoneHandler from "../helpers/ZoneHandler"
+import Toast from "../helpers/Toast"
 import { InputText, TextArea } from "phaser3-rex-plugins/templates/ui/ui-components.js"
 
 // 編號/名稱/等級/天/地/人屬性
@@ -128,6 +130,57 @@ export const HCard_Data_23246 = {
     "23246_H055": { ID: "23246_H055" },
 }
 
+export const QCard_Data = {
+    Q001: { ID: "Q001", name: "完璧歸趙", answer: "B" },
+    Q002: { ID: "Q002", name: "集腋成裘", answer: "A" },
+    Q003: { ID: "Q003", name: "桀驁不馴", answer: "D" },
+    Q004: { ID: "Q004", name: "剛愎自用", answer: "C" },
+    Q005: { ID: "Q005", name: "和藹可親", answer: "B" },
+    Q006: { ID: "Q006", name: "飛揚跋扈", answer: "D" },
+    Q007: { ID: "Q007", name: "明辨是非", answer: "C" },
+    Q008: { ID: "Q008", name: "敝帚自珍", answer: "A" },
+    Q009: { ID: "Q009", name: "按部就班", answer: "A" },
+    Q010: { ID: "Q010", name: "為虎作倀", answer: "C" },
+    Q011: { ID: "Q011", name: "相輔相成", answer: "D" },
+    Q012: { ID: "Q012", name: "一張一弛", answer: "C" },
+    Q013: { ID: "Q013", name: "相形見絀", answer: "B" },
+    Q014: { ID: "Q014", name: "出類拔萃", answer: "D" },
+    Q015: { ID: "Q015", name: "川流不息", answer: "A" },
+    Q016: { ID: "Q016", name: "鞠躬盡瘁", answer: "B" },
+    Q017: { ID: "Q017", name: "理屈詞窮", answer: "A" },
+    Q018: { ID: "Q018", name: "披星戴月", answer: "D" },
+    Q019: { ID: "Q019", name: "虎視眈眈", answer: "D" },
+    Q020: { ID: "Q020", name: "中流砥柱", answer: "C" },
+    Q021: { ID: "Q021", name: "雕蟲小技", answer: "B" },
+    Q022: { ID: "Q022", name: "破釜沉舟", answer: "A" },
+    Q023: { ID: "Q023", name: "入不敷出", answer: "D" },
+    Q024: { ID: "Q024", name: "覆水難收", answer: "A" },
+    Q025: { ID: "Q025", name: "言簡意賅", answer: "D" },
+    Q026: { ID: "Q026", name: "英雄氣概", answer: "B" },
+    Q027: { ID: "Q027", name: "立竿見影", answer: "A" },
+    Q028: { ID: "Q028", name: "一鼓作氣", answer: "A" },
+    Q029: { ID: "Q029", name: "卑躬屈膝", answer: "B" },
+    Q030: { ID: "Q030", name: "性格粗獷", answer: "C" },
+    Q031: { ID: "Q031", name: "食不果腹", answer: "D" },
+    Q032: { ID: "Q032", name: "煥然一新", answer: "A" },
+    Q033: { ID: "Q033", name: "慘絕人寰", answer: "D" },
+    Q034: { ID: "Q034", name: "病入膏肓", answer: "B" },
+    Q035: { ID: "Q035", name: "拾人牙慧", answer: "D" },
+    Q036: { ID: "Q036", name: "精神渙散", answer: "C" },
+    Q037: { ID: "Q037", name: "寒暄客套", answer: "D" },
+    Q038: { ID: "Q038", name: "演繹歸納", answer: "A" },
+    Q039: { ID: "Q039", name: "斷壁頹垣", answer: "A" },
+    Q040: { ID: "Q040", name: "寧靜致遠", answer: "B" },
+    Q041: { ID: "Q041", name: "徇私舞弊", answer: "C" },
+    Q042: { ID: "Q042", name: "綠樹成蔭", answer: "C" },
+    Q043: { ID: "Q043", name: "口乾舌燥", answer: "B" },
+    Q044: { ID: "Q044", name: "膾炙人口", answer: "B" },
+    Q045: { ID: "Q045", name: "照本宣科", answer: "D" },
+    Q046: { ID: "Q046", name: "緣木求魚", answer: "A" },
+    Q047: { ID: "Q047", name: "敲詐勒索", answer: "C" },
+    Q048: { ID: "Q048", name: "梳妝打扮", answer: "B" },
+}
+
 export default class Game extends Phaser.Scene {
     constructor() {
         super({
@@ -195,22 +248,74 @@ export default class Game extends Phaser.Scene {
             "H055",
         ]
 
+        const qCards = [
+            "Q001",
+            "Q002",
+            "Q003",
+            "Q004",
+            "Q005",
+            "Q006",
+            "Q007",
+            "Q008",
+            "Q009",
+            "Q010",
+            "Q011",
+            "Q012",
+            "Q013",
+            "Q014",
+            "Q015",
+            "Q016",
+            "Q017",
+            "Q018",
+            "Q019",
+            "Q020",
+            "Q021",
+            "Q022",
+            "Q023",
+            "Q024",
+            "Q025",
+            "Q026",
+            "Q027",
+            "Q028",
+            "Q029",
+            "Q030",
+            "Q031",
+            "Q032",
+            "Q033",
+            "Q034",
+            "Q035",
+            "Q036",
+            "Q037",
+            "Q038",
+            "Q039",
+            "Q040",
+            "Q041",
+            "Q042",
+            "Q043",
+            "Q044",
+            "Q045",
+            "Q046",
+            "Q047",
+            "Q048",
+        ]
+
         // Function to load images
-        const loadImages = (prefix, cardArray, path) => {
+        const loadImages = (prefix, cardArray, path, format) => {
             cardArray.forEach((card) => {
-                this.load.image(`${prefix}_${card}`, require(`../../public/assets/23246/${path}/${prefix}_${card}.jpg`).default)
+                this.load.image(`${prefix}${card}`, require(`../../src/assets/23246/${path}/${prefix}${card}.${format}`).default)
             })
         }
 
         // Prefix / card number / path
-        loadImages("23246", wCards, "WCard")
-        loadImages("23246", iCards, "ICard")
-        loadImages("23246", hCards, "HCard")
+        loadImages("23246_", wCards, "WCard", "jpg")
+        loadImages("23246_", iCards, "ICard", "jpg")
+        loadImages("23246_", hCards, "HCard", "jpg")
+        loadImages("", qCards, "QCard", "png")
 
-        this.load.image("H001B", require("../../public/assets/Back/H001B.png").default)
-        this.load.image("H001B_Filped", require("../../public/assets/Back/H001B_Filped.png").default)
-        this.load.image("W001B", require("../../public/assets/Back/W001B.png").default)
-        this.load.image("BG", require("../../public/assets/Back/WoodBackground.jpg").default)
+        this.load.image("H001B", require("../../src/assets/Test/H001B.png").default)
+        this.load.image("H001B_Filped", require("../../src/assets/Test/H001B_Filped.png").default)
+        this.load.image("W001B", require("../../src/assets/Test/W001B.png").default)
+        this.load.image("BG", require("../../src/assets/Test/WoodBackground.jpg").default)
 
         this.load.audio("BGM1", require("../sfx/BGM1.mp3").default)
         this.load.audio("flipCard1", require("../sfx/flipCard1.mp3").default)
@@ -253,7 +358,9 @@ export default class Game extends Phaser.Scene {
         this.SocketHandler = new SocketHandler(this)
         this.ZoneHandler = new ZoneHandler(this)
         this.UIHandler = new UIHandler(this)
+        this.QuestionCardHandler = new QuestionCardHandler(this)
         this.InteractiveHandler = new InteractiveHandler(this)
+        this.Toast = new Toast(this)
 
         this.UIHandler.inputText = this.UIHandler.buildInputTextField(this.UIHandler.inputText)
         this.UIHandler.buildLobby()
