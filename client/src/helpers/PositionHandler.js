@@ -66,4 +66,6 @@ export default class PositionHandler {
     static answerD = { x: 520, y: 575 }
     //計時
     static questionCardTimer = { x: 420, y: 650 }
+    //Toast
+    static toast = { x: 300, y: 475 }
 }

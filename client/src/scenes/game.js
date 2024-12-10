@@ -6,6 +6,7 @@ import QuestionCardHandler from "../helpers/QuestionCardHandler"
 import SocketHandler from "../helpers/SocketHandler"
 import UIHandler from "../helpers/UIHandler"
 import ZoneHandler from "../helpers/ZoneHandler"
+import Toast from "../helpers/Toast"
 import { InputText, TextArea } from "phaser3-rex-plugins/templates/ui/ui-components.js"
 
 // 編號/名稱/等級/天/地/人屬性
@@ -359,6 +360,7 @@ export default class Game extends Phaser.Scene {
         this.UIHandler = new UIHandler(this)
         this.QuestionCardHandler = new QuestionCardHandler(this)
         this.InteractiveHandler = new InteractiveHandler(this)
+        this.Toast = new Toast(this)
 
         this.UIHandler.inputText = this.UIHandler.buildInputTextField(this.UIHandler.inputText)
         this.UIHandler.buildLobby()

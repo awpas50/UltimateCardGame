@@ -6,8 +6,10 @@ export default class QuestionCardHandler {
     constructor(scene) {
         this.interval = null
         this.correctAnswer = ""
+        this.hasAnsweredQuestion = true
 
         this.initQuestionCard = () => {
+            this.hasAnsweredQuestion = false
             const numberOfQCards = 48
             const RNG = Math.floor(Math.random() * numberOfQCards) + 1
             const qCardId = RNG >= 1 && RNG <= 9 ? "0" + RNG : RNG
@@ -77,9 +79,11 @@ export default class QuestionCardHandler {
                     console.log("所選答案:" + key)
                     if (this.correctAnswer === key) {
                         console.log("正解")
+                        scene.Toast.showToast("答對,加1分")
                         scene.socket.emit("serverUpdateScores", scene.socket.id, 1, scene.GameHandler.currentRoomID)
                     } else {
                         console.log("錯誤")
+                        scene.Toast.showToast("答錯,扣1分")
                         scene.socket.emit("serverUpdateScores", scene.socket.id, -1, scene.GameHandler.currentRoomID)
                     }
                     this.deleteAnswerTextAndResetQuestion()
@@ -100,6 +104,7 @@ export default class QuestionCardHandler {
             scene.questionCardTimerText.destroy()
             scene.questionCardPreview.destroy()
             this.correctAnswer = ""
+            this.hasAnsweredQuestion = true
         }
     }
 }

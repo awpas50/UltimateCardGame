@@ -140,7 +140,12 @@ export default class InteractiveHandler {
             }
 
             // 卡牌移動到正確位置
-            if (scene.GameHandler.isMyTurn && scene.GameHandler.gameState === "Ready" && dropZone.data.list.cards == 0) {
+            if (
+                scene.GameHandler.isMyTurn &&
+                scene.QuestionCardHandler.hasAnsweredQuestion &&
+                scene.GameHandler.gameState === "Ready" &&
+                dropZone.data.list.cards == 0
+            ) {
                 // 鎖定卡牌位置
                 gameObject.x = dropZone.x
                 gameObject.y = dropZone.y
@@ -226,6 +231,12 @@ export default class InteractiveHandler {
             } else {
                 gameObject.x = gameObject.input.dragStartX
                 gameObject.y = gameObject.input.dragStartY
+
+                if (!scene.GameHandler.isMyTurn) {
+                    scene.Toast.showToast("現在不是你的回合")
+                } else if (!scene.QuestionCardHandler.hasAnsweredQuestion) {
+                    scene.Toast.showToast("請先答題!")
+                }
             }
         })
 
