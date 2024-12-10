@@ -302,7 +302,10 @@ export default class Game extends Phaser.Scene {
         // Function to load images
         const loadImages = (prefix, cardArray, path, format) => {
             cardArray.forEach((card) => {
-                this.load.image(`${prefix}${card}`, require(`../../src/assets/23246/${path}/${prefix}${card}.${format}`).default)
+                this.load.image(
+                    `${prefix}${card}`,
+                    require(`../../public/assets/23246/${path}/${prefix}${card}.${format}`).default
+                )
             })
         }
 
@@ -312,10 +315,10 @@ export default class Game extends Phaser.Scene {
         loadImages("23246_", hCards, "HCard", "jpg")
         loadImages("", qCards, "QCard", "png")
 
-        this.load.image("H001B", require("../../src/assets/Test/H001B.png").default)
-        this.load.image("H001B_Filped", require("../../src/assets/Test/H001B_Filped.png").default)
-        this.load.image("W001B", require("../../src/assets/Test/W001B.png").default)
-        this.load.image("BG", require("../../src/assets/Test/WoodBackground.jpg").default)
+        this.load.image("H001B", require("../../public/assets/Test/H001B.png").default)
+        this.load.image("H001B_Filped", require("../../public/assets/Test/H001B_Filped.png").default)
+        this.load.image("W001B", require("../../public/assets/Test/W001B.png").default)
+        this.load.image("BG", require("../../public/assets/Test/WoodBackground.jpg").default)
 
         this.load.audio("BGM1", require("../sfx/BGM1.mp3").default)
         this.load.audio("flipCard1", require("../sfx/flipCard1.mp3").default)
