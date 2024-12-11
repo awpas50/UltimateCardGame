@@ -166,7 +166,7 @@ export default class UIHandler {
                     .writeText(scene.GameHandler.currentRoomID)
                     .then(() => {
                         console.log("Text copied to clipboard: " + scene.GameHandler.currentRoomID)
-                        alert("已複製房間編號: " + scene.GameHandler.currentRoomID) // Optional feedback for the user
+                        scene.Toast.showToast("已複製房間編號: " + scene.GameHandler.currentRoomID) // Optional feedback for the user
                     })
                     .catch((err) => {
                         console.error("Error copying text: ", err)
@@ -222,10 +222,10 @@ export default class UIHandler {
             this.hideInputTextDecoration()
         })
         scene.socket.on("joinRoomFailedSignal", () => {
-            alert("房間不存在!")
+            scene.Toast.showToast("房間不存在!")
         })
         scene.socket.on("joinRoomFullSignal", () => {
-            alert("房間已滿!")
+            scene.Toast.showToast("房間已滿!")
         })
         this.buildJoinRoomText = () => {
             scene.joinRoomText = scene.add.text(PositionHandler.joinRoomText.x, PositionHandler.joinRoomText.y, "加入房間", {

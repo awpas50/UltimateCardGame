@@ -1,5 +1,6 @@
 export default class PositionHandler {
     // 大廳
+    static authorCardBuilderText = { x: 260, y: 330 } // 作者卡編成
     static createRoomText = { x: 260, y: 380 } // 建立房間
     static joinRoomText = { x: 260, y: 430 } // 加入房間
     static roomNumberText = { x: 440, y: 20 } // 房間編號
