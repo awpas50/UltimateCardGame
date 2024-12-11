@@ -319,7 +319,25 @@ export default class Game extends Phaser.Scene {
     }
 
     preload() {
-        const wCards = ["W001", "W002", "W009", "W010", "W016"]
+        // missing W013
+        const wCards = [
+            "W001",
+            "W002",
+            "W003",
+            "W004",
+            "W005",
+            "W006",
+            "W007",
+            "W008",
+            "W009",
+            "W010",
+            "W011",
+            "W012",
+            "W014",
+            "W015",
+            "W016",
+            "W017",
+        ]
         const iCards = [
             "I002",
             "I006",

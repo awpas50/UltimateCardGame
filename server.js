@@ -180,6 +180,8 @@ io.on("connection", function (socket) {
             io.to(roomId).emit("decideWhichPlayerFirstTurn", socketId, roll1, roll2)
             io.to(roomId).emit("changeGameState", "Ready")
             io.to(roomId).emit("setPlayerTurnText")
+
+            console.log(players)
         }
     })
 
