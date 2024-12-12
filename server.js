@@ -245,8 +245,8 @@ io.on("connection", function (socket) {
 
     socket.on("serverUpdateScores", function (socketId, score, roomId) {
         players[socketId].totalScore += score
-        io.to(roomId).emit("setPlayerWinScoreText", score, socketId)
-        io.to(roomId).emit("setPlayerLoseScoreText", score, socketId)
+        io.to(roomId).emit("setPlayerWinScoreText", players[socketId].totalScore, socketId)
+        io.to(roomId).emit("setPlayerLoseScoreText", players[socketId].totalScore, socketId)
     })
 
     socket.on("serverNotifyCardPlayed", function (cardName, socketId, dropZoneId, roomId, cardType) {
