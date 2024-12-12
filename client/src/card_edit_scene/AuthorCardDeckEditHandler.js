@@ -3,22 +3,24 @@ import PositionHandler from "../helpers/PositionHandler"
 
 export default class AuthorCardDeckEditHandler {
     constructor(scene) {
+        this.authorDeck = ["", "", "", "", ""]
         this.initUI = () => {
-            this.renderZone(90, 300, 330 / 3.25, 430 / 3.25)
-            this.renderZone(195, 300, 330 / 3.25, 430 / 3.25)
-            this.renderZone(300, 300, 330 / 3.25, 430 / 3.25)
-            this.renderZone(405, 300, 330 / 3.25, 430 / 3.25)
-            this.renderZone(510, 300, 330 / 3.25, 430 / 3.25)
+            this.renderZone(90, 330, 330 / 3.25, 430 / 3.25, "authorZone1")
+            this.renderZone(195, 330, 330 / 3.25, 430 / 3.25, "authorZone2")
+            this.renderZone(300, 330, 330 / 3.25, 430 / 3.25, "authorZone3")
+            this.renderZone(405, 330, 330 / 3.25, 430 / 3.25, "authorZone4")
+            this.renderZone(510, 330, 330 / 3.25, 430 / 3.25, "authorZone5")
             this.renderOutlineGrid(40, 260, PositionHandler.outlineGrid.width, PositionHandler.outlineGrid.height)
             this.buildBackText()
             this.generateWCards()
         }
 
-        this.renderZone = (x, y, width, height) => {
+        this.renderZone = (x, y, width, height, name) => {
             let dropZone = scene.add.zone(x, y, width, height).setRectangleDropZone(width, height)
             dropZone.setData({
                 cards: 0,
             })
+            dropZone.setName(name)
         }
 
         this.renderOutlineGrid = (x, y, width, height) => {
@@ -49,8 +51,15 @@ export default class AuthorCardDeckEditHandler {
             scene.buildBackText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
+                scene.scene.wake("Game")
+                scene.scene.get("Game").sys.setVisible(true)
+                scene.scene.get("Game").sys.setActive(true)
                 scene.scene.stop("AuthorCardEdit")
-                scene.scene.start("Game")
+                if (this.authorDeck.some((element) => element === "")) {
+                    localStorage.removeItem("authorDeck")
+                } else {
+                    localStorage.setItem("authorDeck", JSON.stringify(this.authorDeck))
+                }
             })
             // Card color
             scene.buildBackText.on("pointerover", () => {
@@ -104,16 +113,43 @@ export default class AuthorCardDeckEditHandler {
         })
 
         scene.input.on("drop", (pointer, gameObject, dropZone) => {
-            if (isOverDropZone(gameObject, dropZone)) {
-                console.log("Card dropped inside the drop zone!")
+            if (dropZone.data.list.cards !== 0) {
+                gameObject.x = gameObject.input.dragStartX
+                gameObject.y = gameObject.input.dragStartY
             } else {
-                console.log("Card dropped outside the drop zone.")
-            }
-            if (dropZone.data.list.cards === 0) {
-                // 鎖定卡牌位置
-                gameObject.x = dropZone.x
-                gameObject.y = dropZone.y
-                dropZone.data.list.cards++
+                switch (dropZone.name) {
+                    case "authorZone1":
+                        this.authorDeck[0] = gameObject.getData("id")
+                        break
+                    case "authorZone2":
+                        this.authorDeck[1] = gameObject.getData("id")
+                        break
+                    case "authorZone3":
+                        this.authorDeck[2] = gameObject.getData("id")
+                        break
+                    case "authorZone4":
+                        this.authorDeck[3] = gameObject.getData("id")
+                        break
+                    case "authorZone5":
+                        this.authorDeck[4] = gameObject.getData("id")
+                        break
+                    default:
+                        break
+                }
+                // if (isOverDropZone(gameObject, dropZone)) {
+                //     console.log("Card dropped inside the drop zone!")
+                // } else {
+                //     console.log("Card dropped outside the drop zone.")
+                // }
+                if (dropZone.data.list.cards === 0) {
+                    // 鎖定卡牌位置
+                    gameObject.x = dropZone.x
+                    gameObject.y = dropZone.y
+                    dropZone.data.list.cards++
+
+                    scene.input.setDraggable(gameObject, false)
+                }
+                console.log(this.authorDeck)
             }
         })
 
@@ -125,11 +161,11 @@ export default class AuthorCardDeckEditHandler {
             }
         })
 
-        function isOverDropZone(card, dropZone) {
-            const cardBounds = card.getBounds()
-            const dropZoneBounds = dropZone.getBounds()
+        // function isOverDropZone(card, dropZone) {
+        //     const cardBounds = card.getBounds()
+        //     const dropZoneBounds = dropZone.getBounds()
 
-            return Phaser.Geom.Rectangle.Contains(dropZoneBounds, cardBounds.centerX, cardBounds.centerY)
-        }
+        //     return Phaser.Geom.Rectangle.Contains(dropZoneBounds, cardBounds.centerX, cardBounds.centerY)
+        // }
     }
 }
