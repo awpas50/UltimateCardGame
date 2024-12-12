@@ -1,5 +1,6 @@
 export default class PositionHandler {
     // 大廳
+    static authorDeckEditText = { x: 250, y: 330 } // 作者卡編成
     static createRoomText = { x: 260, y: 380 } // 建立房間
     static joinRoomText = { x: 260, y: 430 } // 加入房間
     static roomNumberText = { x: 440, y: 20 } // 房間編號
@@ -68,4 +69,8 @@ export default class PositionHandler {
     static questionCardTimer = { x: 420, y: 650 }
     //Toast
     static toast = { x: 300, y: 475 }
+
+    //-------------------------------------------------------------------
+
+    static backText = { x: 60, y: 30 }
 }

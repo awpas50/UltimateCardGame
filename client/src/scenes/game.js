@@ -35,6 +35,66 @@ export const WCard_Data_23246 = {
         authorBuffs: [40, 0, 0, 0, 10],
     },
 
+    "23246_W003": {
+        ID: "23246_W003",
+        name: "蘇軾",
+        rarity: 2,
+        sky: ["木", "火"],
+        ground: ["金", "木"],
+        person: ["水", "木"],
+        authorBuffs: [0, 0, 30, 20, 0],
+    },
+
+    "23246_W004": {
+        ID: "23246_W004",
+        name: "莊子",
+        rarity: 2,
+        sky: ["土", "金"],
+        ground: ["木", "土"],
+        person: ["火", "土"],
+        authorBuffs: [20, 0, 0, 0, 30],
+    },
+
+    "23246_W005": {
+        ID: "23246_W005",
+        name: "司馬遷",
+        rarity: 2,
+        sky: ["金", "土"],
+        ground: ["土", "金", "水"],
+        person: ["火", "金", "木"],
+        authorBuffs: [0, 0, 0, 40, 20],
+    },
+
+    "23246_W006": {
+        ID: "23246_W006",
+        name: "童年袁枚",
+        rarity: 1,
+        sky: ["火", "土"],
+        ground: ["水", "木"],
+        person: ["火", "木"],
+        authorBuffs: [10, 0, 20, 0, 0],
+    },
+
+    "23246_W007": {
+        ID: "23246_W007",
+        name: "袁枚",
+        rarity: 3,
+        sky: ["水", "火", "木"],
+        ground: ["火", "水", "木", "金", "土"],
+        person: ["火", "水", "木", "金", "土"],
+        authorBuffs: [50, 0, 0, 0, 0],
+    },
+
+    "23246_W008": {
+        ID: "23246_W008",
+        name: "嫦娥",
+        rarity: 3,
+        sky: ["土", "火"],
+        ground: ["火", "水", "木", "金", "土"],
+        person: ["火", "水", "木", "金", "土"],
+        authorBuffs: [50, 0, 0, 0, 50],
+    },
+
     "23246_W009": {
         ID: "23246_W009",
         name: "李商隱",
@@ -55,6 +115,66 @@ export const WCard_Data_23246 = {
         authorBuffs: [60, 60, 0, 0, 0],
     },
 
+    "23246_W011": {
+        ID: "23246_W011",
+        name: "杜甫",
+        rarity: 1,
+        sky: ["水", "金"],
+        ground: ["水", "土"],
+        person: ["金", "土"],
+        authorBuffs: [0, 0, 0, 30, -30],
+    },
+
+    "23246_W012": {
+        ID: "23246_W012",
+        name: "屈原",
+        rarity: 2,
+        sky: ["水", "木"],
+        ground: ["木", "土"],
+        person: ["火", "木"],
+        authorBuffs: [20, 0, 30, 0, 0],
+    },
+
+    "23246_W012": {
+        ID: "23246_W012",
+        name: "屈原",
+        rarity: 2,
+        sky: ["水", "木"],
+        ground: ["木", "土"],
+        person: ["火", "木"],
+        authorBuffs: [20, 0, 30, 0, 0],
+    },
+
+    // "23246_W013": {
+    //     ID: "23246_W013",
+    //     name: "屈原",
+    //     rarity: 1,
+    //     sky: ["木", "水", "火"],
+    //     ground: [],
+    //     person: [],
+    //     authorBuffs: [10, 10, 10, 0, 0],
+    // },
+
+    "23246_W014": {
+        ID: "23246_W014",
+        name: "童年孔子",
+        rarity: 1,
+        sky: ["土"],
+        ground: ["金", "土"],
+        person: ["火", "土"],
+        authorBuffs: [0, 0, 0, 0, 20],
+    },
+
+    "23246_W015": {
+        ID: "23246_W015",
+        name: "孔子",
+        rarity: 3,
+        sky: ["金"],
+        ground: ["火", "水", "木", "金", "土"],
+        person: ["火", "水", "木", "金", "土"],
+        authorBuffs: [0, 0, 0, 20, 0],
+    },
+
     "23246_W016": {
         ID: "23246_W016",
         name: "童年孟子",
@@ -63,6 +183,16 @@ export const WCard_Data_23246 = {
         ground: ["土", "水"],
         person: ["火", "水"],
         authorBuffs: [0, 20, 0, 0, 0],
+    },
+
+    "23246_W017": {
+        ID: "23246_W017",
+        name: "管仲",
+        rarity: 3,
+        sky: ["水", "金", "火"],
+        ground: ["火", "水", "木", "金", "土"],
+        person: ["火", "水", "木", "金", "土"],
+        authorBuffs: [0, 0, 0, 50, 0],
     },
 }
 // 靈感卡：編號/名稱/屬性/系列/靈感值
@@ -189,7 +319,25 @@ export default class Game extends Phaser.Scene {
     }
 
     preload() {
-        const wCards = ["W001", "W002", "W009", "W010", "W016"]
+        // missing W013
+        const wCards = [
+            "W001",
+            "W002",
+            "W003",
+            "W004",
+            "W005",
+            "W006",
+            "W007",
+            "W008",
+            "W009",
+            "W010",
+            "W011",
+            "W012",
+            "W014",
+            "W015",
+            "W016",
+            "W017",
+        ]
         const iCards = [
             "I002",
             "I006",
@@ -375,10 +523,12 @@ export default class Game extends Phaser.Scene {
     }
 
     setupSounds = () => {
-        this.backgroundMusic = this.sound.add("BGM1")
-        this.backgroundMusic.setLoop(true)
-        this.backgroundMusic.play()
-        this.backgroundMusic.setVolume(0.5)
+        if (!this.backgroundMusic) {
+            this.backgroundMusic = this.sound.add("BGM1") // Create the music only if it doesn't exist
+            this.backgroundMusic.setLoop(true)
+            this.backgroundMusic.play()
+            this.backgroundMusic.setVolume(0.5)
+        }
 
         this.sound.add("flipCard1")
         this.sound.add("flipCard2")

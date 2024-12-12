@@ -166,11 +166,45 @@ export default class UIHandler {
                     .writeText(scene.GameHandler.currentRoomID)
                     .then(() => {
                         console.log("Text copied to clipboard: " + scene.GameHandler.currentRoomID)
-                        alert("已複製房間編號: " + scene.GameHandler.currentRoomID) // Optional feedback for the user
+                        scene.Toast.showToast("已複製房間編號: " + scene.GameHandler.currentRoomID) // Optional feedback for the user
                     })
                     .catch((err) => {
                         console.error("Error copying text: ", err)
                     })
+            })
+        }
+        this.buildAuthorDeckEditText = () => {
+            scene.authorDeckEditText = scene.add.text(
+                PositionHandler.authorDeckEditText.x,
+                PositionHandler.authorDeckEditText.y,
+                "作者卡編成",
+                {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                    color: "#00ffff",
+                }
+            )
+            scene.authorDeckEditText.setInteractive()
+            scene.authorDeckEditText.on("pointerdown", () => {
+                const RNG = Math.floor(Math.random() * 3) + 1
+                scene.sound.play(`flipCard${RNG}`)
+                // ---- To be merged ---------
+                // scene.authorDeckEditText.visible = false
+                // scene.createRoomText.visible = false
+                // scene.joinRoomText.visible = false
+                // this.inputText.visible = false
+                // this.hideInputTextDecoration()
+
+                scene.scene.sleep("Game")
+                scene.scene.launch("AuthorCardEdit")
+                // ---------------------------
+            })
+            // Card color
+            scene.authorDeckEditText.on("pointerover", () => {
+                scene.authorDeckEditText.setColor("#fff5fa")
+            })
+            scene.authorDeckEditText.on("pointerout", () => {
+                scene.authorDeckEditText.setColor("#00ffff")
             })
         }
         this.buildCreateRoomText = () => {
@@ -186,17 +220,41 @@ export default class UIHandler {
             )
             scene.createRoomText.setInteractive()
             scene.createRoomText.on("pointerdown", () => {
-                const RNG = Math.floor(Math.random() * 3) + 1
-                scene.sound.play(`flipCard${RNG}`)
-                this.buildPlayArea()
-                scene.GameHandler.currentRoomID = this.generateRandomRoomID()
-                const randomRoomId = scene.GameHandler.currentRoomID
-                scene.socket.emit("createRoom", randomRoomId)
-                scene.createRoomText.visible = false
-                scene.joinRoomText.visible = false
-                scene.roomNumberText.text = "房間編號: " + randomRoomId
-                this.inputText.visible = false
-                this.hideInputTextDecoration()
+                const storedAuthorDeck = localStorage.getItem("authorDeck")
+                if (storedAuthorDeck) {
+                    const myDeck = JSON.parse(storedAuthorDeck)
+                    scene.socket.emit("serverUpdateAuthorDeck", scene.socket.id, myDeck)
+                }
+
+                if (storedAuthorDeck) {
+                    setTimeout(() => {
+                        const RNG = Math.floor(Math.random() * 3) + 1
+                        scene.sound.play(`flipCard${RNG}`)
+                        this.buildPlayArea()
+                        scene.GameHandler.currentRoomID = this.generateRandomRoomID()
+                        const randomRoomId = scene.GameHandler.currentRoomID
+                        scene.socket.emit("createRoom", randomRoomId)
+                        scene.authorDeckEditText.visible = false
+                        scene.createRoomText.visible = false
+                        scene.joinRoomText.visible = false
+                        scene.roomNumberText.text = "房間編號: " + randomRoomId
+                        this.inputText.visible = false
+                        this.hideInputTextDecoration()
+                    }, 1000)
+                } else {
+                    const RNG = Math.floor(Math.random() * 3) + 1
+                    scene.sound.play(`flipCard${RNG}`)
+                    this.buildPlayArea()
+                    scene.GameHandler.currentRoomID = this.generateRandomRoomID()
+                    const randomRoomId = scene.GameHandler.currentRoomID
+                    scene.socket.emit("createRoom", randomRoomId)
+                    scene.authorDeckEditText.visible = false
+                    scene.createRoomText.visible = false
+                    scene.joinRoomText.visible = false
+                    scene.roomNumberText.text = "房間編號: " + randomRoomId
+                    this.inputText.visible = false
+                    this.hideInputTextDecoration()
+                }
             })
             // Card color
             scene.createRoomText.on("pointerover", () => {
@@ -215,17 +273,17 @@ export default class UIHandler {
             scene.GameHandler.currentRoomID = this.getInputTextContent(this.inputText)
             console.log("Current Room ID: " + scene.GameHandler.currentRoomID)
             // scene.socket.emit("dealDeck", scene.socket.id, scene.GameHandler.currentRoomID)
-
+            scene.authorDeckEditText.visible = false
             scene.createRoomText.visible = false
             scene.joinRoomText.visible = false
             this.inputText.destroy()
             this.hideInputTextDecoration()
         })
         scene.socket.on("joinRoomFailedSignal", () => {
-            alert("房間不存在!")
+            scene.Toast.showToast("房間不存在!")
         })
         scene.socket.on("joinRoomFullSignal", () => {
-            alert("房間已滿!")
+            scene.Toast.showToast("房間已滿!")
         })
         this.buildJoinRoomText = () => {
             scene.joinRoomText = scene.add.text(PositionHandler.joinRoomText.x, PositionHandler.joinRoomText.y, "加入房間", {
@@ -237,7 +295,20 @@ export default class UIHandler {
             scene.joinRoomText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
-                scene.socket.emit("joinRoom", this.getInputTextContent(this.inputText))
+                const storedAuthorDeck = localStorage.getItem("authorDeck")
+                if (storedAuthorDeck) {
+                    const myDeck = JSON.parse(storedAuthorDeck)
+                    scene.socket.emit("serverUpdateAuthorDeck", scene.socket.id, myDeck)
+                }
+
+                if (storedAuthorDeck) {
+                    setTimeout(() => {
+                        scene.socket.emit("joinRoom", this.getInputTextContent(this.inputText))
+                    }, 1000)
+                } else {
+                    scene.socket.emit("joinRoom", this.getInputTextContent(this.inputText))
+                }
+
                 // (Runs joinRoomSucceedSignal from server.js if success.)
                 // (Update: Also runs dealCardsFirstRound (in server) for both players)
             })
@@ -262,6 +333,7 @@ export default class UIHandler {
         }
         this.buildLobby = () => {
             this.buildInputTextDecoration()
+            this.buildAuthorDeckEditText()
             this.buildRoomNumberText()
             this.buildCreateRoomText()
             this.buildJoinRoomText()

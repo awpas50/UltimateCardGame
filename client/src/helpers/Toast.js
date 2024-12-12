@@ -34,7 +34,7 @@ export default class Toast {
                                 toastText.destroy()
                             },
                         })
-                    }, 1000) // Delay before fade-out starts
+                    }, 2000) // Delay before fade-out starts
                 },
             })
         }

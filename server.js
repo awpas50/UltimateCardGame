@@ -123,6 +123,7 @@ io.on("connection", function (socket) {
         inScene: [],
         inRubbishBin: [],
 
+        inDeck_customized_WCard: [],
         inDeck_WCard: [],
         inScene_WCard: [],
         inRubbishBin_WCard: [],
@@ -153,9 +154,14 @@ io.on("connection", function (socket) {
             }
             players[socketId].inHand.push(players[socketId].inDeck.shift())
         }
-        if (players[socketId].inDeck_WCard.length === 0) {
+        if (players[socketId].inDeck_customized_WCard.length === 0) {
             players[socketId].inDeck_WCard = shuffle(imageNamesWCard)
+        } else if (players[socketId].inDeck_customized_WCard.length !== 0) {
+            players[socketId].inDeck_WCard = players[socketId].inDeck_customized_WCard
         }
+        // if (players[socketId].inDeck_WCard.length === 0) {
+        //     players[socketId].inDeck_WCard = shuffle(imageNamesWCard)
+        // }
         players[socketId].inScene_WCard = []
         players[socketId].inScene_WCard.push(players[socketId].inDeck_WCard.shift())
 
@@ -180,6 +186,8 @@ io.on("connection", function (socket) {
             io.to(roomId).emit("decideWhichPlayerFirstTurn", socketId, roll1, roll2)
             io.to(roomId).emit("changeGameState", "Ready")
             io.to(roomId).emit("setPlayerTurnText")
+
+            console.log(players)
         }
     })
 
@@ -243,8 +251,8 @@ io.on("connection", function (socket) {
 
     socket.on("serverUpdateScores", function (socketId, score, roomId) {
         players[socketId].totalScore += score
-        io.to(roomId).emit("setPlayerWinScoreText", score, socketId)
-        io.to(roomId).emit("setPlayerLoseScoreText", score, socketId)
+        io.to(roomId).emit("setPlayerWinScoreText", players[socketId].totalScore, socketId)
+        io.to(roomId).emit("setPlayerLoseScoreText", players[socketId].totalScore, socketId)
     })
 
     socket.on("serverNotifyCardPlayed", function (cardName, socketId, dropZoneId, roomId, cardType) {
@@ -255,6 +263,11 @@ io.on("connection", function (socket) {
 
     socket.on("serverHideRollDiceText", function (socketId, roomId) {
         io.to(roomId).emit("hideRollDiceText", socketId, roomId)
+    })
+
+    // authorDeck: array (length of 5)
+    socket.on("serverUpdateAuthorDeck", function (socketId, authorDeck) {
+        players[socketId].inDeck_customized_WCard = authorDeck
     })
 
     // socket.on('setPlayerPoint', function (socketId, playerTotalPoints) {
