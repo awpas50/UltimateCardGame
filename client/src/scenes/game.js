@@ -523,10 +523,12 @@ export default class Game extends Phaser.Scene {
     }
 
     setupSounds = () => {
-        this.backgroundMusic = this.sound.add("BGM1")
-        this.backgroundMusic.setLoop(true)
-        this.backgroundMusic.play()
-        this.backgroundMusic.setVolume(0.5)
+        if (!this.backgroundMusic) {
+            this.backgroundMusic = this.sound.add("BGM1") // Create the music only if it doesn't exist
+            this.backgroundMusic.setLoop(true)
+            this.backgroundMusic.play()
+            this.backgroundMusic.setVolume(0.5)
+        }
 
         this.sound.add("flipCard1")
         this.sound.add("flipCard2")
