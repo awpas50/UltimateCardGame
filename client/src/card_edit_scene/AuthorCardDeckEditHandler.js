@@ -42,7 +42,7 @@ export default class AuthorCardDeckEditHandler {
         }
 
         this.buildBackText = () => {
-            scene.buildBackText = scene.add.text(PositionHandler.backText.x, PositionHandler.backText.y, "返回", {
+            scene.buildBackText = scene.add.text(PositionHandler.backText.x, PositionHandler.backText.y, "儲存", {
                 fontSize: 20,
                 fontFamily: "Trebuchet MS",
                 color: "#00ffff",
