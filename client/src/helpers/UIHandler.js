@@ -225,9 +225,8 @@ export default class UIHandler {
                     const myDeck = JSON.parse(storedAuthorDeck)
                     scene.socket.emit("serverUpdateAuthorDeck", scene.socket.id, myDeck)
                 }
-
-                if (storedAuthorDeck) {
-                    setTimeout(() => {
+                setTimeout(
+                    () => {
                         const RNG = Math.floor(Math.random() * 3) + 1
                         scene.sound.play(`flipCard${RNG}`)
                         this.buildPlayArea()
@@ -240,21 +239,9 @@ export default class UIHandler {
                         scene.roomNumberText.text = "房間編號: " + randomRoomId
                         this.inputText.visible = false
                         this.hideInputTextDecoration()
-                    }, 1000)
-                } else {
-                    const RNG = Math.floor(Math.random() * 3) + 1
-                    scene.sound.play(`flipCard${RNG}`)
-                    this.buildPlayArea()
-                    scene.GameHandler.currentRoomID = this.generateRandomRoomID()
-                    const randomRoomId = scene.GameHandler.currentRoomID
-                    scene.socket.emit("createRoom", randomRoomId)
-                    scene.authorDeckEditText.visible = false
-                    scene.createRoomText.visible = false
-                    scene.joinRoomText.visible = false
-                    scene.roomNumberText.text = "房間編號: " + randomRoomId
-                    this.inputText.visible = false
-                    this.hideInputTextDecoration()
-                }
+                    },
+                    storedAuthorDeck ? 500 : 0
+                )
             })
             // Card color
             scene.createRoomText.on("pointerover", () => {

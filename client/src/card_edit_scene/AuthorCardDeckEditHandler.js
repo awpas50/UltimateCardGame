@@ -11,7 +11,8 @@ export default class AuthorCardDeckEditHandler {
             this.renderZone(405, 330, 330 / 3.25, 430 / 3.25, "authorZone4")
             this.renderZone(510, 330, 330 / 3.25, 430 / 3.25, "authorZone5")
             this.renderOutlineGrid(40, 260, PositionHandler.outlineGrid.width, PositionHandler.outlineGrid.height)
-            this.buildBackText()
+            this.buildSaveAndQuitText()
+            this.buildAuthorCardEditInfoText()
             this.generateWCards()
         }
 
@@ -41,33 +42,84 @@ export default class AuthorCardDeckEditHandler {
             }
         }
 
-        this.buildBackText = () => {
-            scene.buildBackText = scene.add.text(PositionHandler.backText.x, PositionHandler.backText.y, "儲存", {
-                fontSize: 20,
-                fontFamily: "Trebuchet MS",
-                color: "#00ffff",
-            })
-            scene.buildBackText.setInteractive()
-            scene.buildBackText.on("pointerdown", () => {
+        this.buildSaveAndQuitText = () => {
+            scene.buildSaveText = scene.add.text(
+                PositionHandler.authorCardEditSaveText.x,
+                PositionHandler.authorCardEditSaveText.y,
+                "儲存",
+                {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                    color: this.areAllAuthorCardsPlaced() ? "#00ffff" : "#fff5fa",
+                }
+            )
+            scene.buildSaveText.disableInteractive()
+            scene.buildSaveText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
                 scene.scene.wake("Game")
                 scene.scene.get("Game").sys.setVisible(true)
                 scene.scene.get("Game").sys.setActive(true)
                 scene.scene.stop("AuthorCardEdit")
-                if (this.authorDeck.some((element) => element === "")) {
-                    localStorage.removeItem("authorDeck")
-                } else {
-                    localStorage.setItem("authorDeck", JSON.stringify(this.authorDeck))
+                this.areAllAuthorCardsPlaced()
+                    ? localStorage.setItem("authorDeck", JSON.stringify(this.authorDeck))
+                    : localStorage.removeItem("authorDeck")
+            })
+
+            scene.buildSaveText.on("pointerover", () => {
+                if (this.areAllAuthorCardsPlaced()) scene.buildSaveText.setColor("#fff5fa")
+            })
+            scene.buildSaveText.on("pointerout", () => {
+                if (this.areAllAuthorCardsPlaced()) scene.buildSaveText.setColor("#00ffff")
+            })
+
+            scene.buildQuitText = scene.add.text(
+                PositionHandler.authorCardEditQuitText.x,
+                PositionHandler.authorCardEditQuitText.y,
+                "退出 (放棄編成)",
+                {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                    color: "#00ffff",
                 }
+            )
+            scene.buildQuitText.setInteractive()
+            scene.buildQuitText.on("pointerdown", () => {
+                const RNG = Math.floor(Math.random() * 3) + 1
+                scene.sound.play(`flipCard${RNG}`)
+                scene.scene.wake("Game")
+                scene.scene.get("Game").sys.setVisible(true)
+                scene.scene.get("Game").sys.setActive(true)
+                scene.scene.stop("AuthorCardEdit")
             })
-            // Card color
-            scene.buildBackText.on("pointerover", () => {
-                scene.buildBackText.setColor("#fff5fa")
+
+            scene.buildQuitText.on("pointerover", () => {
+                scene.buildQuitText.setColor("#fff5fa")
             })
-            scene.buildBackText.on("pointerout", () => {
-                scene.buildBackText.setColor("#00ffff")
+            scene.buildQuitText.on("pointerout", () => {
+                scene.buildQuitText.setColor("#00ffff")
             })
+        }
+
+        this.buildAuthorCardEditInfoText = () => {
+            scene.authorCardEditInfoText1 = scene.add.text(
+                PositionHandler.authorCardEditInfo1.x,
+                PositionHandler.authorCardEditInfo1.y,
+                "作者卡將按順序從左到右登場。下方五格都必須放入作者卡，",
+                {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                }
+            )
+            scene.authorCardEditInfoText2 = scene.add.text(
+                PositionHandler.authorCardEditInfo2.x,
+                PositionHandler.authorCardEditInfo2.y,
+                "否則不允許儲存卡組。",
+                {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                }
+            )
         }
 
         this.generateWCards = () => {
@@ -81,9 +133,6 @@ export default class AuthorCardDeckEditHandler {
                 wCardId = counter >= 0 && counter <= 9 ? "0" + counter : counter
                 const x = 80 + (i % maxCardsInRow) * 100
                 const y = 500 + Math.floor(i / maxCardsInRow) * 100
-
-                console.log("counter: " + counter)
-                console.log("wCardId: " + wCardId)
 
                 const card = scene.add
                     .image(x, y, "23246_W0" + wCardId)
@@ -117,6 +166,31 @@ export default class AuthorCardDeckEditHandler {
                 gameObject.x = gameObject.input.dragStartX
                 gameObject.y = gameObject.input.dragStartY
             } else {
+                // console.log("[GameObject] width: " + gameObject.width)
+                // console.log("[GameObject] height: " + gameObject.height)
+
+                // // Add the shader
+                // const shader = scene.add.shader("wipeShader", gameObject.x, gameObject.y, gameObject.width, gameObject.height)
+                // const mask = shader.createGeometryMask() // Create a mask from the shader
+
+                // // Apply the mask to the image
+                // gameObject.setMask(mask)
+
+                // // Control the shader's progress uniform
+                // let progress = 0
+                // scene.time.addEvent({
+                //     delay: 50,
+                //     callback: () => {
+                //         progress += 0.01
+                //         shader.setUniform("progress", progress)
+
+                //         if (progress >= 1) {
+                //             scene.time.removeAllEvents()
+                //         }
+                //     },
+                //     loop: true,
+                // })
+
                 switch (dropZone.name) {
                     case "authorZone1":
                         this.authorDeck[0] = gameObject.getData("id")
@@ -150,6 +224,10 @@ export default class AuthorCardDeckEditHandler {
                     scene.input.setDraggable(gameObject, false)
                 }
                 console.log(this.authorDeck)
+                if (this.areAllAuthorCardsPlaced()) {
+                    scene.buildSaveText.setInteractive()
+                    scene.buildSaveText.setColor("#00ffff")
+                }
             }
         })
 
@@ -167,5 +245,9 @@ export default class AuthorCardDeckEditHandler {
 
         //     return Phaser.Geom.Rectangle.Contains(dropZoneBounds, cardBounds.centerX, cardBounds.centerY)
         // }
+    }
+
+    areAllAuthorCardsPlaced() {
+        return this.authorDeck.every((element) => element !== "")
     }
 }
