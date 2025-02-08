@@ -473,6 +473,8 @@ export default class Game extends Phaser.Scene {
         this.load.audio("flipCard2", require("../sfx/flipCard2.wav").default)
         this.load.audio("flipCard3", require("../sfx/flipCard3.wav").default)
         this.load.audio("dragCard", require("../sfx/dragCard.wav").default)
+
+        // this.load.glsl("wipeShader", require("../shaders/linearwipe.glsl").default)
     }
 
     create() {

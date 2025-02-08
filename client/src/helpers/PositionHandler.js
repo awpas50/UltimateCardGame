@@ -1,13 +1,21 @@
 export default class PositionHandler {
-    // 大廳
+    // 目錄 (可用以下標題搜尋):
+    // 1.大廳
+    // 2.對局
+    // 3.作者卡編成
+
+    // -----------------------------------------------------------------------
+    // ------ 1.大廳
     static authorDeckEditText = { x: 250, y: 330 } // 作者卡編成
     static createRoomText = { x: 260, y: 380 } // 建立房間
     static joinRoomText = { x: 260, y: 430 } // 加入房間
     static roomNumberText = { x: 440, y: 20 } // 房間編號
     static inputText = { x: 330, y: 510 } // (輸入房間編號位置)
-    static inputTextRectangle = { x: 300, y: 500 }
+    static inputTextRectangle = { x: 300, y: 500 } // (輸入房間編號位置 - Input field)
 
-    // 對局資訊 (以位置排列)
+    // -----------------------------------------------------------------------
+    // ------ 2.對局
+    // 對局資訊 (從場景位置上到下排列)
     static opponentWinScoreText = { x: 350, y: 250 } // (對方)總分
     static opponentPointText = { x: 350, y: 300 } // 靈感值: x
     static playerNumberText = { x: 350, y: 350 } // "你是: 玩家1 / 2
@@ -70,7 +78,11 @@ export default class PositionHandler {
     //Toast
     static toast = { x: 300, y: 475 }
 
-    //-------------------------------------------------------------------
+    // -----------------------------------------------------------------------
+    // ------ 3.作者卡編成
 
-    static backText = { x: 60, y: 30 }
+    static authorCardEditSaveText = { x: 40, y: 30 }
+    static authorCardEditQuitText = { x: 410, y: 30 }
+    static authorCardEditInfo1 = { x: 40, y: 130 }
+    static authorCardEditInfo2 = { x: 40, y: 175 }
 }
