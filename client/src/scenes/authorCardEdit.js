@@ -28,21 +28,15 @@ export default class AuthorCardEdit extends Phaser.Scene {
             "W016",
             "W017",
         ]
-        // Function to load images
         const loadImages = (prefix, cardArray, path, format) => {
             cardArray.forEach((card) => {
-                this.load.image(
-                    `${prefix}${card}`,
-                    require(`../../public/assets/23246/${path}/${prefix}${card}.${format}`).default
-                )
+                this.load.image(`${prefix}${card}`, require(`../../public/assets/${path}/${prefix}${card}.${format}`).default)
             })
         }
         // Prefix / card number / path
-        loadImages("23246_", wCards, "WCard", "jpg")
+        loadImages("23246_", wCards, "23246/WCard", "jpg")
 
-        this.load.image("H001B", require("../../public/assets/Test/H001B.png").default)
-        this.load.image("H001B_Filped", require("../../public/assets/Test/H001B_Filped.png").default)
-        this.load.image("W001B", require("../../public/assets/Test/W001B.png").default)
+        this.load.image("image_cardback", require("../../public/assets/Test/image_cardback.png").default)
         this.load.image("BG", require("../../public/assets/Test/WoodBackground.jpg").default)
 
         this.load.audio("BGM1", require("../sfx/BGM1.mp3").default)

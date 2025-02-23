@@ -7,7 +7,6 @@ import SocketHandler from "../helpers/SocketHandler"
 import UIHandler from "../helpers/UIHandler"
 import ZoneHandler from "../helpers/ZoneHandler"
 import Toast from "../helpers/Toast"
-import { InputText, TextArea } from "phaser3-rex-plugins/templates/ui/ui-components.js"
 
 // 編號/名稱/等級/天/地/人屬性
 // 無屬性填 ["火", "水", "木", "金", "土"]
@@ -447,26 +446,20 @@ export default class Game extends Phaser.Scene {
             "Q048",
         ]
 
-        // Function to load images
         const loadImages = (prefix, cardArray, path, format) => {
             cardArray.forEach((card) => {
-                this.load.image(
-                    `${prefix}${card}`,
-                    require(`../../public/assets/23246/${path}/${prefix}${card}.${format}`).default
-                )
+                this.load.image(`${prefix}${card}`, require(`../../public/assets/${path}/${prefix}${card}.${format}`).default)
             })
         }
 
         // Prefix / card number / path
-        loadImages("23246_", wCards, "WCard", "jpg")
-        loadImages("23246_", iCards, "ICard", "jpg")
-        loadImages("23246_", hCards, "HCard", "jpg")
+        loadImages("23246_", wCards, "23246/WCard", "jpg")
+        loadImages("23246_", iCards, "23246/ICard", "jpg")
+        loadImages("23246_", hCards, "23246/HCard", "jpg")
         loadImages("", qCards, "QCard", "png")
 
-        this.load.image("H001B", require("../../public/assets/Test/H001B.png").default)
-        this.load.image("H001B_Filped", require("../../public/assets/Test/H001B_Filped.png").default)
-        this.load.image("W001B", require("../../public/assets/Test/W001B.png").default)
-        this.load.image("BG", require("../../public/assets/Test/WoodBackground.jpg").default)
+        this.load.image("image_cardback", require("../../public/assets/others/image_cardback.png").default)
+        this.load.image("BG", require("../../public/assets/others/WoodBackground.jpg").default)
 
         this.load.audio("BGM1", require("../sfx/BGM1.mp3").default)
         this.load.audio("flipCard1", require("../sfx/flipCard1.mp3").default)
