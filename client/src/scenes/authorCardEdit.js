@@ -52,6 +52,16 @@ export default class AuthorCardEdit extends Phaser.Scene {
         this.load.audio("dragCard", require("../sfx/dragCard.wav").default)
 
         // this.load.glsl("wipeShader", require("../shaders/linearwipe.glsl").default)
+
+        // Register the shader as a pipeline (required for Phaser to use it properly)
+        // this.game.renderer.addPipeline(
+        //     "wipeShader",
+        //     new Phaser.Renderer.WebGL.Pipelines.SinglePipeline({
+        //         game: this.game,
+        //         renderer: this.game.renderer,
+        //         fragShader: this.cache.shader.get("wipeShader"),
+        //     })
+        // )
     }
 
     create() {

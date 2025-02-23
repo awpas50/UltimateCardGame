@@ -166,26 +166,21 @@ export default class AuthorCardDeckEditHandler {
                 gameObject.x = gameObject.input.dragStartX
                 gameObject.y = gameObject.input.dragStartY
             } else {
-                // console.log("[GameObject] width: " + gameObject.width)
-                // console.log("[GameObject] height: " + gameObject.height)
+                console.log("[GameObject] width: " + gameObject.width)
+                console.log("[GameObject] height: " + gameObject.height)
 
-                // // Add the shader
-                // const shader = scene.add.shader("wipeShader", gameObject.x, gameObject.y, gameObject.width, gameObject.height)
-                // const mask = shader.createGeometryMask() // Create a mask from the shader
-
-                // // Apply the mask to the image
-                // gameObject.setMask(mask)
+                // gameObject.setPipeline("wipeShader")
 
                 // // Control the shader's progress uniform
                 // let progress = 0
-                // scene.time.addEvent({
+                // const event = scene.time.addEvent({
                 //     delay: 50,
                 //     callback: () => {
                 //         progress += 0.01
-                //         shader.setUniform("progress", progress)
+                //         gameObject.pipeline.set1f("progress", progress) // Set uniform for shader
 
                 //         if (progress >= 1) {
-                //             scene.time.removeAllEvents()
+                //             event.remove() // Stop updating shader
                 //         }
                 //     },
                 //     loop: true,
