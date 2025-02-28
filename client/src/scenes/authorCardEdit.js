@@ -27,6 +27,10 @@ export default class AuthorCardEdit extends Phaser.Scene {
             "W015",
             "W016",
             "W017",
+            "W018",
+            "W019",
+            "W020",
+            "W021",
         ]
         const loadImages = (prefix, cardArray, path, format) => {
             cardArray.forEach((card) => {
@@ -34,10 +38,10 @@ export default class AuthorCardEdit extends Phaser.Scene {
             })
         }
         // Prefix / card number / path
-        loadImages("23246_", wCards, "23246/WCard", "jpg")
+        loadImages("24256_", wCards, "24256/WCard", "jpg")
 
-        this.load.image("image_cardback", require("../../public/assets/Test/image_cardback.png").default)
-        this.load.image("BG", require("../../public/assets/Test/WoodBackground.jpg").default)
+        this.load.image("image_cardback", require("../../public/assets/others/image_cardback.png").default)
+        this.load.image("BG", require("../../public/assets/others/WoodBackground.jpg").default)
 
         this.load.audio("BGM1", require("../sfx/BGM1.mp3").default)
         this.load.audio("flipCard1", require("../sfx/flipCard1.mp3").default)

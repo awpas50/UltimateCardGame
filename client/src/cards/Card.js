@@ -1,4 +1,4 @@
-import { ICard_Data_23246, WCard_Data_23246 } from "../scenes/game.js"
+import { ICard_Data_23246, WCard_Data_23246, WCard_Data_24256 } from "../scenes/game.js"
 
 export default class Card {
     constructor(scene) {
@@ -41,11 +41,11 @@ export default class Card {
                     side: side,
                     sprite: sprite,
 
-                    rarity: WCard_Data_23246[this.id].rarity,
-                    sky: WCard_Data_23246[this.id].sky,
-                    ground: WCard_Data_23246[this.id].ground,
-                    person: WCard_Data_23246[this.id].person,
-                    authorBuffs: WCard_Data_23246[this.id].authorBuffs,
+                    rarity: WCard_Data_24256[this.id].rarity,
+                    sky: WCard_Data_24256[this.id].sky,
+                    ground: WCard_Data_24256[this.id].ground,
+                    person: WCard_Data_24256[this.id].person,
+                    authorBuffs: WCard_Data_24256[this.id].authorBuffs,
                 })
             }
             if (cardType == "cardBack") {

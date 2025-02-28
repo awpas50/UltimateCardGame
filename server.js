@@ -1,4 +1,3 @@
-//import { WCard_Data_23246, ICard_Data_23246 } from './client/src/scenes/game.js';
 const server = require("express")()
 
 const cors = require("cors")
@@ -108,7 +107,7 @@ io.on("connection", function (socket) {
     let folderPathHCard = "./client/dist/assets/23246/HCard"
     let imageNamesHCard = getImageNamesInFolder(folderPathHCard)
 
-    let folderPathWCard = "./client/dist/assets/23246/WCard"
+    let folderPathWCard = "./client/dist/assets/24256/WCard"
     let imageNamesWCard = getImageNamesInFolder(folderPathWCard)
 
     let mixedArray = [...imageNamesICard, ...imageNamesHCard]

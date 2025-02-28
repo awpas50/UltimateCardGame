@@ -7,6 +7,7 @@ import SocketHandler from "../helpers/SocketHandler"
 import UIHandler from "../helpers/UIHandler"
 import ZoneHandler from "../helpers/ZoneHandler"
 import Toast from "../helpers/Toast"
+import * as XLSX from "xlsx"
 
 // 編號/名稱/等級/天/地/人屬性
 // 無屬性填 ["火", "水", "木", "金", "土"]
@@ -122,16 +123,6 @@ export const WCard_Data_23246 = {
         ground: ["水", "土"],
         person: ["金", "土"],
         authorBuffs: [0, 0, 0, 30, -30],
-    },
-
-    "23246_W012": {
-        ID: "23246_W012",
-        name: "屈原",
-        rarity: 2,
-        sky: ["水", "木"],
-        ground: ["木", "土"],
-        person: ["火", "木"],
-        authorBuffs: [20, 0, 30, 0, 0],
     },
 
     "23246_W012": {
@@ -310,6 +301,223 @@ export const QCard_Data = {
     Q048: { ID: "Q048", name: "梳妝打扮", answer: "B" },
 }
 
+// 編號/名稱/等級/天/地/人屬性
+// 無屬性填 ["火", "水", "木", "金", "土"]
+
+// 火/水/木/金/土屬性加成
+// 例子: [0, 50, 0, -20, 0] 指水+50, 金-20.
+export const WCard_Data_24256 = {
+    "24256_W001": {
+        ID: "24256_W001",
+        name: "李煜",
+        rarity: 2,
+        sky: ["金", "水"],
+        ground: ["土", "水", "木"],
+        person: ["火", "水", "金"],
+        authorBuffs: [0, 50, 0, -20, 0],
+    },
+
+    "24256_W002": {
+        ID: "24256_W002",
+        name: "孟子",
+        rarity: 2,
+        sky: ["土", "火"],
+        ground: ["水", "火", "土"],
+        person: ["木", "火", "金"],
+        authorBuffs: [40, 0, 0, 0, 10],
+    },
+
+    "24256_W003": {
+        ID: "24256_W003",
+        name: "蘇軾",
+        rarity: 2,
+        sky: ["木", "火"],
+        ground: ["金", "木"],
+        person: ["水", "木"],
+        authorBuffs: [0, 0, 30, 20, 0],
+    },
+
+    "24256_W004": {
+        ID: "24256_W004",
+        name: "莊子",
+        rarity: 2,
+        sky: ["土", "金"],
+        ground: ["木", "土"],
+        person: ["火", "土"],
+        authorBuffs: [20, 0, 0, 0, 30],
+    },
+
+    "24256_W005": {
+        ID: "24256_W005",
+        name: "司馬遷",
+        rarity: 2,
+        sky: ["金", "土"],
+        ground: ["土", "金", "水"],
+        person: ["火", "金", "木"],
+        authorBuffs: [0, 0, 0, 40, 20],
+    },
+
+    "24256_W006": {
+        ID: "24256_W006",
+        name: "童年袁枚",
+        rarity: 1,
+        sky: ["火", "土"],
+        ground: ["水", "木"],
+        person: ["火", "木"],
+        authorBuffs: [10, 0, 20, 0, 0],
+    },
+
+    "24256_W007": {
+        ID: "24256_W007",
+        name: "袁枚",
+        rarity: 3,
+        sky: ["水", "火", "木"],
+        ground: ["火", "水", "木", "金", "土"],
+        person: ["火", "水", "木", "金", "土"],
+        authorBuffs: [50, 0, 0, 0, 0],
+    },
+
+    "24256_W008": {
+        ID: "24256_W008",
+        name: "嫦娥",
+        rarity: 3,
+        sky: ["土", "火"],
+        ground: ["火", "水", "木", "金", "土"],
+        person: ["火", "水", "木", "金", "土"],
+        authorBuffs: [50, 0, 0, 0, 50],
+    },
+
+    "24256_W009": {
+        ID: "24256_W009",
+        name: "李商隱",
+        rarity: 3,
+        sky: ["水"],
+        ground: ["火", "水", "木", "金", "土"],
+        person: ["火", "水", "木", "金", "土"],
+        authorBuffs: [0, 20, 0, 0, 0],
+    },
+
+    "24256_W010": {
+        ID: "24256_W010",
+        name: "李白",
+        rarity: 4,
+        sky: ["木", "水", "火"],
+        ground: ["火", "水", "木", "金", "土"],
+        person: ["火", "水", "木", "金", "土"],
+        authorBuffs: [60, 60, 0, 0, 0],
+    },
+
+    "24256_W011": {
+        ID: "24256_W011",
+        name: "杜甫",
+        rarity: 1,
+        sky: ["水", "金"],
+        ground: ["水", "土"],
+        person: ["金", "土"],
+        authorBuffs: [0, 0, 0, 30, -30],
+    },
+
+    "24256_W012": {
+        ID: "24256_W012",
+        name: "屈原",
+        rarity: 2,
+        sky: ["水", "木"],
+        ground: ["木", "土"],
+        person: ["火", "木"],
+        authorBuffs: [20, 0, 30, 0, 0],
+    },
+
+    // "24256_W013": {
+    //     ID: "24256_W013",
+    //     name: "屈原",
+    //     rarity: 1,
+    //     sky: ["木", "水", "火"],
+    //     ground: [],
+    //     person: [],
+    //     authorBuffs: [10, 10, 10, 0, 0],
+    // },
+
+    "24256_W014": {
+        ID: "24256_W014",
+        name: "童年孔子",
+        rarity: 1,
+        sky: ["土"],
+        ground: ["金", "土"],
+        person: ["火", "土"],
+        authorBuffs: [0, 0, 0, 0, 20],
+    },
+
+    "24256_W015": {
+        ID: "24256_W015",
+        name: "孔子",
+        rarity: 3,
+        sky: ["金"],
+        ground: ["火", "水", "木", "金", "土"],
+        person: ["火", "水", "木", "金", "土"],
+        authorBuffs: [0, 0, 0, 20, 0],
+    },
+
+    "24256_W016": {
+        ID: "24256_W016",
+        name: "童年孟子",
+        rarity: 1,
+        sky: ["水"],
+        ground: ["土", "水"],
+        person: ["火", "水"],
+        authorBuffs: [0, 20, 0, 0, 0],
+    },
+
+    "24256_W017": {
+        ID: "24256_W017",
+        name: "管仲",
+        rarity: 3,
+        sky: ["水", "金", "火"],
+        ground: ["火", "水", "木", "金", "土"],
+        person: ["火", "水", "木", "金", "土"],
+        authorBuffs: [0, 0, 0, 50, 0],
+    },
+
+    "24256_W018": {
+        ID: "24256_W018",
+        name: "莊子",
+        rarity: 3,
+        sky: ["水", "土", "火"],
+        ground: ["火", "水", "木", "金", "土"],
+        person: ["木", "土", "水"],
+        authorBuffs: [0, 0, 0, 0, 50],
+    },
+
+    "24256_W019": {
+        ID: "24256_W019",
+        name: "甄寶樹",
+        rarity: 3,
+        sky: ["水", "木", "火"],
+        ground: ["火", "水", "木", "金", "土"],
+        person: ["火", "水", "木", "金", "土"],
+        authorBuffs: [0, 0, 50, 0, 0],
+    },
+
+    "24256_W020": {
+        ID: "24256_W020",
+        name: "石如玉",
+        rarity: 3,
+        sky: ["水", "土", "火"],
+        ground: ["火", "水", "木", "金", "土"],
+        person: ["火", "水", "木", "金", "土"],
+        authorBuffs: [0, 50, 0, 0, 0],
+    },
+
+    "24256_W021": {
+        ID: "24256_W021",
+        name: "孫中山",
+        rarity: 2,
+        sky: ["金", "土"],
+        ground: ["水", "木", "土"],
+        person: ["火", "金", "土"],
+        authorBuffs: [20, 0, 0, 0, 40],
+    },
+}
+
 export default class Game extends Phaser.Scene {
     constructor() {
         super({
@@ -318,6 +526,22 @@ export default class Game extends Phaser.Scene {
     }
 
     preload() {
+        // const filePath = "../database/database.xlsx"
+        // const fileBuffer = fs.readFileSync(filePath)
+
+        // // Convert the file buffer to a format that the XLSX library can understand
+        // const data = new Uint8Array(fileBuffer)
+        // const workbook = XLSX.read(data, { type: "array" })
+
+        // // Get the first sheet
+        // const firstSheetName = workbook.SheetNames[0]
+        // const worksheet = workbook.Sheets[firstSheetName]
+
+        // // Convert the sheet to JSON
+        // const jsonData = XLSX.utils.sheet_to_json(worksheet)
+
+        // // Print the data
+        // console.log(jsonData)
         // missing W013
         const wCards = [
             "W001",
@@ -336,6 +560,10 @@ export default class Game extends Phaser.Scene {
             "W015",
             "W016",
             "W017",
+            "W018",
+            "W019",
+            "W020",
+            "W021",
         ]
         const iCards = [
             "I002",
@@ -453,7 +681,7 @@ export default class Game extends Phaser.Scene {
         }
 
         // Prefix / card number / path
-        loadImages("23246_", wCards, "23246/WCard", "jpg")
+        loadImages("24256_", wCards, "24256/WCard", "jpg")
         loadImages("23246_", iCards, "23246/ICard", "jpg")
         loadImages("23246_", hCards, "23246/HCard", "jpg")
         loadImages("", qCards, "QCard", "png")

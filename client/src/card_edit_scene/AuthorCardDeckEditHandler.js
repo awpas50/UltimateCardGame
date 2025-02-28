@@ -124,7 +124,7 @@ export default class AuthorCardDeckEditHandler {
 
         this.generateWCards = () => {
             const maxCardsInRow = 5
-            const totalCards = 17
+            const totalCards = 21
             let wCardId
             let counter = 0
 
@@ -135,11 +135,11 @@ export default class AuthorCardDeckEditHandler {
                 const y = 500 + Math.floor(i / maxCardsInRow) * 100
 
                 const card = scene.add
-                    .image(x, y, "23246_W0" + wCardId)
+                    .image(x, y, "24256_W0" + wCardId)
                     .setInteractive()
                     .setScale(0.26, 0.26)
                     .setData({
-                        id: "23246_W0" + wCardId,
+                        id: "24256_W0" + wCardId,
                     })
 
                 scene.input.setDraggable(card)

@@ -1,4 +1,4 @@
-import { WCard_Data_23246 } from "../scenes/game.js"
+import { WCard_Data_23246, WCard_Data_24256 } from "../scenes/game.js"
 
 export default class GameHandler {
     constructor(scene) {
@@ -54,9 +54,9 @@ export default class GameHandler {
         this.baseTotalScoreWillGet = 8
 
         this.setAuthorElements = (authorCardName) => {
-            this.playerSkyElements = WCard_Data_23246[authorCardName].sky
-            this.playerGroundElements = WCard_Data_23246[authorCardName].ground
-            this.playerPersonElements = WCard_Data_23246[authorCardName].person
+            this.playerSkyElements = WCard_Data_24256[authorCardName].sky
+            this.playerGroundElements = WCard_Data_24256[authorCardName].ground
+            this.playerPersonElements = WCard_Data_24256[authorCardName].person
 
             console.log("playerSkyElements: " + this.playerSkyElements)
             console.log("playerGroundElements: " + this.playerGroundElements)
@@ -64,17 +64,17 @@ export default class GameHandler {
         }
 
         this.setAuthorBuffs = (authorCardName) => {
-            this.authorBuffs = WCard_Data_23246[authorCardName].authorBuffs
+            this.authorBuffs = WCard_Data_24256[authorCardName].authorBuffs
         }
         this.addAuthorBuffsPoints = (points) => {
             this.authorBuffPoint += points
         }
 
         this.setPlayerAuthorRarity = (authorCardName) => {
-            this.playerAuthorRarity = WCard_Data_23246[authorCardName].rarity
+            this.playerAuthorRarity = WCard_Data_24256[authorCardName].rarity
         }
         this.setOpponentAuthorRarity = (authorCardName) => {
-            this.opponentAuthorRarity = WCard_Data_23246[authorCardName].rarity
+            this.opponentAuthorRarity = WCard_Data_24256[authorCardName].rarity
         }
 
         this.setTurn = (turn) => {
