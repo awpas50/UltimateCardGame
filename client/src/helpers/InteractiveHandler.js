@@ -1,4 +1,3 @@
-import { ICard_Data_23246, WCard_Data_23246 } from "../scenes/game.js"
 import PositionHandler from "./PositionHandler.js"
 import ScaleHandler from "./ScaleHandler.js"
 

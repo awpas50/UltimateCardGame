@@ -7,7 +7,6 @@ import SocketHandler from "../helpers/SocketHandler"
 import UIHandler from "../helpers/UIHandler"
 import ZoneHandler from "../helpers/ZoneHandler"
 import Toast from "../helpers/Toast"
-import * as XLSX from "xlsx"
 
 // 編號/名稱/等級/天/地/人屬性
 // 無屬性填 ["火", "水", "木", "金", "土"]
@@ -526,22 +525,6 @@ export default class Game extends Phaser.Scene {
     }
 
     preload() {
-        // const filePath = "../database/database.xlsx"
-        // const fileBuffer = fs.readFileSync(filePath)
-
-        // // Convert the file buffer to a format that the XLSX library can understand
-        // const data = new Uint8Array(fileBuffer)
-        // const workbook = XLSX.read(data, { type: "array" })
-
-        // // Get the first sheet
-        // const firstSheetName = workbook.SheetNames[0]
-        // const worksheet = workbook.Sheets[firstSheetName]
-
-        // // Convert the sheet to JSON
-        // const jsonData = XLSX.utils.sheet_to_json(worksheet)
-
-        // // Print the data
-        // console.log(jsonData)
         // missing W013
         const wCards = [
             "W001",
@@ -709,22 +692,9 @@ export default class Game extends Phaser.Scene {
         this.setupSounds()
 
         this.cameras.main.roundPixels = true
-        // Set scale mode
         this.scale.scaleMode = Phaser.Scale.ScaleModes.NEAREST
         // Ensure the canvas doesn't smooth images
         this.scale.canvas.setAttribute("image-rendering", "pixelated")
-        // Check if the canvas exists
-        // if (this.sys.game.canvas) {
-        //     const context = this.sys.game.canvas.getContext('2d');
-        //     // Check if the context and imageSmoothingQuality are supported
-        //     if (context && 'imageSmoothingQuality' in context) {
-        //         context.imageSmoothingQuality = 'high';
-        //     } else {
-        //         console.warn('Canvas context or imageSmoothingQuality is not supported in this browser.');
-        //     }
-        // } else {
-        //     console.warn('Canvas element not found.');
-        // }
 
         this.CardStorage = new CardStorage(this)
         this.DeckHandler = new DeckHandler(this)
@@ -739,10 +709,7 @@ export default class Game extends Phaser.Scene {
         this.UIHandler.inputText = this.UIHandler.buildInputTextField(this.UIHandler.inputText)
         this.UIHandler.buildLobby()
 
-        // let backgroundImage = this.add.image(0, 0, 'BG');
-        // backgroundImage.setOrigin(0, 0);
-        // backgroundImage.setDepth(0); // Set a depth level for the background
-        // backgroundImage.disableInteractive();
+        localStorage.removeItem("authorDeck")
     }
 
     setupSounds = () => {
