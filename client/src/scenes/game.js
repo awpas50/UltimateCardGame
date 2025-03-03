@@ -8,227 +8,123 @@ import UIHandler from "../helpers/UIHandler"
 import ZoneHandler from "../helpers/ZoneHandler"
 import Toast from "../helpers/Toast"
 
-// 編號/名稱/等級/天/地/人屬性
-// 無屬性填 ["火", "水", "木", "金", "土"]
+// 靈感卡：編號/名稱/星數/屬性/系列/標籤/靈感值
+export const ICard_Data_24256 = {
+    "24256_I001": { ID: "24256_I001", name: "蟋蟀", rarity: 2, element: "土", series: "袁枚", tag: "", points: 10 },
+    "24256_I002": { ID: "24256_I002", name: "幻想", rarity: 2, element: "水", series: "袁枚", tag: "", points: 60 },
+    "24256_I003": { ID: "24256_I003", name: "奮臂", rarity: 4, element: "火", series: "袁枚", tag: "", points: 20 },
+    "24256_I004": { ID: "24256_I004", name: "單縑", rarity: 3, element: "土", series: "袁枚", tag: "", points: 60 },
+    "24256_I005": { ID: "24256_I005", name: "悲慟", rarity: 3, element: "水", series: "袁枚", tag: "", points: 70 },
+    "24256_I006": { ID: "24256_I006", name: "瞠視", rarity: 4, element: "水", series: "袁枚", tag: "", points: 50 },
+    "24256_I007": { ID: "24256_I007", name: "文墨", rarity: 4, element: "土", series: "袁枚", tag: "", points: 40 },
+    "24256_I008": { ID: "24256_I008", name: "野史", rarity: 4, element: "金", series: "袁枚", tag: "", points: 40 },
+    "24256_I009": { ID: "24256_I009", name: "氣絕", rarity: 4, element: "火", series: "袁枚", tag: "", points: 0 },
+    "24256_I010": { ID: "24256_I010", name: "羈魂", rarity: 2, element: "木", series: "袁枚", tag: "", points: 20 },
 
-// 火/水/木/金/土屬性加成
-// 例子: [0, 50, 0, -20, 0] 指水+50, 金-20.
-export const WCard_Data_23246 = {
-    "23246_W001": {
-        ID: "23246_W001",
-        name: "李煜",
-        rarity: 2,
-        sky: ["金", "水"],
-        ground: ["土", "水", "木"],
-        person: ["火", "水", "金"],
-        authorBuffs: [0, 50, 0, -20, 0],
-    },
+    "24256_I011": { ID: "24256_I011", name: "紅燈", rarity: 3, element: "火", series: "袁枚", tag: "", points: 70 },
+    "24256_I012": { ID: "24256_I012", name: "含飴", rarity: 3, element: "火", series: "袁枚", tag: "", points: 80 },
+    "24256_I013": { ID: "24256_I013", name: "曉花", rarity: 4, element: "水", series: "袁枚", tag: "", points: 10 },
+    "24256_I014": { ID: "24256_I014", name: "雞肥", rarity: 4, element: "火", series: "袁枚", tag: "", points: 30 },
+    "24256_I015": { ID: "24256_I015", name: "偷靴", rarity: 4, element: "土", series: "袁枚", tag: "", points: 30 },
+    "24256_I016": { ID: "24256_I016", name: "書生", rarity: 3, element: "火", series: "袁枚", tag: "", points: 50 },
+    "24256_I017": { ID: "24256_I017", name: "明月", rarity: 1, element: "水", series: "中秋", tag: "", points: 80 },
+    "24256_I018": { ID: "24256_I018", name: "清影", rarity: 3, element: "火", series: "中秋", tag: "", points: 60 },
+    "24256_I019": { ID: "24256_I019", name: "雲母", rarity: 3, element: "金", series: "中秋", tag: "", points: 70 },
 
-    "23246_W002": {
-        ID: "23246_W002",
-        name: "孟子",
-        rarity: 2,
-        sky: ["土", "火"],
-        ground: ["水", "火", "土"],
-        person: ["木", "火", "金"],
-        authorBuffs: [40, 0, 0, 0, 10],
-    },
+    "24256_I020": { ID: "24256_I020", name: "曉星", rarity: 2, element: "水", series: "中秋", tag: "", points: 60 },
+    "24256_I021": { ID: "24256_I021", name: "靈藥", rarity: 2, element: "火", series: "中秋", tag: "", points: 20 },
+    "24256_I022": { ID: "24256_I022", name: "夜心", rarity: 3, element: "水", series: "中秋", tag: "", points: 90 },
+    "24256_I023": { ID: "24256_I023", name: "壺酒", rarity: 5, element: "水", series: "中秋", tag: "酒", points: 100 },
+    "24256_I024": { ID: "24256_I024", name: "邀月", rarity: 3, element: "火", series: "中秋", tag: "", points: 30 },
+    "24256_I025": { ID: "24256_I025", name: "雁聲", rarity: 4, element: "木", series: "中秋", tag: "", points: 80 },
+    "24256_I026": { ID: "24256_I026", name: "棲鴉", rarity: 4, element: "木", series: "中秋", tag: "", points: 10 },
+    "24256_I027": { ID: "24256_I027", name: "桂花", rarity: 2, element: "木", series: "中秋", tag: "", points: 40 },
+    "24256_I028": { ID: "24256_I028", name: "蓼莪", rarity: 2, element: "木", series: "詩經", tag: "", points: 60 },
+    "24256_I029": { ID: "24256_I029", name: "缾罍", rarity: 2, element: "金", series: "詩經", tag: "酒", points: 0 },
 
-    "23246_W003": {
-        ID: "23246_W003",
-        name: "蘇軾",
-        rarity: 2,
-        sky: ["木", "火"],
-        ground: ["金", "木"],
-        person: ["水", "木"],
-        authorBuffs: [0, 0, 30, 20, 0],
-    },
+    "24256_I030": { ID: "24256_I030", name: "青蒿", rarity: 3, element: "木", series: "詩經", tag: "", points: 50 },
+    "24256_I031": { ID: "24256_I031", name: "劬勞", rarity: 2, element: "水", series: "詩經", tag: "", points: 0 },
+    "24256_I032": { ID: "24256_I032", name: "昊天", rarity: 5, element: "水", series: "詩經", tag: "", points: 100 },
+    "24256_I033": { ID: "24256_I033", name: "楊柳", rarity: 4, element: "木", series: "詩經", tag: "", points: 0 },
+    "24256_I034": { ID: "24256_I034", name: "雨雪", rarity: 4, element: "水", series: "詩經", tag: "", points: 40 },
+    "24256_I035": { ID: "24256_I035", name: "關睢", rarity: 5, element: "木", series: "詩經", tag: "", points: 100 },
+    "24256_I036": { ID: "24256_I036", name: "淑女", rarity: 4, element: "火", series: "詩經", tag: "", points: 20 },
+    "24256_I037": { ID: "24256_I037", name: "荇菜", rarity: 4, element: "水", series: "詩經", tag: "", points: 20 },
+    "24256_I038": { ID: "24256_I038", name: "終風", rarity: 4, element: "水", series: "詩經", tag: "", points: 10 },
+    "24256_I039": { ID: "24256_I039", name: "木瓜", rarity: 2, element: "木", series: "詩經", tag: "", points: 60 },
+    "24256_I040": { ID: "24256_I040", name: "相鼠", rarity: 2, element: "土", series: "詩經", tag: "", points: 50 },
 
-    "23246_W004": {
-        ID: "23246_W004",
-        name: "莊子",
-        rarity: 2,
-        sky: ["土", "金"],
-        ground: ["木", "土"],
-        person: ["火", "土"],
-        authorBuffs: [20, 0, 0, 0, 30],
-    },
+    "24256_I041": { ID: "24256_I041", name: "碩鼠", rarity: 5, element: "土", series: "詩經", tag: "", points: 90 },
+    "24256_I042": { ID: "24256_I042", name: "黍苗", rarity: 4, element: "土", series: "詩經", tag: "", points: 20 },
+    "24256_I043": { ID: "24256_I043", name: "矛戟", rarity: 3, element: "金", series: "詩經", tag: "", points: 90 },
+    "24256_I044": { ID: "24256_I044", name: "隰桑", rarity: 2, element: "木", series: "詩經", tag: "", points: 10 },
+    "24256_I045": { ID: "24256_I045", name: "蔽日", rarity: 4, element: "木", series: "楚辭", tag: "", points: 50 },
+    "24256_I046": { ID: "24256_I046", name: "矢墜", rarity: 3, element: "火", series: "楚辭", tag: "", points: 90 },
+    "24256_I047": { ID: "24256_I047", name: "驂馬", rarity: 3, element: "火", series: "楚辭", tag: "", points: 70 },
+    "24256_I048": { ID: "24256_I048", name: "秦弓", rarity: 3, element: "金", series: "楚辭", tag: "", points: 10 },
+    "24256_I049": { ID: "24256_I049", name: "漁父", rarity: 4, element: "水", series: "楚辭", tag: "", points: 40 },
+    "24256_I050": { ID: "24256_I050", name: "芰荷", rarity: 4, element: "木", series: "楚辭", tag: "", points: 40 },
 
-    "23246_W005": {
-        ID: "23246_W005",
-        name: "司馬遷",
-        rarity: 2,
-        sky: ["金", "土"],
-        ground: ["土", "金", "水"],
-        person: ["火", "金", "木"],
-        authorBuffs: [0, 0, 0, 40, 20],
-    },
+    "24256_I051": { ID: "24256_I051", name: "芙蓉", rarity: 4, element: "木", series: "楚辭", tag: "", points: 10 },
+    "24256_I052": { ID: "24256_I052", name: "蛾眉", rarity: 3, element: "火", series: "楚辭", tag: "", points: 20 },
+    "24256_I053": { ID: "24256_I053", name: "心悅", rarity: 4, element: "木", series: "孔子", tag: "", points: 30 },
+    "24256_I054": { ID: "24256_I054", name: "得閒", rarity: 2, element: "水", series: "孔子", tag: "", points: 70 },
+    "24256_I055": { ID: "24256_I055", name: "山鬼", rarity: 5, element: "木", series: "孔子", tag: "", points: 90 },
+    "24256_I056": { ID: "24256_I056", name: "師旅", rarity: 5, element: "火", series: "孔子", tag: "", points: 80 },
+    "24256_I057": { ID: "24256_I057", name: "哂", rarity: 2, element: "水", series: "孔子", tag: "", points: 0 },
+    "24256_I058": { ID: "24256_I058", name: "鼓瑟", rarity: 3, element: "土", series: "孔子", tag: "", points: 70 },
+    "24256_I059": { ID: "24256_I059", name: "冠者", rarity: 3, element: "土", series: "孔子", tag: "", points: 20 },
 
-    "23246_W006": {
-        ID: "23246_W006",
-        name: "童年袁枚",
-        rarity: 1,
-        sky: ["火", "土"],
-        ground: ["水", "木"],
-        person: ["火", "木"],
-        authorBuffs: [10, 0, 20, 0, 0],
-    },
+    "24256_I060": { ID: "24256_I060", name: "社稷", rarity: 5, element: "土", series: "孔子", tag: "", points: 100 },
+    "24256_I061": { ID: "24256_I061", name: "虎兕", rarity: 3, element: "金", series: "孔子", tag: "", points: 80 },
+    "24256_I062": { ID: "24256_I062", name: "龜玉", rarity: 4, element: "金", series: "孔子", tag: "", points: 30 },
+    "24256_I063": { ID: "24256_I063", name: "干戈", rarity: 4, element: "金", series: "孔子", tag: "", points: 70 },
+    "24256_I064": { ID: "24256_I064", name: "犬馬", rarity: 3, element: "土", series: "孔子", tag: "", points: 80 },
+    "24256_I065": { ID: "24256_I065", name: "松柏", rarity: 3, element: "木", series: "孔子", tag: "", points: 70 },
+    "24256_I066": { ID: "24256_I066", name: "好人", rarity: 2, element: "水", series: "孔子", tag: "", points: 0 },
+    "24256_I067": { ID: "24256_I067", name: "惡人", rarity: 2, element: "水", series: "孔子", tag: "", points: 0 },
+    "24256_I068": { ID: "24256_I068", name: "貧賤", rarity: 3, element: "土", series: "孔子", tag: "", points: 50 },
+    "24256_I069": { ID: "24256_I069", name: "勿視", rarity: 3, element: "土", series: "孔子", tag: "", points: 90 },
+    "24256_I070": { ID: "24256_I070", name: "棄甲", rarity: 3, element: "金", series: "孟子", tag: "", points: 0 },
 
-    "23246_W007": {
-        ID: "23246_W007",
-        name: "袁枚",
-        rarity: 3,
-        sky: ["水", "火", "木"],
-        ground: ["火", "水", "木", "金", "土"],
-        person: ["火", "水", "木", "金", "土"],
-        authorBuffs: [50, 0, 0, 0, 0],
-    },
+    "24256_I071": { ID: "24256_I071", name: "數罟", rarity: 4, element: "土", series: "孟子", tag: "", points: 0 },
+    "24256_I072": { ID: "24256_I072", name: "魚鼈", rarity: 2, element: "水", series: "孟子", tag: "", points: 80 },
+    "24256_I073": { ID: "24256_I073", name: "斧斤", rarity: 3, element: "金", series: "孟子", tag: "", points: 90 },
+    "24256_I074": { ID: "24256_I074", name: "雞豚", rarity: 2, element: "土", series: "孟子", tag: "", points: 80 },
+    "24256_I075": { ID: "24256_I075", name: "狗彘", rarity: 2, element: "木", series: "孟子", tag: "", points: 80 },
+    "24256_I076": { ID: "24256_I076", name: "餓莩", rarity: 3, element: "火", series: "孟子", tag: "", points: 50 },
+    "24256_I077": { ID: "24256_I077", name: "四善", rarity: 2, element: "火", series: "孟子", tag: "", points: 40 },
+    "24256_I078": { ID: "24256_I078", name: "揠苗", rarity: 2, element: "木", series: "孟子", tag: "", points: 30 },
+    "24256_I079": { ID: "24256_I079", name: "釁鐘", rarity: 4, element: "金", series: "孟子", tag: "", points: 50 },
+    "24256_I080": { ID: "24256_I080", name: "觳觫", rarity: 3, element: "水", series: "孟子", tag: "", points: 30 },
 
-    "23246_W008": {
-        ID: "23246_W008",
-        name: "嫦娥",
-        rarity: 3,
-        sky: ["土", "火"],
-        ground: ["火", "水", "木", "金", "土"],
-        person: ["火", "水", "木", "金", "土"],
-        authorBuffs: [50, 0, 0, 0, 50],
-    },
+    "24256_I081": { ID: "24256_I081", name: "秋毫", rarity: 2, element: "木", series: "孟子", tag: "", points: 20 },
+    "24256_I082": { ID: "24256_I082", name: "輿薪", rarity: 3, element: "木", series: "孟子", tag: "", points: 70 },
+    "24256_I083": { ID: "24256_I083", name: "不能", rarity: 2, element: "水", series: "孟子", tag: "", points: 30 },
+    "24256_I084": { ID: "24256_I084", name: "折枝", rarity: 3, element: "木", series: "孟子", tag: "", points: 50 },
+    "24256_I085": { ID: "24256_I085", name: "知魚", rarity: 2, element: "水", series: "莊子", tag: "", points: 50 },
+    "24256_I086": { ID: "24256_I086", name: "解牛", rarity: 3, element: "土", series: "莊子", tag: "", points: 30 },
+    "24256_I087": { ID: "24256_I087", name: "庖丁", rarity: 5, element: "火", series: "莊子", tag: "", points: 90 },
+    "24256_I088": { ID: "24256_I088", name: "東施", rarity: 2, element: "火", series: "莊子", tag: "", points: 30 },
+    "24256_I089": { ID: "24256_I089", name: "神龜", rarity: 5, element: "木", series: "莊子", tag: "", points: 20 },
+    "24256_I090": { ID: "24256_I090", name: "井蛙", rarity: 3, element: "木", series: "莊子", tag: "", points: 30 },
 
-    "23246_W009": {
-        ID: "23246_W009",
-        name: "李商隱",
-        rarity: 3,
-        sky: ["水"],
-        ground: ["火", "水", "木", "金", "土"],
-        person: ["火", "水", "木", "金", "土"],
-        authorBuffs: [0, 20, 0, 0, 0],
-    },
+    "24256_I091": { ID: "24256_I091", name: "渾沌", rarity: 2, element: "火", series: "莊子", tag: "", points: 70 },
+    "24256_I092": { ID: "24256_I092", name: "鯤鵬", rarity: 5, element: "水", series: "莊子", tag: "", points: 50 },
+    "24256_I093": { ID: "24256_I093", name: "山木", rarity: 3, element: "木", series: "莊子", tag: "", points: 90 },
+    "24256_I094": { ID: "24256_I094", name: "石匠", rarity: 4, element: "金", series: "莊子", tag: "", points: 60 },
+    "24256_I095": { ID: "24256_I095", name: "夢蝶", rarity: 5, element: "土", series: "莊子", tag: "", points: 40 },
+    "24256_I096": { ID: "24256_I096", name: "緣石", rarity: 4, element: "金", series: "澳門", tag: "", points: 30 },
+    "24256_I097": { ID: "24256_I097", name: "猿石", rarity: 3, element: "木", series: "澳門", tag: "", points: 60 },
+    "24256_I098": { ID: "24256_I098", name: "茶盅", rarity: 3, element: "金", series: "澳門", tag: "", points: 60 },
+    "24256_I099": { ID: "24256_I099", name: "鬥蟀", rarity: 5, element: "木", series: "澳門", tag: "", points: 80 },
+    "24256_I100": { ID: "24256_I100", name: "哪吒", rarity: 5, element: "火", series: "澳門", tag: "神", points: 100 },
 
-    "23246_W010": {
-        ID: "23246_W010",
-        name: "李白",
-        rarity: 4,
-        sky: ["木", "水", "火"],
-        ground: ["火", "水", "木", "金", "土"],
-        person: ["火", "水", "木", "金", "土"],
-        authorBuffs: [60, 60, 0, 0, 0],
-    },
-
-    "23246_W011": {
-        ID: "23246_W011",
-        name: "杜甫",
-        rarity: 1,
-        sky: ["水", "金"],
-        ground: ["水", "土"],
-        person: ["金", "土"],
-        authorBuffs: [0, 0, 0, 30, -30],
-    },
-
-    "23246_W012": {
-        ID: "23246_W012",
-        name: "屈原",
-        rarity: 2,
-        sky: ["水", "木"],
-        ground: ["木", "土"],
-        person: ["火", "木"],
-        authorBuffs: [20, 0, 30, 0, 0],
-    },
-
-    // "23246_W013": {
-    //     ID: "23246_W013",
-    //     name: "屈原",
-    //     rarity: 1,
-    //     sky: ["木", "水", "火"],
-    //     ground: [],
-    //     person: [],
-    //     authorBuffs: [10, 10, 10, 0, 0],
-    // },
-
-    "23246_W014": {
-        ID: "23246_W014",
-        name: "童年孔子",
-        rarity: 1,
-        sky: ["土"],
-        ground: ["金", "土"],
-        person: ["火", "土"],
-        authorBuffs: [0, 0, 0, 0, 20],
-    },
-
-    "23246_W015": {
-        ID: "23246_W015",
-        name: "孔子",
-        rarity: 3,
-        sky: ["金"],
-        ground: ["火", "水", "木", "金", "土"],
-        person: ["火", "水", "木", "金", "土"],
-        authorBuffs: [0, 0, 0, 20, 0],
-    },
-
-    "23246_W016": {
-        ID: "23246_W016",
-        name: "童年孟子",
-        rarity: 1,
-        sky: ["水"],
-        ground: ["土", "水"],
-        person: ["火", "水"],
-        authorBuffs: [0, 20, 0, 0, 0],
-    },
-
-    "23246_W017": {
-        ID: "23246_W017",
-        name: "管仲",
-        rarity: 3,
-        sky: ["水", "金", "火"],
-        ground: ["火", "水", "木", "金", "土"],
-        person: ["火", "水", "木", "金", "土"],
-        authorBuffs: [0, 0, 0, 50, 0],
-    },
-}
-// 靈感卡：編號/名稱/屬性/系列/靈感值
-export const ICard_Data_23246 = {
-    "23246_I002": { ID: "23246_I002", name: "幻想", element: "水", series: "袁枚系列", points: 60 },
-    "23246_I006": { ID: "23246_I006", name: "瞠視", element: "水", series: "袁枚系列", points: 50 },
-    "23246_I007": { ID: "23246_I007", name: "文墨", element: "土", series: "袁枚系列", points: 40 },
-    "23246_I008": { ID: "23246_I008", name: "野史", element: "金", series: "袁枚系列", points: 40 },
-    "23246_I013": { ID: "23246_I013", name: "曉花", element: "水", series: "袁枚系列", points: 10 },
-
-    "23246_I019": { ID: "23246_I019", name: "雲母", element: "金", series: "中秋系列", points: 70 },
-    "23246_I020": { ID: "23246_I020", name: "曉星", element: "水", series: "中秋系列", points: 60 },
-    "23246_I021": { ID: "23246_I021", name: "靈藥", element: "火", series: "中秋系列", points: 20 },
-    "23246_I022": { ID: "23246_I022", name: "夜心", element: "水", series: "中秋系列", points: 90 },
-    "23246_I024": { ID: "23246_I024", name: "明月", element: "火", series: "中秋系列", points: 30 },
-
-    "23246_I029": { ID: "23246_I029", name: "缾罍", element: "金", series: "詩經系列", points: 80 },
-    "23246_I030": { ID: "23246_I030", name: "青蒿", element: "木", series: "詩經系列", points: 50 },
-    "23246_I031": { ID: "23246_I031", name: "劬勞", element: "水", series: "詩經系列", points: 0 },
-    "23246_I034": { ID: "23246_I034", name: "雨雪", element: "水", series: "詩經系列", points: 40 },
-    "23246_I037": { ID: "23246_I037", name: "荇菜", element: "水", series: "詩經系列", points: 20 },
-    "23246_I039": { ID: "23246_I039", name: "木瓜", element: "木", series: "詩經系列", points: 60 },
-    "23246_I040": { ID: "23246_I040", name: "相鼠", element: "土", series: "詩經系列", points: 50 },
-
-    "23246_I045": { ID: "23246_I045", name: "蔽日", element: "木", series: "楚辭系列", points: 50 },
-    "23246_I046": { ID: "23246_I046", name: "矢墜", element: "火", series: "楚辭系列", points: 90 },
-    "23246_I047": { ID: "23246_I047", name: "驂馬", element: "火", series: "楚辭系列", points: 70 },
-    "23246_I049": { ID: "23246_I049", name: "漁父", element: "水", series: "楚辭系列", points: 60 },
-    "23246_I051": { ID: "23246_I051", name: "芙蓉", element: "木", series: "楚辭系列", points: 10 },
-    "23246_I055": { ID: "23246_I055", name: "得閒", element: "水", series: "楚辭系列", points: 70 },
-
-    "23246_I059": { ID: "23246_I059", name: "冠者", element: "土", series: "孔子系列", points: 20 },
-    "23246_I064": { ID: "23246_I064", name: "犬馬", element: "土", series: "孔子系列", points: 80 },
-    "23246_I068": { ID: "23246_I068", name: "貧賤", element: "土", series: "孔子系列", points: 50 },
-
-    "23246_I070": { ID: "23246_I070", name: "棄甲", element: "金", series: "孟子系列", points: 0 },
-    "23246_I071": { ID: "23246_I071", name: "數罟", element: "土", series: "孟子系列", points: 0 },
-    "23246_I072": { ID: "23246_I072", name: "魚鼈", element: "水", series: "孟子系列", points: 80 }, //roll dice
-    "23246_I074": { ID: "23246_I074", name: "雞豚", element: "土", series: "孟子系列", points: 80 }, //roll dice
-    "23246_I075": { ID: "23246_I075", name: "狗彘", element: "木", series: "孟子系列", points: 80 }, //roll dice
-    "23246_I076": { ID: "23246_I076", name: "餓莩", element: "火", series: "孟子系列", points: 50 },
-    "23246_I077": { ID: "23246_I077", name: "四善", element: "火", series: "孟子系列", points: 40 },
-    "23246_I079": { ID: "23246_I079", name: "釁鐘", element: "金", series: "孟子系列", points: 50 },
-    "23246_I081": { ID: "23246_I081", name: "秋毫", element: "木", series: "孟子系列", points: 40 },
-    "23246_I082": { ID: "23246_I082", name: "輿薪", element: "木", series: "孟子系列", points: 70 },
-    "23246_I083": { ID: "23246_I083", name: "不能", element: "水", series: "孟子系列", points: 80 },
-    "23246_I084": { ID: "23246_I084", name: "折枝", element: "木", series: "孟子系列", points: 50 },
+    "24256_I101": { ID: "24256_I101", name: "蟾石", rarity: 3, element: "金", series: "澳門", tag: "", points: 40 },
+    "24256_I102": { ID: "24256_I102", name: "乞婦", rarity: 4, element: "火", series: "澳門", tag: "", points: 10 },
+    "24256_I103": { ID: "24256_I103", name: "彈珠", rarity: 3, element: "金", series: "澳門", tag: "", points: 20 },
+    "24256_I104": { ID: "24256_I104", name: "醉龍", rarity: 2, element: "火", series: "澳門", tag: "", points: 90 },
+    "24256_I105": { ID: "24256_I105", name: "栗子", rarity: 3, element: "土", series: "澳門", tag: "", points: 10 },
 }
 
 export const HCard_Data_23246 = {
@@ -426,15 +322,15 @@ export const WCard_Data_24256 = {
         authorBuffs: [20, 0, 30, 0, 0],
     },
 
-    // "24256_W013": {
-    //     ID: "24256_W013",
-    //     name: "屈原",
-    //     rarity: 1,
-    //     sky: ["木", "水", "火"],
-    //     ground: [],
-    //     person: [],
-    //     authorBuffs: [10, 10, 10, 0, 0],
-    // },
+    "24256_W013": {
+        ID: "24256_W013",
+        name: "屈原",
+        rarity: 1,
+        sky: ["木", "水", "火"],
+        ground: ["木", "水", "火"],
+        person: ["木", "水", "火"],
+        authorBuffs: [10, 10, 10, 0, 0],
+    },
 
     "24256_W014": {
         ID: "24256_W014",
@@ -525,69 +421,6 @@ export default class Game extends Phaser.Scene {
     }
 
     preload() {
-        // missing W013
-        const wCards = [
-            "W001",
-            "W002",
-            "W003",
-            "W004",
-            "W005",
-            "W006",
-            "W007",
-            "W008",
-            "W009",
-            "W010",
-            "W011",
-            "W012",
-            "W014",
-            "W015",
-            "W016",
-            "W017",
-            "W018",
-            "W019",
-            "W020",
-            "W021",
-        ]
-        const iCards = [
-            "I002",
-            "I006",
-            "I007",
-            "I008",
-            "I013",
-            "I019",
-            "I020",
-            "I021",
-            "I022",
-            "I024",
-            "I029",
-            "I030",
-            "I031",
-            "I034",
-            "I037",
-            "I039",
-            "I040",
-            "I045",
-            "I046",
-            "I047",
-            "I049",
-            "I051",
-            "I055",
-            "I059",
-            "I064",
-            "I068",
-            "I070",
-            "I071",
-            "I072",
-            "I074",
-            "I075",
-            "I076",
-            "I077",
-            "I079",
-            "I081",
-            "I082",
-            "I083",
-            "I084",
-        ]
         const hCards = [
             "H001",
             "H013",
@@ -606,68 +439,24 @@ export default class Game extends Phaser.Scene {
             "H055",
         ]
 
-        const qCards = [
-            "Q001",
-            "Q002",
-            "Q003",
-            "Q004",
-            "Q005",
-            "Q006",
-            "Q007",
-            "Q008",
-            "Q009",
-            "Q010",
-            "Q011",
-            "Q012",
-            "Q013",
-            "Q014",
-            "Q015",
-            "Q016",
-            "Q017",
-            "Q018",
-            "Q019",
-            "Q020",
-            "Q021",
-            "Q022",
-            "Q023",
-            "Q024",
-            "Q025",
-            "Q026",
-            "Q027",
-            "Q028",
-            "Q029",
-            "Q030",
-            "Q031",
-            "Q032",
-            "Q033",
-            "Q034",
-            "Q035",
-            "Q036",
-            "Q037",
-            "Q038",
-            "Q039",
-            "Q040",
-            "Q041",
-            "Q042",
-            "Q043",
-            "Q044",
-            "Q045",
-            "Q046",
-            "Q047",
-            "Q048",
-        ]
-
         const loadImages = (prefix, cardArray, path, format) => {
             cardArray.forEach((card) => {
                 this.load.image(`${prefix}${card}`, require(`../../public/assets/${path}/${prefix}${card}.${format}`).default)
             })
         }
+        const loadImages_new = (prefix, start, end, path, format) => {
+            for (let i = start; i <= end; i++) {
+                // Format the card ID to match the pattern
+                const cardID = `${prefix}${i.toString().padStart(3, "0")}`
+                this.load.image(cardID, require(`../../public/assets/${path}/${cardID}.${format}`).default)
+            }
+        }
 
         // Prefix / card number / path
-        loadImages("24256_", wCards, "24256/WCard", "jpg")
-        loadImages("23246_", iCards, "23246/ICard", "jpg")
+        loadImages_new("24256_W", 1, 21, "24256/WCard", "jpg")
+        loadImages_new("24256_I", 1, 105, "24256/ICard", "jpg")
         loadImages("23246_", hCards, "23246/HCard", "jpg")
-        loadImages("", qCards, "QCard", "png")
+        loadImages_new("Q", 1, 48, "QCard", "png")
 
         this.load.image("image_cardback", require("../../public/assets/others/image_cardback.png").default)
         this.load.image("BG", require("../../public/assets/others/WoodBackground.jpg").default)

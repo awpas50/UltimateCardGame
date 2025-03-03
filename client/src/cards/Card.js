@@ -1,4 +1,4 @@
-import { ICard_Data_23246, WCard_Data_23246, WCard_Data_24256 } from "../scenes/game.js"
+import { ICard_Data_24256, WCard_Data_24256 } from "../scenes/game.js"
 
 export default class Card {
     constructor(scene) {
@@ -25,14 +25,14 @@ export default class Card {
             if (cardType == "ICard") {
                 card = scene.add.image(x, y, sprite).setInteractive().setData({
                     id: this.id,
-                    element: ICard_Data_23246[this.id].element,
-                    series: ICard_Data_23246[this.id].series,
-                    points: ICard_Data_23246[this.id].points,
+                    element: ICard_Data_24256[this.id].element,
+                    series: ICard_Data_24256[this.id].series,
+                    points: ICard_Data_24256[this.id].points,
+                    rarity: ICard_Data_24256[this.id].points,
+                    tag: ICard_Data_24256[this.id].tag,
 
                     side: side,
                     sprite: sprite,
-
-                    test: "test message",
                 })
             }
             if (cardType == "WCard") {

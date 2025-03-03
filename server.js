@@ -101,7 +101,7 @@ io.on("connection", function (socket) {
         }
     })
 
-    let folderPathICard = "./client/dist/assets/23246/ICard"
+    let folderPathICard = "./client/dist/assets/24256/ICard"
     let imageNamesICard = getImageNamesInFolder(folderPathICard)
 
     let folderPathHCard = "./client/dist/assets/23246/HCard"
