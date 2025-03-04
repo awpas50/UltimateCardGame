@@ -390,14 +390,31 @@ function endRound(roomId) {
     console.log(`玩家2總分: ${player2ScoreBeforeCalculation} >>> ${players[player2SocketId].totalScore}`)
     console.log(players)
 
+    // 勝利狀態
+    let endGameState = false
+    if (players[player1SocketId].totalScore >= 60 || players[player2SocketId].totalScore >= 60) {
+        endGameState = true
+    }
+
     // 防止玩家出牌
     players[player1SocketId].isReady = false
     players[player2SocketId].isReady = false
     io.to(roomId).emit("changeGameState", "Initializing")
 
-    setTimeout(() => {
-        resetBattleField(roomId, endRoundRoom)
-    }, 8000)
+    // 完場
+    if (endGameState) {
+        if (players[player1SocketId].totalScore > players[player2SocketId].totalScore) {
+            io.to(roomId).emit("localGetWhichPlayerWin", player1SocketId)
+        } else {
+            io.to(roomId).emit("localGetWhichPlayerWin", player2SocketId)
+        }
+    }
+    // 繼續
+    else {
+        setTimeout(() => {
+            resetBattleField(roomId, endRoundRoom)
+        }, 8000)
+    }
 }
 
 // endRoundRoom: array (string)

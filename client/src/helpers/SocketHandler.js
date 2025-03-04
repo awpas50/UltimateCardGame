@@ -54,9 +54,6 @@ export default class SocketHandler {
         })
         scene.socket.on("changeGameState", (gameState) => {
             scene.GameHandler.changeGameState(gameState)
-            // if (gameState === "Initializing") {
-            //     scene.UIHandler.ActivateGameText()
-            // }
         })
         scene.socket.on("readyToStartGame", (socketId) => {
             // 雙方玩家自動抽卡。其中一方會有延遲，如果指令同時進行可能會出問題
@@ -370,6 +367,10 @@ export default class SocketHandler {
                 scene.GameHandler.opponentTotalWinScore = scores
             }
             scene.UIHandler.setOpponentWinScoreText(scene.GameHandler.opponentTotalWinScore)
+        })
+
+        scene.socket.on("localGetWhichPlayerWin", (socketId) => {
+            socketId === scene.socket.id ? scene.Toast.showPermanentToast("勝利") : scene.Toast.showPermanentToast("失敗")
         })
 
         scene.socket.on("clearLocalBattleField", (socketIdToStartLater) => {
