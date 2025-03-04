@@ -210,6 +210,8 @@ export const WCard_Data_24256 = {
         ground: ["土", "水", "木"],
         person: ["火", "水", "金"],
         authorBuffs: [0, 50, 0, -20, 0],
+        ability: "搜尋",
+        target: "$element=水$count=1",
     },
 
     "24256_W002": {
@@ -280,6 +282,8 @@ export const WCard_Data_24256 = {
         ground: ["火", "水", "木", "金", "土"],
         person: ["火", "水", "木", "金", "土"],
         authorBuffs: [50, 0, 0, 0, 50],
+        ability: "搜尋",
+        target: "$series=中秋$count=1",
     },
 
     "24256_W009": {
@@ -300,6 +304,8 @@ export const WCard_Data_24256 = {
         ground: ["火", "水", "木", "金", "土"],
         person: ["火", "水", "木", "金", "土"],
         authorBuffs: [60, 60, 0, 0, 0],
+        ability: "搜尋",
+        target: "$tag=酒",
     },
 
     "24256_W011": {
@@ -340,6 +346,8 @@ export const WCard_Data_24256 = {
         ground: ["金", "土"],
         person: ["火", "土"],
         authorBuffs: [0, 0, 0, 0, 20],
+        ability: "搜尋",
+        target: "$id=24256_H033$count=1",
     },
 
     "24256_W015": {
@@ -360,6 +368,8 @@ export const WCard_Data_24256 = {
         ground: ["土", "水"],
         person: ["火", "水"],
         authorBuffs: [0, 20, 0, 0, 0],
+        ability: "搜尋",
+        target: "$id=24256_H049$count=1",
     },
 
     "24256_W017": {
@@ -410,6 +420,8 @@ export const WCard_Data_24256 = {
         ground: ["水", "木", "土"],
         person: ["火", "金", "土"],
         authorBuffs: [20, 0, 0, 0, 40],
+        ability: "搜尋",
+        target: "$series=澳門$count=1",
     },
 }
 
@@ -421,24 +433,6 @@ export default class Game extends Phaser.Scene {
     }
 
     preload() {
-        const hCards = [
-            "H001",
-            "H013",
-            "H025",
-            "H034",
-            "H036",
-            "H042",
-            "H044",
-            "H045",
-            "H046",
-            "H049",
-            "H050",
-            "H051",
-            "H052",
-            "H054",
-            "H055",
-        ]
-
         const loadImages = (prefix, cardArray, path, format) => {
             cardArray.forEach((card) => {
                 this.load.image(`${prefix}${card}`, require(`../../public/assets/${path}/${prefix}${card}.${format}`).default)
@@ -455,7 +449,7 @@ export default class Game extends Phaser.Scene {
         // Prefix / card number / path
         loadImages_new("24256_W", 1, 21, "24256/WCard", "jpg")
         loadImages_new("24256_I", 1, 105, "24256/ICard", "jpg")
-        loadImages("23246_", hCards, "23246/HCard", "jpg")
+        loadImages_new("24256_H", 33, 49, "24256/HCard", "jpg")
         loadImages_new("Q", 1, 48, "QCard", "png")
 
         this.load.image("image_cardback", require("../../public/assets/others/image_cardback.png").default)

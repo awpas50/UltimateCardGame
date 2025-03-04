@@ -104,7 +104,7 @@ io.on("connection", function (socket) {
     let folderPathICard = "./client/dist/assets/24256/ICard"
     let imageNamesICard = getImageNamesInFolder(folderPathICard)
 
-    let folderPathHCard = "./client/dist/assets/23246/HCard"
+    let folderPathHCard = "./client/dist/assets/24256/HCard"
     let imageNamesHCard = getImageNamesInFolder(folderPathHCard)
 
     let folderPathWCard = "./client/dist/assets/24256/WCard"
@@ -165,10 +165,11 @@ io.on("connection", function (socket) {
         players[socketId].inScene_WCard.push(players[socketId].inDeck_WCard.shift())
 
         // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
-        io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
         io.to(roomId).emit("addWCardsInScene", socketId, players[socketId].inScene_WCard)
-        socket.emit("setAuthorElements", players[socketId].inScene_WCard)
+        socket.emit("setAuthorData", players[socketId].inScene_WCard)
         io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
+        io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
+        io.to(roomId).emit("localCheckIfAbilityIsSearch", socketId)
 
         players[socketId].isReady = true
 
@@ -196,8 +197,9 @@ io.on("connection", function (socket) {
         // // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
         // io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
         io.to(roomId).emit("addWCardsInScene", socketId, players[socketId].inScene_WCard)
-        socket.emit("setAuthorElements", players[socketId].inScene_WCard)
+        socket.emit("setAuthorData", players[socketId].inScene_WCard)
         io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
+        io.to(roomId).emit("localCheckIfAbilityIsSearch", socketId)
 
         players[socketId].isReady = true
 
@@ -231,6 +233,26 @@ io.on("connection", function (socket) {
         players[socketId].inDeck.shift()
         // Tell local to actually show one new card
         io.to(roomId).emit("dealOneCardInHand", socketId, players[socketId].inHand[cardIndex], cardIndex)
+    })
+
+    socket.on("serverAddExtraCardInHand", function (socketId, roomId, element, series, id, count) {
+        // Player: check spot, add x amount of cards to spot. Opponent: Add x amount of card backs
+        for (let i = 0; i < count; i++) {
+            if (id !== null) {
+                console.log(`搜尋技能: 搜尋卡牌${id}`)
+                players[socketId].inHand.push(id)
+                // add 1 card at the right of the inHand deck
+                const cardIndex = players[socketId].inHand.length
+                // inDeck delete the specific card
+                const index = players[socketId].inDeck.findIndex((cardToRemove) => cardToRemove === id)
+                // If the item is found, remove it
+                if (index !== -1) {
+                    players[socketId].inDeck.splice(index, 1)
+                }
+                // Tell local to actually show one new card
+                io.to(roomId).emit("dealOneCardInHand", socketId, id, cardIndex)
+            }
+        }
     })
 
     // Used for setting score multiplier at the end of the round

@@ -53,7 +53,11 @@ export default class GameHandler {
         //基礎分數:8張卡,8分
         this.baseTotalScoreWillGet = 8
 
-        this.setAuthorElements = (authorCardName) => {
+        //技能
+        this.ability = ""
+        this.target = ""
+
+        this.setAuthorData = (authorCardName) => {
             this.playerSkyElements = WCard_Data_24256[authorCardName].sky
             this.playerGroundElements = WCard_Data_24256[authorCardName].ground
             this.playerPersonElements = WCard_Data_24256[authorCardName].person
@@ -61,10 +65,10 @@ export default class GameHandler {
             console.log("playerSkyElements: " + this.playerSkyElements)
             console.log("playerGroundElements: " + this.playerGroundElements)
             console.log("playerPersonElements: " + this.playerPersonElements)
-        }
 
-        this.setAuthorBuffs = (authorCardName) => {
             this.authorBuffs = WCard_Data_24256[authorCardName].authorBuffs
+            this.ability = WCard_Data_24256[authorCardName].ability || null
+            this.target = WCard_Data_24256[authorCardName].target || null
         }
         this.addAuthorBuffsPoints = (points) => {
             this.authorBuffPoint += points
