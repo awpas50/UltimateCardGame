@@ -161,8 +161,8 @@ export default class AuthorCardDeckEditHandler {
 
                 // Optional: If you want to handle drag events
                 card.on("drag", (pointer, dragX, dragY) => {
-                    card.x = dragX
-                    card.y = dragY
+                    card.x = dragX + 100
+                    card.y = dragY - 100
                     card.setScale(0.8, 0.8)
                 })
                 card.on("dragstart", () => {

@@ -305,7 +305,7 @@ export const WCard_Data_24256 = {
         person: ["火", "水", "木", "金", "土"],
         authorBuffs: [60, 60, 0, 0, 0],
         ability: "搜尋",
-        target: "$tag=酒",
+        target: "$tag=酒$count=2",
     },
 
     "24256_W011": {
