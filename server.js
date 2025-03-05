@@ -1,4 +1,3 @@
-//import { WCard_Data_23246, ICard_Data_23246 } from './client/src/scenes/game.js';
 const server = require("express")()
 
 const cors = require("cors")
@@ -102,13 +101,13 @@ io.on("connection", function (socket) {
         }
     })
 
-    let folderPathICard = "./client/dist/assets/23246/ICard"
+    let folderPathICard = "./client/dist/assets/24256/ICard"
     let imageNamesICard = getImageNamesInFolder(folderPathICard)
 
-    let folderPathHCard = "./client/dist/assets/23246/HCard"
+    let folderPathHCard = "./client/dist/assets/24256/HCard"
     let imageNamesHCard = getImageNamesInFolder(folderPathHCard)
 
-    let folderPathWCard = "./client/dist/assets/23246/WCard"
+    let folderPathWCard = "./client/dist/assets/24256/WCard"
     let imageNamesWCard = getImageNamesInFolder(folderPathWCard)
 
     let mixedArray = [...imageNamesICard, ...imageNamesHCard]
@@ -166,10 +165,11 @@ io.on("connection", function (socket) {
         players[socketId].inScene_WCard.push(players[socketId].inDeck_WCard.shift())
 
         // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
-        io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
         io.to(roomId).emit("addWCardsInScene", socketId, players[socketId].inScene_WCard)
-        socket.emit("setAuthorElements", players[socketId].inScene_WCard)
+        socket.emit("setAuthorData", players[socketId].inScene_WCard)
         io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
+        io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
+        io.to(roomId).emit("localCheckIfAbilityIsSearch", socketId)
 
         players[socketId].isReady = true
 
@@ -197,8 +197,9 @@ io.on("connection", function (socket) {
         // // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
         // io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
         io.to(roomId).emit("addWCardsInScene", socketId, players[socketId].inScene_WCard)
-        socket.emit("setAuthorElements", players[socketId].inScene_WCard)
+        socket.emit("setAuthorData", players[socketId].inScene_WCard)
         io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
+        io.to(roomId).emit("localCheckIfAbilityIsSearch", socketId)
 
         players[socketId].isReady = true
 
@@ -232,6 +233,74 @@ io.on("connection", function (socket) {
         players[socketId].inDeck.shift()
         // Tell local to actually show one new card
         io.to(roomId).emit("dealOneCardInHand", socketId, players[socketId].inHand[cardIndex], cardIndex)
+    })
+
+    socket.on("serverAddExtraCardInHandById", function (socketId, roomId, id, count) {
+        // Player: check spot, add x amount of cards to spot. Opponent: Add x amount of card backs
+        for (let i = 0; i < count; i++) {
+            console.log(`搜尋技能: 搜尋卡牌${id}`)
+            // If inDeck contains the desire card, inDeck delete the specific card
+            const index = players[socketId].inDeck.findIndex((cardToRemove) => cardToRemove === id)
+            if (index !== -1) {
+                players[socketId].inDeck.splice(index, 1)
+                players[socketId].inHand.push(id)
+                // add 1 card at the right of the inHand deck
+                const cardIndex = players[socketId].inHand.length - 1
+                // Tell local to actually show one new card
+                io.to(roomId).emit("dealOneCardInHand", socketId, id, cardIndex)
+            }
+        }
+    })
+    socket.on("serverAddExtraCardInHandByElement", function (socketId, roomId, element, filteredCardArray, count) {
+        let array = shuffle(filteredCardArray)
+        for (let i = 0; i < count; i++) {
+            console.log(`搜尋技能: 搜尋${element}屬性`)
+            // If inDeck contains the desire card, inDeck delete the specific card
+            const index = players[socketId].inDeck.findIndex((cardToRemove) => cardToRemove === array[i])
+            console.log(`找到卡牌: ${array[i]} index: ${index}`)
+            if (index !== -1) {
+                players[socketId].inDeck.splice(index, 1)
+                players[socketId].inHand.push(array[i])
+                // add 1 card at the right of the inHand deck
+                const cardIndex = players[socketId].inHand.length - 1
+                // Tell local to actually show one new card
+                io.to(roomId).emit("dealOneCardInHand", socketId, array[i], cardIndex)
+            }
+        }
+    })
+    socket.on("serverAddExtraCardInHandBySeries", function (socketId, roomId, series, filteredCardArray, count) {
+        let array = shuffle(filteredCardArray)
+        for (let i = 0; i < count; i++) {
+            console.log(`搜尋技能: 搜尋${series}系列`)
+            // If inDeck contains the desire card, inDeck delete the specific card
+            const index = players[socketId].inDeck.findIndex((cardToRemove) => cardToRemove === array[i])
+            console.log(`找到卡牌: ${array[i]} index: ${index}`)
+            if (index !== -1) {
+                players[socketId].inDeck.splice(index, 1)
+                players[socketId].inHand.push(array[i])
+                // add 1 card at the right of the inHand deck
+                const cardIndex = players[socketId].inHand.length - 1
+                // Tell local to actually show one new card
+                io.to(roomId).emit("dealOneCardInHand", socketId, array[i], cardIndex)
+            }
+        }
+    })
+    socket.on("serverAddExtraCardInHandByTag", function (socketId, roomId, tag, filteredCardArray, count) {
+        let array = shuffle(filteredCardArray)
+        for (let i = 0; i < count; i++) {
+            console.log(`搜尋技能: 搜尋${tag}`)
+            // If inDeck contains the desire card, inDeck delete the specific card
+            const index = players[socketId].inDeck.findIndex((cardToRemove) => cardToRemove === array[i])
+            console.log(`找到卡牌: ${array[i]} index: ${index}`)
+            if (index !== -1) {
+                players[socketId].inDeck.splice(index, 1)
+                players[socketId].inHand.push(array[i])
+                // add 1 card at the right of the inHand deck
+                const cardIndex = players[socketId].inHand.length - 1
+                // Tell local to actually show one new card
+                io.to(roomId).emit("dealOneCardInHand", socketId, array[i], cardIndex)
+            }
+        }
     })
 
     // Used for setting score multiplier at the end of the round
@@ -270,10 +339,6 @@ io.on("connection", function (socket) {
         players[socketId].inDeck_customized_WCard = authorDeck
     })
 
-    // socket.on('setPlayerPoint', function (socketId, playerTotalPoints) {
-    //     players[socketId].totalInspriationPt = playerTotalPoints
-    // });
-
     socket.on("serverUpdateAuthorBuff", function (socketId, authorBuffPt) {
         players[socketId].inSceneAuthorBoostPt.push(authorBuffPt)
     })
@@ -292,6 +357,7 @@ io.on("connection", function (socket) {
             endRound(roomId)
         } else {
             console.log(`開始下一回合，對手收到題目`)
+            console.log(players)
             io.to(roomId).emit("localInitQuestionCard", opponentId)
         }
     })
@@ -391,14 +457,31 @@ function endRound(roomId) {
     console.log(`玩家2總分: ${player2ScoreBeforeCalculation} >>> ${players[player2SocketId].totalScore}`)
     console.log(players)
 
+    // 勝利狀態
+    let endGameState = false
+    if (players[player1SocketId].totalScore >= 60 || players[player2SocketId].totalScore >= 60) {
+        endGameState = true
+    }
+
     // 防止玩家出牌
     players[player1SocketId].isReady = false
     players[player2SocketId].isReady = false
     io.to(roomId).emit("changeGameState", "Initializing")
 
-    setTimeout(() => {
-        resetBattleField(roomId, endRoundRoom)
-    }, 8000)
+    // 完場
+    if (endGameState) {
+        if (players[player1SocketId].totalScore > players[player2SocketId].totalScore) {
+            io.to(roomId).emit("localGetWhichPlayerWin", player1SocketId)
+        } else {
+            io.to(roomId).emit("localGetWhichPlayerWin", player2SocketId)
+        }
+    }
+    // 繼續
+    else {
+        setTimeout(() => {
+            resetBattleField(roomId, endRoundRoom)
+        }, 8000)
+    }
 }
 
 // endRoundRoom: array (string)

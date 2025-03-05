@@ -1,4 +1,3 @@
-import { ICard_Data_23246, WCard_Data_23246 } from "../scenes/game.js"
 import PositionHandler from "./PositionHandler.js"
 import ScaleHandler from "./ScaleHandler.js"
 
@@ -162,7 +161,7 @@ export default class InteractiveHandler {
                 let elementID = -1
                 // 反轉卡牌判斷
                 if (cardType === "cardBack") {
-                    gameObject.setTexture("H001B")
+                    gameObject.setTexture("image_cardback")
                 }
                 // 作者屬性加成  (無屬性不能獲得)
                 if (gameObject.getData("id").includes("I")) {

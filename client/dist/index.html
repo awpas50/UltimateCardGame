@@ -1,49 +1,60 @@
-<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/><title>集換式中文卡牌遊戲</title><script>document.addEventListener("DOMContentLoaded", function () {
-                const textList = [
-                    "規則，就是用來打破",
-                    "槍尖已經點燃，炎槍衝鋒！",
-                    "洞天幻化，長夢已覺",
-                    "人類從不掩飾掌控星空的欲望，當然也包括我在內",
-                    "幫幫我！史瓦羅先生！",
-                    "沒見過這麼大的鑽石吧，送給你啦",
-                    "我們早已踏入風暴，為了守護和捍衛，擊潰他們",
-                    "生存還是毀滅，你別無選擇",
-                    "就以奇珍萬千，給各位鼓勁了",
-                    "想要我背叛上帝，除非你加錢",
-                    "歷經冰雪，鑄成此志，永不終結",
-                    "試探就到此為止了，萬劍天來",
-                    "星星啊，向開拓者們賜予你真正的祝福吧",
-                    "隨蝴蝶一起消散吧，舊日的幻影",
-                    "煌煌威靈，遵吾敕命，斬無赦",
-                    "戰鬥體驗該優化了",
-                    "美妙的時光總有盡頭，該說再見了",
-                    "此番美景，邀諸位共賞",
-                    "洞天飲月，蒼龍濯世",
-                    "但換斗移星，謀事在人",
-                    "對啊，望長放短，就是成功的秘訣",
-                    "就讓這輪月華，照徹萬川",
-                    "捍衛銀河中的美，獻給伊德莉拉",
-                    "生命裡的每一片花瓣，都有被風吹落的一天",
-                    "知識既為萬物尺度，定將窮盡真理，根除謬誤",
-                    "愚者千面，遊戲人間，你會找到答案嗎？",
-                    "水面下，便是無盡深淵",
-                    "一無所有，或者贏下所有",
-                    "我為逝者哀哭，暮雨終將落下",
-                    "星穹列車，不許發車",
-                    "生命醇美如佳釀，朋友們盡情享用吧",
-                    "飛螢撲火，向死而生",
-                    "左青龍，右白虎，少吃碳水化合物",
-                    "世間種種，不過是過眼雲煙",
-                    "此乃忍法奧義，繚亂滅破殺陣",
-                    "好奇心可是很危險的",
-                ]
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+        <title>集換式中文卡牌遊戲</title>
+        <script>
+            // document.addEventListener("DOMContentLoaded", function () {
+            //     const textList = [
+            //         "規則，就是用來打破",
+            //         "槍尖已經點燃，炎槍衝鋒！",
+            //         "洞天幻化，長夢已覺",
+            //         "人類從不掩飾掌控星空的欲望，當然也包括我在內",
+            //         "幫幫我！史瓦羅先生！",
+            //         "沒見過這麼大的鑽石吧，送給你啦",
+            //         "我們早已踏入風暴，為了守護和捍衛，擊潰他們",
+            //         "生存還是毀滅，你別無選擇",
+            //         "就以奇珍萬千，給各位鼓勁了",
+            //         "想要我背叛上帝，除非你加錢",
+            //         "歷經冰雪，鑄成此志，永不終結",
+            //         "試探就到此為止了，萬劍天來",
+            //         "星星啊，向開拓者們賜予你真正的祝福吧",
+            //         "隨蝴蝶一起消散吧，舊日的幻影",
+            //         "煌煌威靈，遵吾敕命，斬無赦",
+            //         "戰鬥體驗該優化了",
+            //         "美妙的時光總有盡頭，該說再見了",
+            //         "此番美景，邀諸位共賞",
+            //         "洞天飲月，蒼龍濯世",
+            //         "但換斗移星，謀事在人",
+            //         "對啊，望長放短，就是成功的秘訣",
+            //         "就讓這輪月華，照徹萬川",
+            //         "捍衛銀河中的美，獻給伊德莉拉",
+            //         "生命裡的每一片花瓣，都有被風吹落的一天",
+            //         "知識既為萬物尺度，定將窮盡真理，根除謬誤",
+            //         "愚者千面，遊戲人間，你會找到答案嗎？",
+            //         "水面下，便是無盡深淵",
+            //         "一無所有，或者贏下所有",
+            //         "我為逝者哀哭，暮雨終將落下",
+            //         "星穹列車，不許發車",
+            //         "生命醇美如佳釀，朋友們盡情享用吧",
+            //         "飛螢撲火，向死而生",
+            //         "左青龍，右白虎，少吃碳水化合物",
+            //         "世間種種，不過是過眼雲煙",
+            //         "此乃忍法奧義，繚亂滅破殺陣",
+            //         "好奇心可是很危險的",
+            //     ]
 
-                const randomText = textList[Math.floor(Math.random() * textList.length)]
-                document.title = randomText
-            })
+            //     const randomText = textList[Math.floor(Math.random() * textList.length)]
+            //     document.title = randomText
+            // })
             document.addEventListener("keydown", function (event) {
                 // Disabling the F5 key, preventing players accidentally restart the game. (key code 116)
                 if (event.keyCode === 116) {
                     event.preventDefault()
                 }
-            })</script><script defer="defer" src="bundle.min.js"></script></head></html>
+            })
+        </script>
+        <script defer="defer" src="bundle.min.js"></script>
+    </head>
+</html>

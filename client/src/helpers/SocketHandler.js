@@ -2,6 +2,8 @@ import io from "socket.io-client"
 import PositionHandler from "./PositionHandler"
 import ScaleHandler from "./ScaleHandler"
 import RotationHandler from "./RotationHandler"
+import AbilityReader from "./AbilityReader"
+import { ICard_Data_24256 } from "../scenes/game.js"
 
 export default class SocketHandler {
     constructor(scene) {
@@ -52,9 +54,6 @@ export default class SocketHandler {
         })
         scene.socket.on("changeGameState", (gameState) => {
             scene.GameHandler.changeGameState(gameState)
-            // if (gameState === "Initializing") {
-            //     scene.UIHandler.ActivateGameText()
-            // }
         })
         scene.socket.on("readyToStartGame", (socketId) => {
             // 雙方玩家自動抽卡。其中一方會有延遲，如果指令同時進行可能會出問題
@@ -116,7 +115,6 @@ export default class SocketHandler {
                     // let testMessage = card.getData('test');
                     // console.log(testMessage); // This should output: "test message"
                 }
-                // console.log(scene.GameHandler.playerHand)
             } else {
                 // 對手: 只會看到卡背
                 for (let i in cardIdList) {
@@ -129,6 +127,76 @@ export default class SocketHandler {
                     ).setScale(ScaleHandler.opponentCardBack.scaleY)
                     scene.CardStorage.opponentCardBackStorage.push(card)
                 }
+            }
+        })
+
+        scene.socket.on("localCheckIfAbilityIsSearch", (socketId) => {
+            // 玩家: 如果作者卡技能(ability)=搜尋,額外出牌
+            // 可選目標(only choose 1): $element, $series, $id, $tag
+            // 數量(required): $count
+            if (socketId === scene.socket.id) {
+                if (scene.GameHandler.ability !== "搜尋") {
+                    return
+                }
+                const ability = scene.GameHandler.ability
+                const target = scene.GameHandler.target
+                console.log(`ability: ${ability}, target: ${target}`)
+                const element = AbilityReader.getValueByTag(target, "$element")
+                const series = AbilityReader.getValueByTag(target, "$series")
+                const id = AbilityReader.getValueByTag(target, "$id")
+                const tag = AbilityReader.getValueByTag(target, "$tag")
+                const count = Number(AbilityReader.getValueByTag(target, "$count"))
+                console.log(`element: ${element}, series: ${series}, id: ${id}, tag: ${tag}, count: ${count}`)
+
+                if (id !== null) {
+                    scene.socket.emit(
+                        "serverAddExtraCardInHandById",
+                        scene.socket.id,
+                        scene.GameHandler.currentRoomID,
+                        id,
+                        count === 0 ? 1 : count
+                    )
+                } else if (element !== null) {
+                    const filteredElementCardArray = Object.entries(ICard_Data_24256)
+                        .filter(([_, card]) => card.element === element)
+                        .map(([key]) => key)
+
+                    scene.socket.emit(
+                        "serverAddExtraCardInHandByElement",
+                        scene.socket.id,
+                        scene.GameHandler.currentRoomID,
+                        element,
+                        filteredElementCardArray,
+                        count === 0 ? 1 : count
+                    )
+                } else if (series !== null) {
+                    const filteredSeriesCardArray = Object.entries(ICard_Data_24256)
+                        .filter(([_, card]) => card.series === series)
+                        .map(([key]) => key)
+
+                    scene.socket.emit(
+                        "serverAddExtraCardInHandBySeries",
+                        scene.socket.id,
+                        scene.GameHandler.currentRoomID,
+                        series,
+                        filteredSeriesCardArray,
+                        count === 0 ? 1 : count
+                    )
+                } else if (tag != null) {
+                    const filteredTagCardArray = Object.entries(ICard_Data_24256)
+                        .filter(([_, card]) => card.tag === tag)
+                        .map(([key]) => key)
+
+                    scene.socket.emit(
+                        "serverAddExtraCardInHandByTag",
+                        scene.socket.id,
+                        scene.GameHandler.currentRoomID,
+                        tag,
+                        filteredTagCardArray,
+                        count === 0 ? 1 : count
+                    )
+                }
+                // 對手: TODO (增加對應數量卡牌)
             }
         })
 
@@ -147,18 +215,20 @@ export default class SocketHandler {
         // * cardId: string * //
         scene.socket.on("dealOneCardInHand", (socketId, cardId, index) => {
             if (socketId === scene.socket.id) {
+                console.log("[card index] " + index)
                 const cardType = cardId.includes("I") ? "ICard" : cardId.includes("H") ? "HCard" : null
 
                 if (cardType) {
                     const card = scene.DeckHandler.InstantiateCard(
                         PositionHandler.playerCardInHandArea.x + index * PositionHandler.playerCardInHandArea.gap,
-                        PositionHandler.playerCardInHandArea.y + PositionHandler.playerCardInHandArea.waveEffectOffset[index],
+                        PositionHandler.playerCardInHandArea.y +
+                            PositionHandler.playerCardInHandArea.waveEffectOffset[index > 5 ? 5 : index],
                         cardType,
                         cardId,
                         "playerCard"
                     )
                         .setScale(ScaleHandler.playerInHandCard.scaleX)
-                        .setRotation(RotationHandler.playerInHandCard[index] * (Math.PI / 180))
+                        .setRotation(RotationHandler.playerInHandCard[index > 5 ? 5 : index] * (Math.PI / 180))
                         .setDepth(index)
                     scene.CardStorage.inHandStorage.push(card)
                 }
@@ -191,10 +261,9 @@ export default class SocketHandler {
             }
         })
 
-        scene.socket.on("setAuthorElements", (authorCardName) => {
+        scene.socket.on("setAuthorData", (authorCardName) => {
             //Author card
-            scene.GameHandler.setAuthorElements(authorCardName) //Player side
-            scene.GameHandler.setAuthorBuffs(authorCardName) //Player side
+            scene.GameHandler.setAuthorData(authorCardName) //Player side
         })
         scene.socket.on("setAuthorRarity", (socketId, authorCardName) => {
             //Author card
@@ -368,6 +437,10 @@ export default class SocketHandler {
                 scene.GameHandler.opponentTotalWinScore = scores
             }
             scene.UIHandler.setOpponentWinScoreText(scene.GameHandler.opponentTotalWinScore)
+        })
+
+        scene.socket.on("localGetWhichPlayerWin", (socketId) => {
+            socketId === scene.socket.id ? scene.Toast.showPermanentToast("勝利") : scene.Toast.showPermanentToast("失敗")
         })
 
         scene.socket.on("clearLocalBattleField", (socketIdToStartLater) => {

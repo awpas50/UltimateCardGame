@@ -32,7 +32,7 @@ export default class PositionHandler {
     static outlineGrid = { x: 25, y: 100, width: 380, height: 470 }
 
     // 卡牌在手牌區的位置 (第一張牌的位置 / y軸 / 每張牌的間隔 / 波浪特效幅度)
-    static playerCardInHandArea = { x: 95, y: 950, gap: 75, waveEffectOffset: [30, 15, 0, 0, 15, 30] }
+    static playerCardInHandArea = { x: 75, y: 950, gap: 55, waveEffectOffset: [25, 15, 0, 0, 15, 25] }
     static opponentCardInHandArea = { x: 55, y: 25, gap: 45, waveEffectOffset: [0, 0, 0, 0, 0, 0] }
 
     // 手牌區(未打出卡牌前的位置)
@@ -83,6 +83,7 @@ export default class PositionHandler {
 
     static authorCardEditSaveText = { x: 40, y: 30 }
     static authorCardEditQuitText = { x: 410, y: 30 }
-    static authorCardEditInfo1 = { x: 40, y: 130 }
-    static authorCardEditInfo2 = { x: 40, y: 175 }
+    static authorCardEditInfo1 = { x: 40, y: 100 }
+    static authorCardEditInfo2 = { x: 40, y: 135 }
+    static authorCardEditInfo3 = { x: 40, y: 170 }
 }

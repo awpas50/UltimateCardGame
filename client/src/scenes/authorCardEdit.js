@@ -27,23 +27,21 @@ export default class AuthorCardEdit extends Phaser.Scene {
             "W015",
             "W016",
             "W017",
+            "W018",
+            "W019",
+            "W020",
+            "W021",
         ]
-        // Function to load images
         const loadImages = (prefix, cardArray, path, format) => {
             cardArray.forEach((card) => {
-                this.load.image(
-                    `${prefix}${card}`,
-                    require(`../../public/assets/23246/${path}/${prefix}${card}.${format}`).default
-                )
+                this.load.image(`${prefix}${card}`, require(`../../public/assets/${path}/${prefix}${card}.${format}`).default)
             })
         }
         // Prefix / card number / path
-        loadImages("23246_", wCards, "WCard", "jpg")
+        loadImages("24256_", wCards, "24256/WCard", "jpg")
 
-        this.load.image("H001B", require("../../public/assets/Test/H001B.png").default)
-        this.load.image("H001B_Filped", require("../../public/assets/Test/H001B_Filped.png").default)
-        this.load.image("W001B", require("../../public/assets/Test/W001B.png").default)
-        this.load.image("BG", require("../../public/assets/Test/WoodBackground.jpg").default)
+        this.load.image("image_cardback", require("../../public/assets/others/image_cardback.png").default)
+        this.load.image("BG", require("../../public/assets/others/WoodBackground.jpg").default)
 
         this.load.audio("BGM1", require("../sfx/BGM1.mp3").default)
         this.load.audio("flipCard1", require("../sfx/flipCard1.mp3").default)
@@ -52,6 +50,16 @@ export default class AuthorCardEdit extends Phaser.Scene {
         this.load.audio("dragCard", require("../sfx/dragCard.wav").default)
 
         // this.load.glsl("wipeShader", require("../shaders/linearwipe.glsl").default)
+
+        // Register the shader as a pipeline (required for Phaser to use it properly)
+        // this.game.renderer.addPipeline(
+        //     "wipeShader",
+        //     new Phaser.Renderer.WebGL.Pipelines.SinglePipeline({
+        //         game: this.game,
+        //         renderer: this.game.renderer,
+        //         fragShader: this.cache.shader.get("wipeShader"),
+        //     })
+        // )
     }
 
     create() {

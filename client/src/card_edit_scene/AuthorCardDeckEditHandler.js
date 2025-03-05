@@ -1,9 +1,12 @@
 import Color from "../helpers/Color"
 import PositionHandler from "../helpers/PositionHandler"
+import { WCard_Data_24256 } from "../scenes/game.js"
 
 export default class AuthorCardDeckEditHandler {
     constructor(scene) {
         this.authorDeck = ["", "", "", "", ""]
+        this.currentRarity = 0
+        this.maxRarity = 12
         this.initUI = () => {
             this.renderZone(90, 330, 330 / 3.25, 430 / 3.25, "authorZone1")
             this.renderZone(195, 330, 330 / 3.25, 430 / 3.25, "authorZone2")
@@ -120,34 +123,54 @@ export default class AuthorCardDeckEditHandler {
                     fontFamily: "Trebuchet MS",
                 }
             )
+            scene.authorCardEditInfoText3 = scene.add.text(
+                PositionHandler.authorCardEditInfo3.x,
+                PositionHandler.authorCardEditInfo3.y,
+                "LV: 0 / 12",
+                {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                }
+            )
         }
 
         this.generateWCards = () => {
             const maxCardsInRow = 5
-            const totalCards = 17
+            const totalCards = 21
             let wCardId
             let counter = 0
 
             for (let i = 0; i < totalCards; i++) {
                 counter++
                 wCardId = counter >= 0 && counter <= 9 ? "0" + counter : counter
-                const x = 80 + (i % maxCardsInRow) * 100
+                const x = 80 + (i % maxCardsInRow) * 110
                 const y = 500 + Math.floor(i / maxCardsInRow) * 100
 
                 const card = scene.add
-                    .image(x, y, "23246_W0" + wCardId)
+                    .image(x, y, "24256_W0" + wCardId)
                     .setInteractive()
                     .setScale(0.26, 0.26)
                     .setData({
-                        id: "23246_W0" + wCardId,
+                        id: "24256_W0" + wCardId,
+                        rarity: WCard_Data_24256["24256_W0" + wCardId].rarity,
+                        zIndex: i,
                     })
+                    .setDepth(i)
 
                 scene.input.setDraggable(card)
 
                 // Optional: If you want to handle drag events
                 card.on("drag", (pointer, dragX, dragY) => {
-                    card.x = dragX
-                    card.y = dragY
+                    card.x = dragX + 100
+                    card.y = dragY - 100
+                    card.setScale(0.8, 0.8)
+                })
+                card.on("dragstart", () => {
+                    scene.children.bringToTop(card)
+                })
+                card.on("dragend", () => {
+                    card.setScale(0.26, 0.26)
+                    card.setDepth(card.getData("zIndex"))
                 })
             }
         }
@@ -165,27 +188,26 @@ export default class AuthorCardDeckEditHandler {
             if (dropZone.data.list.cards !== 0) {
                 gameObject.x = gameObject.input.dragStartX
                 gameObject.y = gameObject.input.dragStartY
+            } else if (this.currentRarity + gameObject.getData("rarity") > this.maxRarity) {
+                gameObject.x = gameObject.input.dragStartX
+                gameObject.y = gameObject.input.dragStartY
+                scene.Toast.showToast("作者卡的LV總和不得超過12")
             } else {
-                // console.log("[GameObject] width: " + gameObject.width)
-                // console.log("[GameObject] height: " + gameObject.height)
+                console.log("[GameObject] width: " + gameObject.width)
+                console.log("[GameObject] height: " + gameObject.height)
 
-                // // Add the shader
-                // const shader = scene.add.shader("wipeShader", gameObject.x, gameObject.y, gameObject.width, gameObject.height)
-                // const mask = shader.createGeometryMask() // Create a mask from the shader
-
-                // // Apply the mask to the image
-                // gameObject.setMask(mask)
+                // gameObject.setPipeline("wipeShader")
 
                 // // Control the shader's progress uniform
                 // let progress = 0
-                // scene.time.addEvent({
+                // const event = scene.time.addEvent({
                 //     delay: 50,
                 //     callback: () => {
                 //         progress += 0.01
-                //         shader.setUniform("progress", progress)
+                //         gameObject.pipeline.set1f("progress", progress) // Set uniform for shader
 
                 //         if (progress >= 1) {
-                //             scene.time.removeAllEvents()
+                //             event.remove() // Stop updating shader
                 //         }
                 //     },
                 //     loop: true,
@@ -220,7 +242,8 @@ export default class AuthorCardDeckEditHandler {
                     gameObject.x = dropZone.x
                     gameObject.y = dropZone.y
                     dropZone.data.list.cards++
-
+                    this.currentRarity += gameObject.getData("rarity")
+                    scene.authorCardEditInfoText3.text = `LV: ${this.currentRarity} / ${this.maxRarity}`
                     scene.input.setDraggable(gameObject, false)
                 }
                 console.log(this.authorDeck)
