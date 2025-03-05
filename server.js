@@ -242,7 +242,7 @@ io.on("connection", function (socket) {
                 console.log(`搜尋技能: 搜尋卡牌${id}`)
                 players[socketId].inHand.push(id)
                 // add 1 card at the right of the inHand deck
-                const cardIndex = players[socketId].inHand.length
+                const cardIndex = players[socketId].inHand.length - 1
                 // inDeck delete the specific card
                 const index = players[socketId].inDeck.findIndex((cardToRemove) => cardToRemove === id)
                 // If the item is found, remove it
@@ -291,10 +291,6 @@ io.on("connection", function (socket) {
         players[socketId].inDeck_customized_WCard = authorDeck
     })
 
-    // socket.on('setPlayerPoint', function (socketId, playerTotalPoints) {
-    //     players[socketId].totalInspriationPt = playerTotalPoints
-    // });
-
     socket.on("serverUpdateAuthorBuff", function (socketId, authorBuffPt) {
         players[socketId].inSceneAuthorBoostPt.push(authorBuffPt)
     })
@@ -313,6 +309,7 @@ io.on("connection", function (socket) {
             endRound(roomId)
         } else {
             console.log(`開始下一回合，對手收到題目`)
+            console.log(players)
             io.to(roomId).emit("localInitQuestionCard", opponentId)
         }
     })

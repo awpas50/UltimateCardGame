@@ -1,9 +1,12 @@
 import Color from "../helpers/Color"
 import PositionHandler from "../helpers/PositionHandler"
+import { WCard_Data_24256 } from "../scenes/game.js"
 
 export default class AuthorCardDeckEditHandler {
     constructor(scene) {
         this.authorDeck = ["", "", "", "", ""]
+        this.currentRarity = 0
+        this.maxRarity = 12
         this.initUI = () => {
             this.renderZone(90, 330, 330 / 3.25, 430 / 3.25, "authorZone1")
             this.renderZone(195, 330, 330 / 3.25, 430 / 3.25, "authorZone2")
@@ -120,6 +123,15 @@ export default class AuthorCardDeckEditHandler {
                     fontFamily: "Trebuchet MS",
                 }
             )
+            scene.authorCardEditInfoText3 = scene.add.text(
+                PositionHandler.authorCardEditInfo3.x,
+                PositionHandler.authorCardEditInfo3.y,
+                "LV: 0 / 12",
+                {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                }
+            )
         }
 
         this.generateWCards = () => {
@@ -131,7 +143,7 @@ export default class AuthorCardDeckEditHandler {
             for (let i = 0; i < totalCards; i++) {
                 counter++
                 wCardId = counter >= 0 && counter <= 9 ? "0" + counter : counter
-                const x = 80 + (i % maxCardsInRow) * 100
+                const x = 80 + (i % maxCardsInRow) * 110
                 const y = 500 + Math.floor(i / maxCardsInRow) * 100
 
                 const card = scene.add
@@ -140,7 +152,10 @@ export default class AuthorCardDeckEditHandler {
                     .setScale(0.26, 0.26)
                     .setData({
                         id: "24256_W0" + wCardId,
+                        rarity: WCard_Data_24256["24256_W0" + wCardId].rarity,
+                        zIndex: i,
                     })
+                    .setDepth(i)
 
                 scene.input.setDraggable(card)
 
@@ -148,6 +163,14 @@ export default class AuthorCardDeckEditHandler {
                 card.on("drag", (pointer, dragX, dragY) => {
                     card.x = dragX
                     card.y = dragY
+                    card.setScale(0.8, 0.8)
+                })
+                card.on("dragstart", () => {
+                    scene.children.bringToTop(card)
+                })
+                card.on("dragend", () => {
+                    card.setScale(0.26, 0.26)
+                    card.setDepth(card.getData("zIndex"))
                 })
             }
         }
@@ -165,6 +188,10 @@ export default class AuthorCardDeckEditHandler {
             if (dropZone.data.list.cards !== 0) {
                 gameObject.x = gameObject.input.dragStartX
                 gameObject.y = gameObject.input.dragStartY
+            } else if (this.currentRarity + gameObject.getData("rarity") > this.maxRarity) {
+                gameObject.x = gameObject.input.dragStartX
+                gameObject.y = gameObject.input.dragStartY
+                scene.Toast.showToast("作者卡的LV總和不得超過12")
             } else {
                 console.log("[GameObject] width: " + gameObject.width)
                 console.log("[GameObject] height: " + gameObject.height)
@@ -215,7 +242,8 @@ export default class AuthorCardDeckEditHandler {
                     gameObject.x = dropZone.x
                     gameObject.y = dropZone.y
                     dropZone.data.list.cards++
-
+                    this.currentRarity += gameObject.getData("rarity")
+                    scene.authorCardEditInfoText3.text = `LV: ${this.currentRarity} / ${this.maxRarity}`
                     scene.input.setDraggable(gameObject, false)
                 }
                 console.log(this.authorDeck)

@@ -176,6 +176,7 @@ export default class SocketHandler {
         // * cardId: string * //
         scene.socket.on("dealOneCardInHand", (socketId, cardId, index) => {
             if (socketId === scene.socket.id) {
+                console.log("[card index] " + index)
                 const cardType = cardId.includes("I") ? "ICard" : cardId.includes("H") ? "HCard" : null
 
                 if (cardType) {
