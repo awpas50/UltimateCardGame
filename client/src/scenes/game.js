@@ -6,7 +6,7 @@ import QuestionCardHandler from "../helpers/QuestionCardHandler"
 import SocketHandler from "../helpers/SocketHandler"
 import UIHandler from "../helpers/UIHandler"
 import ZoneHandler from "../helpers/ZoneHandler"
-import Toast from "../helpers/Toast"
+import Toast from "../components/Toast"
 
 // 靈感卡：編號/名稱/星數/屬性/系列/標籤/靈感值
 export const ICard_Data_24256 = {
@@ -222,6 +222,9 @@ export const WCard_Data_24256 = {
         ground: ["水", "火", "土"],
         person: ["木", "火", "金"],
         authorBuffs: [40, 0, 0, 0, 10],
+        ability: "打牌加成",
+        target: "$score=2",
+        targetRules: "$series=孟子",
     },
 
     "24256_W003": {

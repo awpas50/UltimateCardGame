@@ -150,54 +150,31 @@ export default class SocketHandler {
                 const count = Number(AbilityReader.getValueByTag(target, "$count"))
                 console.log(`element: ${element}, series: ${series}, id: ${id}, tag: ${tag}, count: ${count}`)
 
+                let filteredCardArray = []
                 if (id !== null) {
-                    scene.socket.emit(
-                        "serverAddExtraCardInHandById",
-                        scene.socket.id,
-                        scene.GameHandler.currentRoomID,
-                        id,
-                        count === 0 ? 1 : count
-                    )
+                    filteredCardArray = [id]
                 } else if (element !== null) {
-                    const filteredElementCardArray = Object.entries(ICard_Data_24256)
+                    filteredCardArray = Object.entries(ICard_Data_24256)
                         .filter(([_, card]) => card.element === element)
                         .map(([key]) => key)
-
-                    scene.socket.emit(
-                        "serverAddExtraCardInHandByElement",
-                        scene.socket.id,
-                        scene.GameHandler.currentRoomID,
-                        element,
-                        filteredElementCardArray,
-                        count === 0 ? 1 : count
-                    )
                 } else if (series !== null) {
-                    const filteredSeriesCardArray = Object.entries(ICard_Data_24256)
+                    filteredCardArray = Object.entries(ICard_Data_24256)
                         .filter(([_, card]) => card.series === series)
                         .map(([key]) => key)
-
-                    scene.socket.emit(
-                        "serverAddExtraCardInHandBySeries",
-                        scene.socket.id,
-                        scene.GameHandler.currentRoomID,
-                        series,
-                        filteredSeriesCardArray,
-                        count === 0 ? 1 : count
-                    )
-                } else if (tag != null) {
-                    const filteredTagCardArray = Object.entries(ICard_Data_24256)
+                } else if (tag !== null) {
+                    filteredCardArray = Object.entries(ICard_Data_24256)
                         .filter(([_, card]) => card.tag === tag)
                         .map(([key]) => key)
-
-                    scene.socket.emit(
-                        "serverAddExtraCardInHandByTag",
-                        scene.socket.id,
-                        scene.GameHandler.currentRoomID,
-                        tag,
-                        filteredTagCardArray,
-                        count === 0 ? 1 : count
-                    )
                 }
+                console.log("搜尋的卡組:")
+                console.log(filteredCardArray)
+                scene.socket.emit(
+                    "serverAddExtraCardInHand",
+                    scene.socket.id,
+                    scene.GameHandler.currentRoomID,
+                    filteredCardArray,
+                    count === 0 ? 1 : count
+                )
                 // 對手: TODO (增加對應數量卡牌)
             }
         })

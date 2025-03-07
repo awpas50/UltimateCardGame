@@ -52,6 +52,7 @@ export default class Card {
                         authorBuffs: WCard_Data_24256[this.id].authorBuffs,
                         ability: WCard_Data_24256[this.id].ability || "",
                         target: WCard_Data_24256[this.id].target || "",
+                        targetRules: WCard_Data_24256[this.id].targetRules || "",
                     })
             }
             if (cardType == "cardBack") {

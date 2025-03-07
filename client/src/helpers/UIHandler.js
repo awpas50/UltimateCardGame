@@ -177,7 +177,7 @@ export default class UIHandler {
             scene.authorDeckEditText = scene.add.text(
                 PositionHandler.authorDeckEditText.x,
                 PositionHandler.authorDeckEditText.y,
-                "作者卡編成",
+                "角色卡編成",
                 {
                     fontSize: 20,
                     fontFamily: "Trebuchet MS",

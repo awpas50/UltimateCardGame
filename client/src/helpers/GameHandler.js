@@ -56,6 +56,7 @@ export default class GameHandler {
         //技能
         this.ability = ""
         this.target = ""
+        this.targetRules = ""
 
         this.setAuthorData = (authorCardName) => {
             this.playerSkyElements = WCard_Data_24256[authorCardName].sky
@@ -69,6 +70,7 @@ export default class GameHandler {
             this.authorBuffs = WCard_Data_24256[authorCardName].authorBuffs
             this.ability = WCard_Data_24256[authorCardName].ability || null
             this.target = WCard_Data_24256[authorCardName].target || null
+            this.targetRules = WCard_Data_24256[authorCardName].targetRules || null
         }
         this.addAuthorBuffsPoints = (points) => {
             this.authorBuffPoint += points

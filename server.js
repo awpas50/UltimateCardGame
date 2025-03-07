@@ -235,60 +235,9 @@ io.on("connection", function (socket) {
         io.to(roomId).emit("dealOneCardInHand", socketId, players[socketId].inHand[cardIndex], cardIndex)
     })
 
-    socket.on("serverAddExtraCardInHandById", function (socketId, roomId, id, count) {
-        // Player: check spot, add x amount of cards to spot. Opponent: Add x amount of card backs
-        for (let i = 0; i < count; i++) {
-            console.log(`搜尋技能: 搜尋卡牌${id}`)
-            // If inDeck contains the desire card, inDeck delete the specific card
-            const index = players[socketId].inDeck.findIndex((cardToRemove) => cardToRemove === id)
-            if (index !== -1) {
-                players[socketId].inDeck.splice(index, 1)
-                players[socketId].inHand.push(id)
-                // add 1 card at the right of the inHand deck
-                const cardIndex = players[socketId].inHand.length - 1
-                // Tell local to actually show one new card
-                io.to(roomId).emit("dealOneCardInHand", socketId, id, cardIndex)
-            }
-        }
-    })
-    socket.on("serverAddExtraCardInHandByElement", function (socketId, roomId, element, filteredCardArray, count) {
+    socket.on("serverAddExtraCardInHand", function (socketId, roomId, filteredCardArray, count) {
         let array = shuffle(filteredCardArray)
         for (let i = 0; i < count; i++) {
-            console.log(`搜尋技能: 搜尋${element}屬性`)
-            // If inDeck contains the desire card, inDeck delete the specific card
-            const index = players[socketId].inDeck.findIndex((cardToRemove) => cardToRemove === array[i])
-            console.log(`找到卡牌: ${array[i]} index: ${index}`)
-            if (index !== -1) {
-                players[socketId].inDeck.splice(index, 1)
-                players[socketId].inHand.push(array[i])
-                // add 1 card at the right of the inHand deck
-                const cardIndex = players[socketId].inHand.length - 1
-                // Tell local to actually show one new card
-                io.to(roomId).emit("dealOneCardInHand", socketId, array[i], cardIndex)
-            }
-        }
-    })
-    socket.on("serverAddExtraCardInHandBySeries", function (socketId, roomId, series, filteredCardArray, count) {
-        let array = shuffle(filteredCardArray)
-        for (let i = 0; i < count; i++) {
-            console.log(`搜尋技能: 搜尋${series}系列`)
-            // If inDeck contains the desire card, inDeck delete the specific card
-            const index = players[socketId].inDeck.findIndex((cardToRemove) => cardToRemove === array[i])
-            console.log(`找到卡牌: ${array[i]} index: ${index}`)
-            if (index !== -1) {
-                players[socketId].inDeck.splice(index, 1)
-                players[socketId].inHand.push(array[i])
-                // add 1 card at the right of the inHand deck
-                const cardIndex = players[socketId].inHand.length - 1
-                // Tell local to actually show one new card
-                io.to(roomId).emit("dealOneCardInHand", socketId, array[i], cardIndex)
-            }
-        }
-    })
-    socket.on("serverAddExtraCardInHandByTag", function (socketId, roomId, tag, filteredCardArray, count) {
-        let array = shuffle(filteredCardArray)
-        for (let i = 0; i < count; i++) {
-            console.log(`搜尋技能: 搜尋${tag}`)
             // If inDeck contains the desire card, inDeck delete the specific card
             const index = players[socketId].inDeck.findIndex((cardToRemove) => cardToRemove === array[i])
             console.log(`找到卡牌: ${array[i]} index: ${index}`)
@@ -343,7 +292,7 @@ io.on("connection", function (socket) {
         players[socketId].inSceneAuthorBoostPt.push(authorBuffPt)
     })
 
-    socket.on("serverUpdateCardCount", function (socketId, opponentId, roomId) {
+    socket.on("serverEndRoundAfterPlayingCard", function (socketId, opponentId, roomId) {
         players[socketId].cardCount++
         calculateTotalInspriationPts(socketId)
         console.log(`場上有${players[socketId].cardCount}+${players[opponentId].cardCount}張牌`)

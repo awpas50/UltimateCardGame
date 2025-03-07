@@ -1,5 +1,6 @@
 import PositionHandler from "./PositionHandler.js"
 import ScaleHandler from "./ScaleHandler.js"
+import AbilityReader from "./AbilityReader"
 
 export default class InteractiveHandler {
     constructor(scene) {
@@ -218,11 +219,28 @@ export default class InteractiveHandler {
                     scene.GameHandler.currentRoomID
                 )
 
+                // !! 技能:打牌加成
+                if (scene.GameHandler.ability === "打牌加成") {
+                    const target = scene.GameHandler.target
+                    const targetRules = scene.GameHandler.targetRules
+                    gameObject.getData("series")
+                    const score = Number(AbilityReader.getValueByTag(target, "$score"))
+                    const series = AbilityReader.getValueByTag(targetRules, "$series")
+
+                    let isCardConditionMatch = false
+                    if (series !== null && gameObject.getData("series") === series) {
+                        isCardConditionMatch = true
+                    }
+                    if (score !== null && isCardConditionMatch && canGetPoints) {
+                        scene.socket.emit("serverUpdateScores", scene.socket.id, score, scene.GameHandler.currentRoomID)
+                    }
+                }
+
                 scene.socket.emit("serverHideRollDiceText", scene.socket.id, scene.GameHandler.currentRoomID)
                 dropZone.data.list.cards++
                 // 同時檢查比賽是否結束。如未結束，對方會得到一張題目卡。
                 scene.socket.emit(
-                    "serverUpdateCardCount",
+                    "serverEndRoundAfterPlayingCard",
                     scene.socket.id,
                     scene.GameHandler.opponentID,
                     scene.GameHandler.currentRoomID
