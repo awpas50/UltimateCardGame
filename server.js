@@ -166,7 +166,7 @@ io.on("connection", function (socket) {
 
         // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
         io.to(roomId).emit("addWCardsInScene", socketId, players[socketId].inScene_WCard)
-        socket.emit("setAuthorData", players[socketId].inScene_WCard)
+        io.to(roomId).emit("setAuthorData", socketId, players[socketId].inScene_WCard)
         io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
         io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
         io.to(roomId).emit("localCheckIfAbilityIsSearch", socketId)
@@ -197,7 +197,7 @@ io.on("connection", function (socket) {
         // // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
         // io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
         io.to(roomId).emit("addWCardsInScene", socketId, players[socketId].inScene_WCard)
-        socket.emit("setAuthorData", players[socketId].inScene_WCard)
+        io.to(roomId).emit("setAuthorData", socketId, players[socketId].inScene_WCard)
         io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
         io.to(roomId).emit("localCheckIfAbilityIsSearch", socketId)
 
@@ -271,6 +271,25 @@ io.on("connection", function (socket) {
         players[socketId].totalScore += score
         io.to(roomId).emit("setPlayerWinScoreText", players[socketId].totalScore, socketId)
         io.to(roomId).emit("setPlayerLoseScoreText", players[socketId].totalScore, socketId)
+
+        let endRoundRoom = playersInRooms.get(roomId)
+        // * player1, player2: string (socket ID) *
+        let player1SocketId = endRoundRoom[0]
+        let player2SocketId = endRoundRoom[1]
+
+        if (players[player1SocketId].totalScore < 60 && players[player2SocketId].totalScore < 60) {
+            return
+        }
+        // ---- 完場 ----
+        // 防止玩家出牌
+        players[player1SocketId].isReady = false
+        players[player2SocketId].isReady = false
+        io.to(roomId).emit("changeGameState", "Initializing")
+        if (players[player1SocketId].totalScore > players[player2SocketId].totalScore) {
+            io.to(roomId).emit("localGetWhichPlayerWin", player1SocketId)
+        } else {
+            io.to(roomId).emit("localGetWhichPlayerWin", player2SocketId)
+        }
     })
 
     socket.on("serverNotifyCardPlayed", function (cardName, socketId, dropZoneId, roomId, cardType) {

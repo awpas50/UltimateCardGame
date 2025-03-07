@@ -240,9 +240,13 @@ export default class SocketHandler {
             }
         })
 
-        scene.socket.on("setAuthorData", (authorCardName) => {
+        scene.socket.on("setAuthorData", (socketId, authorCardName) => {
             //Author card
-            scene.GameHandler.setAuthorData(authorCardName) //Player side
+            if (socketId === scene.socket.id) {
+                scene.GameHandler.setPlayerAuthorData(authorCardName) //Player side
+            } else {
+                scene.GameHandler.setOpponentAuthorData(authorCardName) //Opponent side
+            }
         })
         scene.socket.on("setAuthorRarity", (socketId, authorCardName) => {
             //Author card

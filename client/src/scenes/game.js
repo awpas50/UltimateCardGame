@@ -319,6 +319,8 @@ export const WCard_Data_24256 = {
         ground: ["水", "土"],
         person: ["金", "土"],
         authorBuffs: [0, 0, 0, 30, -30],
+        ability: "限制出牌",
+        target: "$element=土,金",
     },
 
     "24256_W012": {
@@ -329,6 +331,8 @@ export const WCard_Data_24256 = {
         ground: ["木", "土"],
         person: ["火", "木"],
         authorBuffs: [20, 0, 30, 0, 0],
+        ability: "限制出牌",
+        target: "$element=木",
     },
 
     "24256_W013": {

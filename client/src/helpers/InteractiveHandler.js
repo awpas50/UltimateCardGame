@@ -146,6 +146,26 @@ export default class InteractiveHandler {
                 scene.GameHandler.gameState === "Ready" &&
                 dropZone.data.list.cards == 0
             ) {
+                // 是否受到對方作者技能"限制出牌"影響?
+                if (scene.GameHandler.opponentAbility === "限制出牌") {
+                    const opponentTarget = scene.GameHandler.opponentTarget
+                    const element = AbilityReader.getValueByTag(opponentTarget, "$element")
+                    const elementArray = element.split(",")
+
+                    const isBeingDragged = elementArray.some((element) => {
+                        if (gameObject.getData("element") === element) {
+                            return true
+                        }
+                        return false
+                    })
+                    if (isBeingDragged) {
+                        gameObject.x = gameObject.input.dragStartX
+                        gameObject.y = gameObject.input.dragStartY
+                        scene.Toast.showToast("你的靈感卡受到束縛,無法打出")
+                        return
+                    }
+                }
+                // ---- 正常打出卡牌 ----
                 // 鎖定卡牌位置
                 gameObject.x = dropZone.x
                 gameObject.y = dropZone.y
@@ -223,7 +243,6 @@ export default class InteractiveHandler {
                 if (scene.GameHandler.ability === "打牌加成") {
                     const target = scene.GameHandler.target
                     const targetRules = scene.GameHandler.targetRules
-                    gameObject.getData("series")
                     const score = Number(AbilityReader.getValueByTag(target, "$score"))
                     const series = AbilityReader.getValueByTag(targetRules, "$series")
 
