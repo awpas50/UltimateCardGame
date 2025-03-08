@@ -127,13 +127,16 @@ io.on("connection", function (socket) {
         inScene_WCard: [],
         inRubbishBin_WCard: [],
 
+        isHCardActive: false, // for multiplier
         inSceneElementCalculator: [], // for multiplier
         inSceneIPointCalculator: [], // for multiplier
         inSceneSeriesCalculator: [], // for multiplier
+        inSceneRarityCalculator: [],
         inSceneAuthorBoostPt: [],
         cardCount: 0,
         totalInspriationPt: 0,
         totalScore: 0, // 60 to win
+        extraScore: 0, // extra scores by abilities
     }
 
     const objLength = Object.keys(players).length
@@ -253,11 +256,14 @@ io.on("connection", function (socket) {
     })
 
     // Used for setting score multiplier at the end of the round
-    socket.on("serverSetCardType", function (socketId, elementId, inspriationPt, series) {
+    socket.on("serverSetCardType", function (socketId, elementId, inspriationPt, series, rarity) {
         players[socketId].inSceneElementCalculator.push(elementId) // double scores if all elements match
         players[socketId].inSceneIPointCalculator.push(inspriationPt) // triple scores if all inspriation points match
         players[socketId].inSceneSeriesCalculator.push(series) // triple scores if all series match
-        // players[socketId].totalInspriationPt += inspriationPt
+        players[socketId].inSceneRarityCalculator.push(rarity)
+    })
+    socket.on("serverSetHCardActiveState", function (socketId, state) {
+        players[socketId].isHCardActive = state
     })
 
     // Called in InteractiveHandler.js
@@ -315,9 +321,6 @@ io.on("connection", function (socket) {
         players[socketId].cardCount++
         calculateTotalInspriationPts(socketId)
         console.log(`場上有${players[socketId].cardCount}+${players[opponentId].cardCount}張牌`)
-
-        console.log(socketId)
-        console.log(opponentId)
 
         if (players[socketId].cardCount >= 4 && players[opponentId].cardCount >= 4) {
             io.to(roomId).emit("setPlayerPointText")
@@ -400,7 +403,11 @@ function endRound(roomId) {
         }
     }
 
-    // 計分
+    // 額外加分,無論是否勝出都會加上 (技能,例如"結算加分")
+    players[player1SocketId].totalScore += players[player1SocketId].extraScore
+    players[player2SocketId].totalScore += players[player2SocketId].extraScore
+
+    // 計分結果
     io.to(roomId).emit("setPlayerWinText", whoWin)
     if (whoWinSocketId === player1SocketId) {
         console.log("玩家1獲得分數: " + baseScore * player1Multiplier)
@@ -425,7 +432,7 @@ function endRound(roomId) {
     console.log(`玩家2總分: ${player2ScoreBeforeCalculation} >>> ${players[player2SocketId].totalScore}`)
     console.log(players)
 
-    // 勝利狀態
+    // 完場狀態
     let endGameState = false
     if (players[player1SocketId].totalScore >= 60 || players[player2SocketId].totalScore >= 60) {
         endGameState = true
@@ -458,10 +465,12 @@ function resetBattleField(roomId, endRoundRoom) {
         players[endRoundRoom[i]].inSceneElementCalculator = []
         players[endRoundRoom[i]].inSceneIPointCalculator = []
         players[endRoundRoom[i]].inSceneSeriesCalculator = []
+        players[endRoundRoom[i]].inSceneRarityCalculator = []
         players[endRoundRoom[i]].inSceneAuthorBoostPt = []
         players[endRoundRoom[i]].totalInspriationPt = 0
         players[endRoundRoom[i]].cardCount = 0
         players[endRoundRoom[i]].roundCount++
+        players[endRoundRoom[i]].extraScore = 0
 
         // Move all cards in scene to rubbish bin
         while (players[endRoundRoom[i]].inScene.length > 0) {
@@ -507,6 +516,11 @@ function getMultiplier(socketId, playerNumber) {
     let sameElement = false
     let sameSeries = false
     let sameIPoint = false
+    // 成語卡蓋牌，結束倍率計算
+    if (!players[socketId].isHCardActive) {
+        console.log(`玩家${playerNumber}成語卡蓋牌，結束倍率計算`)
+        return 1
+    }
     // 同屬
     if (
         players[socketId].inSceneElementCalculator.length === 3 &&

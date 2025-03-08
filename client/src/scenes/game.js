@@ -66,7 +66,7 @@ export const ICard_Data_24256 = {
     "24256_I050": { ID: "24256_I050", name: "芰荷", rarity: 4, element: "木", series: "楚辭", tag: "", points: 40 },
 
     "24256_I051": { ID: "24256_I051", name: "芙蓉", rarity: 4, element: "木", series: "楚辭", tag: "", points: 10 },
-    "24256_I052": { ID: "24256_I052", name: "山鬼", rarity: 5, element: "木", series: "楚辭", tag: "", points: 90 },
+    "24256_I052": { ID: "24256_I052", name: "山鬼", rarity: 5, element: "木", series: "楚辭", tag: "神", points: 90 },
     "24256_I053": { ID: "24256_I053", name: "蛾眉", rarity: 3, element: "火", series: "楚辭", tag: "", points: 20 },
     "24256_I054": { ID: "24256_I054", name: "心悅", rarity: 4, element: "木", series: "孔子", tag: "", points: 30 },
     "24256_I055": { ID: "24256_I055", name: "得閒", rarity: 2, element: "水", series: "孔子", tag: "", points: 70 },
@@ -75,7 +75,7 @@ export const ICard_Data_24256 = {
     "24256_I058": { ID: "24256_I058", name: "鼓瑟", rarity: 3, element: "土", series: "孔子", tag: "", points: 70 },
     "24256_I059": { ID: "24256_I059", name: "冠者", rarity: 3, element: "土", series: "孔子", tag: "", points: 20 },
 
-    "24256_I060": { ID: "24256_I060", name: "社稷", rarity: 5, element: "土", series: "孔子", tag: "", points: 100 },
+    "24256_I060": { ID: "24256_I060", name: "社稷", rarity: 5, element: "土", series: "孔子", tag: "神", points: 100 },
     "24256_I061": { ID: "24256_I061", name: "虎兕", rarity: 3, element: "金", series: "孔子", tag: "", points: 80 },
     "24256_I062": { ID: "24256_I062", name: "龜玉", rarity: 4, element: "金", series: "孔子", tag: "", points: 30 },
     "24256_I063": { ID: "24256_I063", name: "干戈", rarity: 4, element: "金", series: "孔子", tag: "", points: 70 },
@@ -297,6 +297,8 @@ export const WCard_Data_24256 = {
         ground: ["火", "水", "木", "金", "土"],
         person: ["火", "水", "木", "金", "土"],
         authorBuffs: [0, 20, 0, 0, 0],
+        ability: "結算加分",
+        target: "$formula=totalRarity/2",
     },
 
     "24256_W010": {

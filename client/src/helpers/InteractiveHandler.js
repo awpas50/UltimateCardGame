@@ -200,18 +200,26 @@ export default class InteractiveHandler {
                     authorBuffPts = isVoid ? 0 : scene.GameHandler.authorBuffs[elementID]
                 }
 
+                // 積分倍率計算，任何一張靈感卡蓋牌/成語卡蓋牌將無法獲得積分加倍。
                 if (gameObject.getData("id").includes("I") && dropZone.name !== "dropZone4") {
-                    // 積分倍率計算(同屬雙倍,同靈感三倍)。蓋牌無法獲得積分加倍。null表示無效積分計算。5表示無屬性。
+                    // 同屬雙倍,同靈感三倍,同屬+同靈感值四倍。null表示無效積分計算。5表示無屬性。
+                    // 同時存入卡牌的星數。
                     scene.socket.emit(
                         "serverSetCardType",
                         scene.socket.id,
                         canGetPoints ? elementID : null,
                         canGetPoints ? gameObject.getData("points") : null,
-                        canGetPoints ? gameObject.getData("series") : null
+                        canGetPoints ? gameObject.getData("series") : null,
+                        canGetPoints ? gameObject.getData("rarity") : null
                     )
                     // 作者屬性加成
                     scene.socket.emit("serverUpdateAuthorBuff", scene.socket.id, authorBuffPts)
                 }
+                // ** "日"(成語卡格)不能蓋牌，否則無法獲得積分加倍
+                if (gameObject.getData("id").includes("H") && dropZone.name === "dropZone4") {
+                    scene.socket.emit("serverSetHCardActiveState", scene.socket.id, true)
+                }
+
                 // 計算總得分。卡反轉時能不能獲得作者屬性
                 const totalPointsToUpdate =
                     canGetPoints && cardType !== "cardBack" ? gameObject.getData("points") + authorBuffPts : 0
