@@ -273,6 +273,10 @@ io.on("connection", function (socket) {
         io.to(roomId).emit("setOpponentPointText")
     })
 
+    socket.on("serverUpdateExtraScores", function (socketId, extraScore) {
+        players[socketId].extraScore += extraScore
+    })
+
     socket.on("serverUpdateScores", function (socketId, score, roomId) {
         players[socketId].totalScore += score
         io.to(roomId).emit("setPlayerWinScoreText", players[socketId].totalScore, socketId)
@@ -404,8 +408,11 @@ function endRound(roomId) {
     }
 
     // 額外加分,無論是否勝出都會加上 (技能,例如"結算加分")
-    players[player1SocketId].totalScore += players[player1SocketId].extraScore
-    players[player2SocketId].totalScore += players[player2SocketId].extraScore
+    // 不計小數
+    players[player1SocketId].totalScore += Math.floor(players[player1SocketId].extraScore)
+    players[player2SocketId].totalScore += Math.floor(players[player2SocketId].extraScore)
+    console.log("玩家1額外加分(技能): " + Math.floor(players[player1SocketId].extraScore))
+    console.log("玩家2額外加分(技能): " + Math.floor(players[player2SocketId].extraScore))
 
     // 計分結果
     io.to(roomId).emit("setPlayerWinText", whoWin)

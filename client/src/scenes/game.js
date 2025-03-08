@@ -298,7 +298,7 @@ export const WCard_Data_24256 = {
         person: ["火", "水", "木", "金", "土"],
         authorBuffs: [0, 20, 0, 0, 0],
         ability: "結算加分",
-        target: "$formula=totalRarity/2",
+        target: "$formula=totalRarity$operator=/$number=2",
     },
 
     "24256_W010": {

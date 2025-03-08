@@ -263,9 +263,33 @@ export default class InteractiveHandler {
                     }
                 }
 
+                // !! 技能:結算加分 (先save extraScore落server, 對局結束後先一次過加算extraScore)
+                if (scene.GameHandler.ability === "結算加分" && gameObject.getData("id").includes("I") && canGetPoints) {
+                    let initialNumber = 0
+                    const target = scene.GameHandler.target
+                    const formula = AbilityReader.getValueByTag(target, "$formula")
+                    const operator = AbilityReader.getValueByTag(target, "$operator")
+                    const number = AbilityReader.getValueByTag(target, "$number")
+
+                    console.log(`formula: ${formula}, operator: ${operator}, nmuber: ${number}`)
+
+                    if (formula === "totalRarity") {
+                        initialNumber = gameObject.getData("rarity")
+                        console.log(`initialNumber: ${initialNumber}`)
+                    }
+                    // assert number !== null
+                    if (operator === "/") {
+                        initialNumber /= number
+                        console.log(`initialNumber: ${initialNumber}`)
+                    }
+                    const extraScore = initialNumber
+                    console.log(`extraScore: ${extraScore}`)
+                    scene.socket.emit("serverUpdateExtraScores", scene.socket.id, extraScore)
+                }
+
                 scene.socket.emit("serverHideRollDiceText", scene.socket.id, scene.GameHandler.currentRoomID)
                 dropZone.data.list.cards++
-                // 同時檢查比賽是否結束。如未結束，對方會得到一張題目卡。
+                // 同時檢查對局是否結束。如未結束，對方會得到一張題目卡。
                 scene.socket.emit(
                     "serverEndRoundAfterPlayingCard",
                     scene.socket.id,

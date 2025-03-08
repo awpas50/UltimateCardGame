@@ -28,7 +28,7 @@ export default class Card {
                     element: ICard_Data_24256[this.id].element,
                     series: ICard_Data_24256[this.id].series,
                     points: ICard_Data_24256[this.id].points,
-                    rarity: ICard_Data_24256[this.id].points,
+                    rarity: ICard_Data_24256[this.id].rarity,
                     tag: ICard_Data_24256[this.id].tag,
 
                     side: side,
