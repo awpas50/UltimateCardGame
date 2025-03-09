@@ -1,5 +1,5 @@
 import AuthorCardDeckEditHandler from "../card_edit_scene/AuthorCardDeckEditHandler"
-import Toast from "../helpers/Toast"
+import Toast from "../components/Toast"
 
 export default class AuthorCardEdit extends Phaser.Scene {
     constructor() {

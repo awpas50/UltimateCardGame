@@ -138,9 +138,7 @@ export default class SocketHandler {
                 if (scene.GameHandler.ability !== "搜尋") {
                     return
                 }
-                const ability = scene.GameHandler.ability
                 const target = scene.GameHandler.target
-                console.log(`ability: ${ability}, target: ${target}`)
                 const element = AbilityReader.getValueByTag(target, "$element")
                 const series = AbilityReader.getValueByTag(target, "$series")
                 const id = AbilityReader.getValueByTag(target, "$id")
@@ -148,55 +146,51 @@ export default class SocketHandler {
                 const count = Number(AbilityReader.getValueByTag(target, "$count"))
                 console.log(`element: ${element}, series: ${series}, id: ${id}, tag: ${tag}, count: ${count}`)
 
+                let filteredCardArray = []
                 if (id !== null) {
-                    scene.socket.emit(
-                        "serverAddExtraCardInHandById",
-                        scene.socket.id,
-                        scene.GameHandler.currentRoomID,
-                        id,
-                        count === 0 ? 1 : count
-                    )
+                    filteredCardArray = [id]
                 } else if (element !== null) {
-                    const filteredElementCardArray = Object.entries(ICard_Data_24256)
+                    filteredCardArray = Object.entries(ICard_Data_24256)
                         .filter(([_, card]) => card.element === element)
                         .map(([key]) => key)
-
-                    scene.socket.emit(
-                        "serverAddExtraCardInHandByElement",
-                        scene.socket.id,
-                        scene.GameHandler.currentRoomID,
-                        element,
-                        filteredElementCardArray,
-                        count === 0 ? 1 : count
-                    )
                 } else if (series !== null) {
-                    const filteredSeriesCardArray = Object.entries(ICard_Data_24256)
+                    filteredCardArray = Object.entries(ICard_Data_24256)
                         .filter(([_, card]) => card.series === series)
                         .map(([key]) => key)
-
-                    scene.socket.emit(
-                        "serverAddExtraCardInHandBySeries",
-                        scene.socket.id,
-                        scene.GameHandler.currentRoomID,
-                        series,
-                        filteredSeriesCardArray,
-                        count === 0 ? 1 : count
-                    )
-                } else if (tag != null) {
-                    const filteredTagCardArray = Object.entries(ICard_Data_24256)
+                } else if (tag !== null) {
+                    filteredCardArray = Object.entries(ICard_Data_24256)
                         .filter(([_, card]) => card.tag === tag)
                         .map(([key]) => key)
-
-                    scene.socket.emit(
-                        "serverAddExtraCardInHandByTag",
-                        scene.socket.id,
-                        scene.GameHandler.currentRoomID,
-                        tag,
-                        filteredTagCardArray,
-                        count === 0 ? 1 : count
-                    )
                 }
+                console.log("搜尋的卡組:")
+                console.log(filteredCardArray)
+                scene.socket.emit(
+                    "serverAddExtraCardInHand",
+                    scene.socket.id,
+                    scene.GameHandler.currentRoomID,
+                    filteredCardArray,
+                    count === 0 ? 1 : count
+                )
                 // 對手: TODO (增加對應數量卡牌)
+            }
+        })
+
+        scene.socket.on("localCheckIfAbilityIsMultiplier", (socketId) => {
+            // 玩家: 如果作者卡技能(ability)=倍率加成
+            if (socketId === scene.socket.id) {
+                if (scene.GameHandler.ability !== "倍率加成") {
+                    return
+                }
+                const target = scene.GameHandler.target
+                const targetRules = scene.GameHandler.targetRules
+                const multiplier = Number(AbilityReader.getValueByTag(target, "$multiplier"))
+                const formula = AbilityReader.getValueByTag(targetRules, "$formula")
+                const check = AbilityReader.getValueByTag(targetRules, "$check")
+                console.log(`multiplier: ${multiplier}, formula: ${formula}, check: ${check}`)
+                const realArray = JSON.parse(check)
+                console.log(realArray)
+
+                scene.socket.emit("serverSetSpecialMultiplierRules", scene.socket.id, multiplier, formula, check)
             }
         })
 
@@ -261,9 +255,13 @@ export default class SocketHandler {
             }
         })
 
-        scene.socket.on("setAuthorData", (authorCardName) => {
+        scene.socket.on("setAuthorData", (socketId, authorCardName) => {
             //Author card
-            scene.GameHandler.setAuthorData(authorCardName) //Player side
+            if (socketId === scene.socket.id) {
+                scene.GameHandler.setPlayerAuthorData(authorCardName) //Player side
+            } else {
+                scene.GameHandler.setOpponentAuthorData(authorCardName) //Opponent side
+            }
         })
         scene.socket.on("setAuthorRarity", (socketId, authorCardName) => {
             //Author card

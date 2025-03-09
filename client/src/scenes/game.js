@@ -6,7 +6,7 @@ import QuestionCardHandler from "../helpers/QuestionCardHandler"
 import SocketHandler from "../helpers/SocketHandler"
 import UIHandler from "../helpers/UIHandler"
 import ZoneHandler from "../helpers/ZoneHandler"
-import Toast from "../helpers/Toast"
+import Toast from "../components/Toast"
 
 // 靈感卡：編號/名稱/星數/屬性/系列/標籤/靈感值
 export const ICard_Data_24256 = {
@@ -66,16 +66,16 @@ export const ICard_Data_24256 = {
     "24256_I050": { ID: "24256_I050", name: "芰荷", rarity: 4, element: "木", series: "楚辭", tag: "", points: 40 },
 
     "24256_I051": { ID: "24256_I051", name: "芙蓉", rarity: 4, element: "木", series: "楚辭", tag: "", points: 10 },
-    "24256_I052": { ID: "24256_I052", name: "蛾眉", rarity: 3, element: "火", series: "楚辭", tag: "", points: 20 },
-    "24256_I053": { ID: "24256_I053", name: "心悅", rarity: 4, element: "木", series: "孔子", tag: "", points: 30 },
-    "24256_I054": { ID: "24256_I054", name: "得閒", rarity: 2, element: "水", series: "孔子", tag: "", points: 70 },
-    "24256_I055": { ID: "24256_I055", name: "山鬼", rarity: 5, element: "木", series: "孔子", tag: "", points: 90 },
+    "24256_I052": { ID: "24256_I052", name: "山鬼", rarity: 5, element: "木", series: "楚辭", tag: "神", points: 90 },
+    "24256_I053": { ID: "24256_I053", name: "蛾眉", rarity: 3, element: "火", series: "楚辭", tag: "", points: 20 },
+    "24256_I054": { ID: "24256_I054", name: "心悅", rarity: 4, element: "木", series: "孔子", tag: "", points: 30 },
+    "24256_I055": { ID: "24256_I055", name: "得閒", rarity: 2, element: "水", series: "孔子", tag: "", points: 70 },
     "24256_I056": { ID: "24256_I056", name: "師旅", rarity: 5, element: "火", series: "孔子", tag: "", points: 80 },
     "24256_I057": { ID: "24256_I057", name: "哂", rarity: 2, element: "水", series: "孔子", tag: "", points: 0 },
     "24256_I058": { ID: "24256_I058", name: "鼓瑟", rarity: 3, element: "土", series: "孔子", tag: "", points: 70 },
     "24256_I059": { ID: "24256_I059", name: "冠者", rarity: 3, element: "土", series: "孔子", tag: "", points: 20 },
 
-    "24256_I060": { ID: "24256_I060", name: "社稷", rarity: 5, element: "土", series: "孔子", tag: "", points: 100 },
+    "24256_I060": { ID: "24256_I060", name: "社稷", rarity: 5, element: "土", series: "孔子", tag: "神", points: 100 },
     "24256_I061": { ID: "24256_I061", name: "虎兕", rarity: 3, element: "金", series: "孔子", tag: "", points: 80 },
     "24256_I062": { ID: "24256_I062", name: "龜玉", rarity: 4, element: "金", series: "孔子", tag: "", points: 30 },
     "24256_I063": { ID: "24256_I063", name: "干戈", rarity: 4, element: "金", series: "孔子", tag: "", points: 70 },
@@ -222,6 +222,9 @@ export const WCard_Data_24256 = {
         ground: ["水", "火", "土"],
         person: ["木", "火", "金"],
         authorBuffs: [40, 0, 0, 0, 10],
+        ability: "打牌加成",
+        target: "$score=2",
+        targetRules: "$series=孟子",
     },
 
     "24256_W003": {
@@ -242,6 +245,9 @@ export const WCard_Data_24256 = {
         ground: ["木", "土"],
         person: ["火", "土"],
         authorBuffs: [20, 0, 0, 0, 30],
+        ability: "倍率加成",
+        target: "$multiplier=3",
+        targetRules: "$formula=sameElement$check=[4,4,4]",
     },
 
     "24256_W005": {
@@ -294,6 +300,8 @@ export const WCard_Data_24256 = {
         ground: ["火", "水", "木", "金", "土"],
         person: ["火", "水", "木", "金", "土"],
         authorBuffs: [0, 20, 0, 0, 0],
+        ability: "結算加分",
+        target: "$formula=totalRarity$operator=/$number=2",
     },
 
     "24256_W010": {
@@ -316,6 +324,8 @@ export const WCard_Data_24256 = {
         ground: ["水", "土"],
         person: ["金", "土"],
         authorBuffs: [0, 0, 0, 30, -30],
+        ability: "限制出牌",
+        target: "$element=土,金",
     },
 
     "24256_W012": {
@@ -326,6 +336,8 @@ export const WCard_Data_24256 = {
         ground: ["木", "土"],
         person: ["火", "木"],
         authorBuffs: [20, 0, 30, 0, 0],
+        ability: "限制出牌",
+        target: "$element=木",
     },
 
     "24256_W013": {

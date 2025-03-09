@@ -26,6 +26,11 @@ export default class GameHandler {
         this.playerSkyElements = []
         this.playerGroundElements = []
         this.playerPersonElements = []
+
+        this.opponentSkyElements = []
+        this.opponentGroundElements = []
+        this.opponentPersonElements = []
+
         //加成 [5種屬性]
         this.authorBuffs = []
         this.authorBuffPoint = 0
@@ -56,8 +61,13 @@ export default class GameHandler {
         //技能
         this.ability = ""
         this.target = ""
+        this.targetRules = ""
+        //技能 (對手)
+        this.opponentAbility = ""
+        this.opponentTarget = ""
+        this.opponentTargetRules = ""
 
-        this.setAuthorData = (authorCardName) => {
+        this.setPlayerAuthorData = (authorCardName) => {
             this.playerSkyElements = WCard_Data_24256[authorCardName].sky
             this.playerGroundElements = WCard_Data_24256[authorCardName].ground
             this.playerPersonElements = WCard_Data_24256[authorCardName].person
@@ -69,7 +79,23 @@ export default class GameHandler {
             this.authorBuffs = WCard_Data_24256[authorCardName].authorBuffs
             this.ability = WCard_Data_24256[authorCardName].ability || null
             this.target = WCard_Data_24256[authorCardName].target || null
+            this.targetRules = WCard_Data_24256[authorCardName].targetRules || null
         }
+
+        this.setOpponentAuthorData = (authorCardName) => {
+            this.opponentSkyElements = WCard_Data_24256[authorCardName].sky
+            this.opponentGroundElements = WCard_Data_24256[authorCardName].ground
+            this.opponentPersonElements = WCard_Data_24256[authorCardName].person
+
+            console.log("opponentSkyElements: " + this.opponentSkyElements)
+            console.log("opponentGroundElements: " + this.opponentGroundElements)
+            console.log("opponentPersonElements: " + this.opponentPersonElements)
+
+            this.opponentAbility = WCard_Data_24256[authorCardName].ability || null
+            this.opponentTarget = WCard_Data_24256[authorCardName].target || null
+            this.opponentTargetRules = WCard_Data_24256[authorCardName].targetRules || null
+        }
+
         this.addAuthorBuffsPoints = (points) => {
             this.authorBuffPoint += points
         }

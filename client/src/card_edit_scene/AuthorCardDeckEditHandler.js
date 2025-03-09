@@ -108,7 +108,7 @@ export default class AuthorCardDeckEditHandler {
             scene.authorCardEditInfoText1 = scene.add.text(
                 PositionHandler.authorCardEditInfo1.x,
                 PositionHandler.authorCardEditInfo1.y,
-                "作者卡將按順序從左到右登場。下方五格都必須放入作者卡，",
+                "角色卡將按順序從左到右登場。下方五格都必須放入角色卡，",
                 {
                     fontSize: 20,
                     fontFamily: "Trebuchet MS",
@@ -191,7 +191,7 @@ export default class AuthorCardDeckEditHandler {
             } else if (this.currentRarity + gameObject.getData("rarity") > this.maxRarity) {
                 gameObject.x = gameObject.input.dragStartX
                 gameObject.y = gameObject.input.dragStartY
-                scene.Toast.showToast("作者卡的LV總和不得超過12")
+                scene.Toast.showToast("角色卡的LV總和不得超過12")
             } else {
                 console.log("[GameObject] width: " + gameObject.width)
                 console.log("[GameObject] height: " + gameObject.height)

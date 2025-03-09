@@ -47,6 +47,7 @@ export default class QuestionCardHandler {
                 if (timer < 0) {
                     clearInterval(this.interval)
                     scene.socket.emit("serverUpdateScores", scene.socket.id, -1, scene.GameHandler.currentRoomID)
+                    scene.Toast.showToast("沒有回答！扣1分")
                     console.log("Timer stopped at 20")
                     this.deleteAnswerTextAndResetQuestion()
                     scene.questionCardPreview.destroy()
@@ -67,9 +68,9 @@ export default class QuestionCardHandler {
                 D: PositionHandler.answerD,
             }
 
-            const createAnswerText = (key, position) => {
+            const createAnswerText = (key, position, backgroundColor) => {
                 scene[`answer${key}Text`] = scene.add
-                    .text(position.x, position.y, key)
+                    .text(position.x, position.y, key, { backgroundColor: backgroundColor, padding: { x: 8, y: 8 } })
                     .setFontSize(24)
                     .setFontFamily("Trebuchet MS")
 
@@ -79,21 +80,21 @@ export default class QuestionCardHandler {
                     console.log("所選答案:" + key)
                     if (this.correctAnswer === key) {
                         console.log("正解")
-                        scene.Toast.showToast("答對,加1分")
+                        scene.Toast.showToast("答對！加1分")
                         scene.socket.emit("serverUpdateScores", scene.socket.id, 1, scene.GameHandler.currentRoomID)
                     } else {
                         console.log("錯誤")
-                        scene.Toast.showToast("答錯,扣1分")
+                        scene.Toast.showToast("答錯！扣1分")
                         scene.socket.emit("serverUpdateScores", scene.socket.id, -1, scene.GameHandler.currentRoomID)
                     }
                     this.deleteAnswerTextAndResetQuestion()
                 })
             }
 
-            createAnswerText("A", answerPositionMap["A"])
-            createAnswerText("B", answerPositionMap["B"])
-            createAnswerText("C", answerPositionMap["C"])
-            createAnswerText("D", answerPositionMap["D"])
+            createAnswerText("A", answerPositionMap["A"], "#c96d63") // red
+            createAnswerText("B", answerPositionMap["B"], "#63a4c9") // blue
+            createAnswerText("C", answerPositionMap["C"], "#8063c9") // purple
+            createAnswerText("D", answerPositionMap["D"], "#d69429") // orange
         }
 
         this.deleteAnswerTextAndResetQuestion = () => {

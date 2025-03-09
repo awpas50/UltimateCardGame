@@ -1,5 +1,6 @@
 import PositionHandler from "./PositionHandler.js"
 import ScaleHandler from "./ScaleHandler.js"
+import AbilityReader from "./AbilityReader"
 
 export default class InteractiveHandler {
     constructor(scene) {
@@ -145,6 +146,26 @@ export default class InteractiveHandler {
                 scene.GameHandler.gameState === "Ready" &&
                 dropZone.data.list.cards == 0
             ) {
+                // 是否受到對方作者技能"限制出牌"影響?
+                if (scene.GameHandler.opponentAbility === "限制出牌") {
+                    const opponentTarget = scene.GameHandler.opponentTarget
+                    const element = AbilityReader.getValueByTag(opponentTarget, "$element")
+                    const elementArray = element.split(",")
+
+                    const isBeingDragged = elementArray.some((element) => {
+                        if (gameObject.getData("element") === element) {
+                            return true
+                        }
+                        return false
+                    })
+                    if (isBeingDragged) {
+                        gameObject.x = gameObject.input.dragStartX
+                        gameObject.y = gameObject.input.dragStartY
+                        scene.Toast.showToast("你的靈感卡受到束縛,無法打出")
+                        return
+                    }
+                }
+                // ---- 正常打出卡牌 ----
                 // 鎖定卡牌位置
                 gameObject.x = dropZone.x
                 gameObject.y = dropZone.y
@@ -179,18 +200,26 @@ export default class InteractiveHandler {
                     authorBuffPts = isVoid ? 0 : scene.GameHandler.authorBuffs[elementID]
                 }
 
+                // 積分倍率計算，任何一張靈感卡蓋牌/成語卡蓋牌將無法獲得積分加倍。
                 if (gameObject.getData("id").includes("I") && dropZone.name !== "dropZone4") {
-                    // 積分倍率計算(同屬雙倍,同靈感三倍)。蓋牌無法獲得積分加倍。null表示無效積分計算。5表示無屬性。
+                    // 同屬雙倍,同靈感三倍,同屬+同靈感值四倍。null表示無效積分計算。5表示無屬性。
+                    // 同時存入卡牌的星數。
                     scene.socket.emit(
                         "serverSetCardType",
                         scene.socket.id,
                         canGetPoints ? elementID : null,
                         canGetPoints ? gameObject.getData("points") : null,
-                        canGetPoints ? gameObject.getData("series") : null
+                        canGetPoints ? gameObject.getData("series") : null,
+                        canGetPoints ? gameObject.getData("rarity") : null
                     )
                     // 作者屬性加成
                     scene.socket.emit("serverUpdateAuthorBuff", scene.socket.id, authorBuffPts)
                 }
+                // ** "日"(成語卡格)不能蓋牌，否則無法獲得積分加倍
+                if (gameObject.getData("id").includes("H") && dropZone.name === "dropZone4") {
+                    scene.socket.emit("serverSetHCardActiveState", scene.socket.id, true)
+                }
+
                 // 計算總得分。卡反轉時能不能獲得作者屬性
                 const totalPointsToUpdate =
                     canGetPoints && cardType !== "cardBack" ? gameObject.getData("points") + authorBuffPts : 0
@@ -218,11 +247,51 @@ export default class InteractiveHandler {
                     scene.GameHandler.currentRoomID
                 )
 
+                // !! 技能:打牌加成
+                if (scene.GameHandler.ability === "打牌加成") {
+                    const target = scene.GameHandler.target
+                    const targetRules = scene.GameHandler.targetRules
+                    const score = Number(AbilityReader.getValueByTag(target, "$score"))
+                    const series = AbilityReader.getValueByTag(targetRules, "$series")
+
+                    let isCardConditionMatch = false
+                    if (series !== null && gameObject.getData("series") === series) {
+                        isCardConditionMatch = true
+                    }
+                    if (score !== null && isCardConditionMatch && canGetPoints) {
+                        scene.socket.emit("serverUpdateScores", scene.socket.id, score, scene.GameHandler.currentRoomID)
+                    }
+                }
+
+                // !! 技能:結算加分 (先save extraScore落server, 對局結束後先一次過加算extraScore)
+                if (scene.GameHandler.ability === "結算加分" && gameObject.getData("id").includes("I") && canGetPoints) {
+                    let initialNumber = 0
+                    const target = scene.GameHandler.target
+                    const formula = AbilityReader.getValueByTag(target, "$formula")
+                    const operator = AbilityReader.getValueByTag(target, "$operator")
+                    const number = AbilityReader.getValueByTag(target, "$number")
+
+                    console.log(`formula: ${formula}, operator: ${operator}, nmuber: ${number}`)
+
+                    if (formula === "totalRarity") {
+                        initialNumber = gameObject.getData("rarity")
+                        console.log(`initialNumber: ${initialNumber}`)
+                    }
+                    // assert number !== null
+                    if (operator === "/") {
+                        initialNumber /= number
+                        console.log(`initialNumber: ${initialNumber}`)
+                    }
+                    const extraScore = initialNumber
+                    console.log(`extraScore: ${extraScore}`)
+                    scene.socket.emit("serverUpdateExtraScores", scene.socket.id, extraScore)
+                }
+
                 scene.socket.emit("serverHideRollDiceText", scene.socket.id, scene.GameHandler.currentRoomID)
                 dropZone.data.list.cards++
-                // 同時檢查比賽是否結束。如未結束，對方會得到一張題目卡。
+                // 同時檢查對局是否結束。如未結束，對方會得到一張題目卡。
                 scene.socket.emit(
-                    "serverUpdateCardCount",
+                    "serverEndRoundAfterPlayingCard",
                     scene.socket.id,
                     scene.GameHandler.opponentID,
                     scene.GameHandler.currentRoomID

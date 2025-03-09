@@ -2,7 +2,7 @@ export default class PositionHandler {
     // 目錄 (可用以下標題搜尋):
     // 1.大廳
     // 2.對局
-    // 3.作者卡編成
+    // 3.角色卡編成
 
     // -----------------------------------------------------------------------
     // ------ 1.大廳
@@ -25,8 +25,8 @@ export default class PositionHandler {
     static playerWinScoreText = { x: 350, y: 680 } // (玩家)總分
 
     // 擲骰
-    static rollDiceText1 = { x: 350, y: 720 }
-    static rollDiceText2 = { x: 450, y: 720 }
+    static rollDiceText1 = { x: 350, y: 710 }
+    static rollDiceText2 = { x: 450, y: 710 }
 
     // 場景
     static outlineGrid = { x: 25, y: 100, width: 380, height: 470 }
@@ -60,7 +60,7 @@ export default class PositionHandler {
     static opponentPersonCard = { x: 280, y: 286 }
     static opponentSunCard = { x: 176, y: 160 }
 
-    //作者卡位置
+    //角色卡位置
     static playerAuthorCard = { x: 176, y: 670 }
     static opponentAuthorCard = { x: 176, y: 286 }
 
@@ -69,17 +69,17 @@ export default class PositionHandler {
     static cardPreviewEnd = { x: 750, y: 400 }
 
     //答案 (A,B,C,D)
-    static answerA = { x: 370, y: 575 }
-    static answerB = { x: 420, y: 575 }
-    static answerC = { x: 470, y: 575 }
-    static answerD = { x: 520, y: 575 }
+    static answerA = { x: 355, y: 565 }
+    static answerB = { x: 415, y: 565 }
+    static answerC = { x: 475, y: 565 }
+    static answerD = { x: 535, y: 565 }
     //計時
-    static questionCardTimer = { x: 420, y: 650 }
+    static questionCardTimer = { x: 470, y: 630 } // 剩餘時間:
     //Toast
     static toast = { x: 300, y: 475 }
 
     // -----------------------------------------------------------------------
-    // ------ 3.作者卡編成
+    // ------ 3.角色卡編成
 
     static authorCardEditSaveText = { x: 40, y: 30 }
     static authorCardEditQuitText = { x: 410, y: 30 }

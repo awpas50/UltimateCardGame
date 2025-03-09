@@ -127,13 +127,19 @@ io.on("connection", function (socket) {
         inScene_WCard: [],
         inRubbishBin_WCard: [],
 
+        multiplierSpecialRule: null,
+        multiplierSpecialRuleCheck: null,
+        multiplierSpecialCount: 1,
+        isHCardActive: false, // for multiplier
         inSceneElementCalculator: [], // for multiplier
         inSceneIPointCalculator: [], // for multiplier
         inSceneSeriesCalculator: [], // for multiplier
+        inSceneRarityCalculator: [],
         inSceneAuthorBoostPt: [],
         cardCount: 0,
         totalInspriationPt: 0,
         totalScore: 0, // 60 to win
+        extraScore: 0, // extra scores by abilities
     }
 
     const objLength = Object.keys(players).length
@@ -166,10 +172,11 @@ io.on("connection", function (socket) {
 
         // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
         io.to(roomId).emit("addWCardsInScene", socketId, players[socketId].inScene_WCard)
-        socket.emit("setAuthorData", players[socketId].inScene_WCard)
+        io.to(roomId).emit("setAuthorData", socketId, players[socketId].inScene_WCard)
         io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
         io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
         io.to(roomId).emit("localCheckIfAbilityIsSearch", socketId)
+        io.to(roomId).emit("localCheckIfAbilityIsMultiplier", socketId)
 
         players[socketId].isReady = true
 
@@ -197,9 +204,10 @@ io.on("connection", function (socket) {
         // // emits the 'addCardsInScene' event to all clients, passing the socketId and the cards dealt to the player's hand.
         // io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
         io.to(roomId).emit("addWCardsInScene", socketId, players[socketId].inScene_WCard)
-        socket.emit("setAuthorData", players[socketId].inScene_WCard)
+        io.to(roomId).emit("setAuthorData", socketId, players[socketId].inScene_WCard)
         io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
         io.to(roomId).emit("localCheckIfAbilityIsSearch", socketId)
+        io.to(roomId).emit("localCheckIfAbilityIsMultiplier", socketId)
 
         players[socketId].isReady = true
 
@@ -235,60 +243,9 @@ io.on("connection", function (socket) {
         io.to(roomId).emit("dealOneCardInHand", socketId, players[socketId].inHand[cardIndex], cardIndex)
     })
 
-    socket.on("serverAddExtraCardInHandById", function (socketId, roomId, id, count) {
-        // Player: check spot, add x amount of cards to spot. Opponent: Add x amount of card backs
-        for (let i = 0; i < count; i++) {
-            console.log(`搜尋技能: 搜尋卡牌${id}`)
-            // If inDeck contains the desire card, inDeck delete the specific card
-            const index = players[socketId].inDeck.findIndex((cardToRemove) => cardToRemove === id)
-            if (index !== -1) {
-                players[socketId].inDeck.splice(index, 1)
-                players[socketId].inHand.push(id)
-                // add 1 card at the right of the inHand deck
-                const cardIndex = players[socketId].inHand.length - 1
-                // Tell local to actually show one new card
-                io.to(roomId).emit("dealOneCardInHand", socketId, id, cardIndex)
-            }
-        }
-    })
-    socket.on("serverAddExtraCardInHandByElement", function (socketId, roomId, element, filteredCardArray, count) {
+    socket.on("serverAddExtraCardInHand", function (socketId, roomId, filteredCardArray, count) {
         let array = shuffle(filteredCardArray)
         for (let i = 0; i < count; i++) {
-            console.log(`搜尋技能: 搜尋${element}屬性`)
-            // If inDeck contains the desire card, inDeck delete the specific card
-            const index = players[socketId].inDeck.findIndex((cardToRemove) => cardToRemove === array[i])
-            console.log(`找到卡牌: ${array[i]} index: ${index}`)
-            if (index !== -1) {
-                players[socketId].inDeck.splice(index, 1)
-                players[socketId].inHand.push(array[i])
-                // add 1 card at the right of the inHand deck
-                const cardIndex = players[socketId].inHand.length - 1
-                // Tell local to actually show one new card
-                io.to(roomId).emit("dealOneCardInHand", socketId, array[i], cardIndex)
-            }
-        }
-    })
-    socket.on("serverAddExtraCardInHandBySeries", function (socketId, roomId, series, filteredCardArray, count) {
-        let array = shuffle(filteredCardArray)
-        for (let i = 0; i < count; i++) {
-            console.log(`搜尋技能: 搜尋${series}系列`)
-            // If inDeck contains the desire card, inDeck delete the specific card
-            const index = players[socketId].inDeck.findIndex((cardToRemove) => cardToRemove === array[i])
-            console.log(`找到卡牌: ${array[i]} index: ${index}`)
-            if (index !== -1) {
-                players[socketId].inDeck.splice(index, 1)
-                players[socketId].inHand.push(array[i])
-                // add 1 card at the right of the inHand deck
-                const cardIndex = players[socketId].inHand.length - 1
-                // Tell local to actually show one new card
-                io.to(roomId).emit("dealOneCardInHand", socketId, array[i], cardIndex)
-            }
-        }
-    })
-    socket.on("serverAddExtraCardInHandByTag", function (socketId, roomId, tag, filteredCardArray, count) {
-        let array = shuffle(filteredCardArray)
-        for (let i = 0; i < count; i++) {
-            console.log(`搜尋技能: 搜尋${tag}`)
             // If inDeck contains the desire card, inDeck delete the specific card
             const index = players[socketId].inDeck.findIndex((cardToRemove) => cardToRemove === array[i])
             console.log(`找到卡牌: ${array[i]} index: ${index}`)
@@ -304,11 +261,19 @@ io.on("connection", function (socket) {
     })
 
     // Used for setting score multiplier at the end of the round
-    socket.on("serverSetCardType", function (socketId, elementId, inspriationPt, series) {
+    socket.on("serverSetCardType", function (socketId, elementId, inspriationPt, series, rarity) {
         players[socketId].inSceneElementCalculator.push(elementId) // double scores if all elements match
         players[socketId].inSceneIPointCalculator.push(inspriationPt) // triple scores if all inspriation points match
         players[socketId].inSceneSeriesCalculator.push(series) // triple scores if all series match
-        // players[socketId].totalInspriationPt += inspriationPt
+        players[socketId].inSceneRarityCalculator.push(rarity)
+    })
+    socket.on("serverSetHCardActiveState", function (socketId, state) {
+        players[socketId].isHCardActive = state
+    })
+    socket.on("serverSetSpecialMultiplierRules", function (socketId, multiplier, formula, check) {
+        players[socketId].multiplierSpecialRule = formula
+        players[socketId].multiplierSpecialRuleCheck = check
+        players[socketId].multiplierSpecialCount = multiplier
     })
 
     // Called in InteractiveHandler.js
@@ -318,10 +283,33 @@ io.on("connection", function (socket) {
         io.to(roomId).emit("setOpponentPointText")
     })
 
+    socket.on("serverUpdateExtraScores", function (socketId, extraScore) {
+        players[socketId].extraScore += extraScore
+    })
+
     socket.on("serverUpdateScores", function (socketId, score, roomId) {
         players[socketId].totalScore += score
         io.to(roomId).emit("setPlayerWinScoreText", players[socketId].totalScore, socketId)
         io.to(roomId).emit("setPlayerLoseScoreText", players[socketId].totalScore, socketId)
+
+        let endRoundRoom = playersInRooms.get(roomId)
+        // * player1, player2: string (socket ID) *
+        let player1SocketId = endRoundRoom[0]
+        let player2SocketId = endRoundRoom[1]
+
+        if (players[player1SocketId].totalScore < 60 && players[player2SocketId].totalScore < 60) {
+            return
+        }
+        // ---- 完場 ----
+        // 防止玩家出牌
+        players[player1SocketId].isReady = false
+        players[player2SocketId].isReady = false
+        io.to(roomId).emit("changeGameState", "Initializing")
+        if (players[player1SocketId].totalScore > players[player2SocketId].totalScore) {
+            io.to(roomId).emit("localGetWhichPlayerWin", player1SocketId)
+        } else {
+            io.to(roomId).emit("localGetWhichPlayerWin", player2SocketId)
+        }
     })
 
     socket.on("serverNotifyCardPlayed", function (cardName, socketId, dropZoneId, roomId, cardType) {
@@ -343,13 +331,10 @@ io.on("connection", function (socket) {
         players[socketId].inSceneAuthorBoostPt.push(authorBuffPt)
     })
 
-    socket.on("serverUpdateCardCount", function (socketId, opponentId, roomId) {
+    socket.on("serverEndRoundAfterPlayingCard", function (socketId, opponentId, roomId) {
         players[socketId].cardCount++
         calculateTotalInspriationPts(socketId)
         console.log(`場上有${players[socketId].cardCount}+${players[opponentId].cardCount}張牌`)
-
-        console.log(socketId)
-        console.log(opponentId)
 
         if (players[socketId].cardCount >= 4 && players[opponentId].cardCount >= 4) {
             io.to(roomId).emit("setPlayerPointText")
@@ -432,7 +417,14 @@ function endRound(roomId) {
         }
     }
 
-    // 計分
+    // 額外加分,無論是否勝出都會加上 (技能,例如"結算加分")
+    // 不計小數
+    players[player1SocketId].totalScore += Math.floor(players[player1SocketId].extraScore)
+    players[player2SocketId].totalScore += Math.floor(players[player2SocketId].extraScore)
+    console.log("玩家1額外加分(技能): " + Math.floor(players[player1SocketId].extraScore))
+    console.log("玩家2額外加分(技能): " + Math.floor(players[player2SocketId].extraScore))
+
+    // 計分結果
     io.to(roomId).emit("setPlayerWinText", whoWin)
     if (whoWinSocketId === player1SocketId) {
         console.log("玩家1獲得分數: " + baseScore * player1Multiplier)
@@ -457,7 +449,7 @@ function endRound(roomId) {
     console.log(`玩家2總分: ${player2ScoreBeforeCalculation} >>> ${players[player2SocketId].totalScore}`)
     console.log(players)
 
-    // 勝利狀態
+    // 完場狀態
     let endGameState = false
     if (players[player1SocketId].totalScore >= 60 || players[player2SocketId].totalScore >= 60) {
         endGameState = true
@@ -490,10 +482,17 @@ function resetBattleField(roomId, endRoundRoom) {
         players[endRoundRoom[i]].inSceneElementCalculator = []
         players[endRoundRoom[i]].inSceneIPointCalculator = []
         players[endRoundRoom[i]].inSceneSeriesCalculator = []
+        players[endRoundRoom[i]].inSceneRarityCalculator = []
         players[endRoundRoom[i]].inSceneAuthorBoostPt = []
         players[endRoundRoom[i]].totalInspriationPt = 0
         players[endRoundRoom[i]].cardCount = 0
         players[endRoundRoom[i]].roundCount++
+        players[endRoundRoom[i]].extraScore = 0
+
+        players[endRoundRoom[i]].multiplierSpecialRule = null
+        players[endRoundRoom[i]].multiplierSpecialRuleCheck = null
+        players[endRoundRoom[i]].multiplierSpecialCount = 1
+        players[endRoundRoom[i]].isHCardActive = false
 
         // Move all cards in scene to rubbish bin
         while (players[endRoundRoom[i]].inScene.length > 0) {
@@ -539,6 +538,11 @@ function getMultiplier(socketId, playerNumber) {
     let sameElement = false
     let sameSeries = false
     let sameIPoint = false
+    // 成語卡蓋牌，結束倍率計算
+    if (!players[socketId].isHCardActive) {
+        console.log(`玩家${playerNumber}成語卡蓋牌，結束倍率計算`)
+        return 1
+    }
     // 同屬
     if (
         players[socketId].inSceneElementCalculator.length === 3 &&
@@ -548,6 +552,15 @@ function getMultiplier(socketId, playerNumber) {
         console.log(`玩家${playerNumber}做出組合：同屬`)
         multiplier = 2
         sameElement = true
+        if (players[socketId].multiplierSpecialRule === "sameElement") {
+            // multiplierSpecialRuleCheck is a string that pretends to be an array. e.g. "[4,4,4]"
+            const realArray = JSON.parse(players[socketId].multiplierSpecialRuleCheck)
+            // 24256_W004 莊子: 土屬組合--> 3倍
+            if (JSON.stringify(players[socketId].inSceneElementCalculator) === JSON.stringify(realArray)) {
+                multiplier = players[socketId].multiplierSpecialCount
+            }
+            console.log(`玩家${playerNumber}獲得特殊積分倍率(同屬)：${multiplier}倍`)
+        }
     }
     // 同系列
     if (
@@ -558,6 +571,9 @@ function getMultiplier(socketId, playerNumber) {
         console.log(`玩家${playerNumber}做出組合：同系列`)
         multiplier = 3
         sameSeries = true
+        if (players[socketId].multiplierSpecialRule === "sameSeries") {
+            console.log(`玩家${playerNumber}獲得特殊積分倍率(同系列)：${multiplier}倍`)
+        }
     }
     // 同靈感值
     if (
@@ -568,12 +584,16 @@ function getMultiplier(socketId, playerNumber) {
         console.log(`玩家${playerNumber}做出組合：同靈感值`)
         multiplier = 3
         sameIPoint = true
+        if (players[socketId].multiplierSpecialRule === "sameIPoint") {
+            console.log(`玩家${playerNumber}獲得特殊積分倍率(同靈感值)：${multiplier}倍`)
+        }
     }
     // 同屬 + 同靈感值
     if (sameElement && sameIPoint) {
         console.log(`玩家${playerNumber}做出組合：同屬 + 同靈感值`)
         multiplier = 4
     }
+    // TODO: 神組合
     return multiplier
 }
 
