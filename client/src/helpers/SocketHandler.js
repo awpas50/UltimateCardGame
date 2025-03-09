@@ -140,9 +140,7 @@ export default class SocketHandler {
                 if (scene.GameHandler.ability !== "搜尋") {
                     return
                 }
-                const ability = scene.GameHandler.ability
                 const target = scene.GameHandler.target
-                console.log(`ability: ${ability}, target: ${target}`)
                 const element = AbilityReader.getValueByTag(target, "$element")
                 const series = AbilityReader.getValueByTag(target, "$series")
                 const id = AbilityReader.getValueByTag(target, "$id")
@@ -176,6 +174,25 @@ export default class SocketHandler {
                     count === 0 ? 1 : count
                 )
                 // 對手: TODO (增加對應數量卡牌)
+            }
+        })
+
+        scene.socket.on("localCheckIfAbilityIsMultiplier", (socketId) => {
+            // 玩家: 如果作者卡技能(ability)=倍率加成
+            if (socketId === scene.socket.id) {
+                if (scene.GameHandler.ability !== "倍率加成") {
+                    return
+                }
+                const target = scene.GameHandler.target
+                const targetRules = scene.GameHandler.targetRules
+                const multiplier = Number(AbilityReader.getValueByTag(target, "$multiplier"))
+                const formula = AbilityReader.getValueByTag(targetRules, "$formula")
+                const check = AbilityReader.getValueByTag(targetRules, "$check")
+                console.log(`multiplier: ${multiplier}, formula: ${formula}, check: ${check}`)
+                const realArray = JSON.parse(check)
+                console.log(realArray)
+
+                scene.socket.emit("serverSetSpecialMultiplierRules", scene.socket.id, multiplier, formula, check)
             }
         })
 

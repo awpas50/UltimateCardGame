@@ -127,6 +127,9 @@ io.on("connection", function (socket) {
         inScene_WCard: [],
         inRubbishBin_WCard: [],
 
+        multiplierSpecialRule: null,
+        multiplierSpecialRuleCheck: null,
+        multiplierSpecialCount: 1,
         isHCardActive: false, // for multiplier
         inSceneElementCalculator: [], // for multiplier
         inSceneIPointCalculator: [], // for multiplier
@@ -173,6 +176,7 @@ io.on("connection", function (socket) {
         io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
         io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
         io.to(roomId).emit("localCheckIfAbilityIsSearch", socketId)
+        io.to(roomId).emit("localCheckIfAbilityIsMultiplier", socketId)
 
         players[socketId].isReady = true
 
@@ -203,6 +207,7 @@ io.on("connection", function (socket) {
         io.to(roomId).emit("setAuthorData", socketId, players[socketId].inScene_WCard)
         io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
         io.to(roomId).emit("localCheckIfAbilityIsSearch", socketId)
+        io.to(roomId).emit("localCheckIfAbilityIsMultiplier", socketId)
 
         players[socketId].isReady = true
 
@@ -264,6 +269,11 @@ io.on("connection", function (socket) {
     })
     socket.on("serverSetHCardActiveState", function (socketId, state) {
         players[socketId].isHCardActive = state
+    })
+    socket.on("serverSetSpecialMultiplierRules", function (socketId, multiplier, formula, check) {
+        players[socketId].multiplierSpecialRule = formula
+        players[socketId].multiplierSpecialRuleCheck = check
+        players[socketId].multiplierSpecialCount = multiplier
     })
 
     // Called in InteractiveHandler.js
@@ -479,6 +489,11 @@ function resetBattleField(roomId, endRoundRoom) {
         players[endRoundRoom[i]].roundCount++
         players[endRoundRoom[i]].extraScore = 0
 
+        players[endRoundRoom[i]].multiplierSpecialRule = null
+        players[endRoundRoom[i]].multiplierSpecialRuleCheck = null
+        players[endRoundRoom[i]].multiplierSpecialCount = 1
+        players[endRoundRoom[i]].isHCardActive = false
+
         // Move all cards in scene to rubbish bin
         while (players[endRoundRoom[i]].inScene.length > 0) {
             players[endRoundRoom[i]].inRubbishBin.push(players[endRoundRoom[i]].inScene.shift())
@@ -537,6 +552,15 @@ function getMultiplier(socketId, playerNumber) {
         console.log(`玩家${playerNumber}做出組合：同屬`)
         multiplier = 2
         sameElement = true
+        if (players[socketId].multiplierSpecialRule === "sameElement") {
+            // multiplierSpecialRuleCheck is a string that pretends to be an array. e.g. "[4,4,4]"
+            const realArray = JSON.parse(players[socketId].multiplierSpecialRuleCheck)
+            // 24256_W004 莊子: 土屬組合--> 3倍
+            if (JSON.stringify(players[socketId].inSceneElementCalculator) === JSON.stringify(realArray)) {
+                multiplier = players[socketId].multiplierSpecialCount
+            }
+            console.log(`玩家${playerNumber}獲得特殊積分倍率(同屬)：${multiplier}倍`)
+        }
     }
     // 同系列
     if (
@@ -547,6 +571,9 @@ function getMultiplier(socketId, playerNumber) {
         console.log(`玩家${playerNumber}做出組合：同系列`)
         multiplier = 3
         sameSeries = true
+        if (players[socketId].multiplierSpecialRule === "sameSeries") {
+            console.log(`玩家${playerNumber}獲得特殊積分倍率(同系列)：${multiplier}倍`)
+        }
     }
     // 同靈感值
     if (
@@ -557,12 +584,16 @@ function getMultiplier(socketId, playerNumber) {
         console.log(`玩家${playerNumber}做出組合：同靈感值`)
         multiplier = 3
         sameIPoint = true
+        if (players[socketId].multiplierSpecialRule === "sameIPoint") {
+            console.log(`玩家${playerNumber}獲得特殊積分倍率(同靈感值)：${multiplier}倍`)
+        }
     }
     // 同屬 + 同靈感值
     if (sameElement && sameIPoint) {
         console.log(`玩家${playerNumber}做出組合：同屬 + 同靈感值`)
         multiplier = 4
     }
+    // TODO: 神組合
     return multiplier
 }
 

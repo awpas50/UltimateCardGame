@@ -245,6 +245,9 @@ export const WCard_Data_24256 = {
         ground: ["木", "土"],
         person: ["火", "土"],
         authorBuffs: [20, 0, 0, 0, 30],
+        ability: "倍率加成",
+        target: "$multiplier=3",
+        targetRules: "$formula=sameElement$check=[4,4,4]",
     },
 
     "24256_W005": {
