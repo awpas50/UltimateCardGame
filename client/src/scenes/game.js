@@ -268,6 +268,9 @@ export const WCard_Data_24256 = {
         ground: ["水", "木"],
         person: ["火", "木"],
         authorBuffs: [10, 0, 20, 0, 0],
+        ability: "轉數值",
+        target: "$target=player$min=0$max=90",
+        hasActiveSkill: true,
     },
 
     "24256_W007": {

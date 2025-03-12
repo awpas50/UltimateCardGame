@@ -11,7 +11,6 @@ export default class UIHandler {
                 dropZone.setName(config.name)
                 scene.ZoneHandler.dropZoneList.push(dropZone)
             })
-            console.log(scene.ZoneHandler.dropZoneList)
         }
         this.buildZoneOutline = () => {
             scene.ZoneHandler.renderOutlineGrid(
@@ -161,11 +160,9 @@ export default class UIHandler {
                 .setFontFamily("Trebuchet MS")
             scene.roomNumberText.setInteractive()
             scene.roomNumberText.on("pointerdown", () => {
-                console.log("Clicked")
                 navigator.clipboard
                     .writeText(scene.GameHandler.currentRoomID)
                     .then(() => {
-                        console.log("Text copied to clipboard: " + scene.GameHandler.currentRoomID)
                         scene.Toast.showToast("已複製房間編號: " + scene.GameHandler.currentRoomID) // Optional feedback for the user
                     })
                     .catch((err) => {
@@ -258,7 +255,6 @@ export default class UIHandler {
             scene.roomNumberText.text = "房間編號: " + this.getInputTextContent(this.inputText)
 
             scene.GameHandler.currentRoomID = this.getInputTextContent(this.inputText)
-            console.log("Current Room ID: " + scene.GameHandler.currentRoomID)
             // scene.socket.emit("dealDeck", scene.socket.id, scene.GameHandler.currentRoomID)
             scene.authorDeckEditText.visible = false
             scene.createRoomText.visible = false

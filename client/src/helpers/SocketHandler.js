@@ -11,12 +11,15 @@ export default class SocketHandler {
         // Default: localhost:3000 is where the server is.
         // scene.socket = io("https://ultimate-card-game-f26046605e38.herokuapp.com")
         const hostname = window.location.hostname
-        console.log(window.location.hostname)
+        console.log("%cHostname: " + window.location.hostname, "color: blue; font-size: 14px; font-weight: bold;")
         scene.socket = io("http://" + hostname + ":3000")
 
         //Create or join a room
         scene.socket.on("connect", () => {
-            console.log("Connected!")
+            console.log(
+                "%c[ID] Connected! You socket id is " + scene.socket.id,
+                "color: salmon; font-size: 14px; font-weight: bold;"
+            )
         })
         scene.socket.on("playersInRoom", (players) => {
             console.log("Players in the room:", players)
@@ -26,7 +29,11 @@ export default class SocketHandler {
             // Extract the string from the array
             if (scene.GameHandler.opponentID.length === 1) {
                 scene.GameHandler.opponentID = scene.GameHandler.opponentID[0]
-                console.log("opponentID:", scene.GameHandler.opponentID)
+                console.log(
+                    "%c[ID] your opponent id is ",
+                    scene.GameHandler.opponentID,
+                    "color: salmon; font-size: 14px; font-weight: bold;"
+                )
             }
         })
 
@@ -94,8 +101,10 @@ export default class SocketHandler {
                             .setScale(ScaleHandler.playerInHandCard.scaleX)
                             .setRotation(RotationHandler.playerInHandCard[i] * (Math.PI / 180))
                             .setDepth(i)
-                        console.log(typeof card)
-                        console.log(cardIdList[i])
+                        console.log(
+                            `%ccardIdList[${i}]: ${cardIdList[i]}`,
+                            "color: darkgreen; font-size: 14px; font-weight: bold;"
+                        )
                         scene.CardStorage.inHandStorage.push(card)
                     }
                     if (cardIdList[i].includes("H")) {
@@ -109,8 +118,10 @@ export default class SocketHandler {
                             .setScale(ScaleHandler.playerInHandCard.scaleX)
                             .setRotation(RotationHandler.playerInHandCard[i] * (Math.PI / 180))
                             .setDepth(i)
-                        console.log(typeof card)
-                        console.log(cardIdList[i])
+                        console.log(
+                            `%ccardIdList[${i}]: ${cardIdList[i]}`,
+                            "color: darkgreen; font-size: 14px; font-weight: bold;"
+                        )
                         scene.CardStorage.inHandStorage.push(card)
                     }
                     // scene.GameHandler.playerHand.push(card)
@@ -146,7 +157,10 @@ export default class SocketHandler {
                 const id = AbilityReader.getValueByTag(target, "$id")
                 const tag = AbilityReader.getValueByTag(target, "$tag")
                 const count = Number(AbilityReader.getValueByTag(target, "$count"))
-                console.log(`element: ${element}, series: ${series}, id: ${id}, tag: ${tag}, count: ${count}`)
+                console.log(
+                    `%c[ability] element: ${element}, series: ${series}, id: ${id}, tag: ${tag}, count: ${count}`,
+                    "color: lightcoral; font-size: 14px; font-weight: bold;"
+                )
 
                 let filteredCardArray = []
                 if (id !== null) {
@@ -188,7 +202,10 @@ export default class SocketHandler {
                 const multiplier = Number(AbilityReader.getValueByTag(target, "$multiplier"))
                 const formula = AbilityReader.getValueByTag(targetRules, "$formula")
                 const check = AbilityReader.getValueByTag(targetRules, "$check")
-                console.log(`multiplier: ${multiplier}, formula: ${formula}, check: ${check}`)
+                console.log(
+                    `[ability] %cmultiplier: ${multiplier}, formula: ${formula}, check: ${check}`,
+                    "color: lightcoral; font-size: 14px; font-weight: bold;"
+                )
                 const realArray = JSON.parse(check)
                 console.log(realArray)
 
@@ -211,7 +228,7 @@ export default class SocketHandler {
         // * cardId: string * //
         scene.socket.on("dealOneCardInHand", (socketId, cardId, index) => {
             if (socketId === scene.socket.id) {
-                console.log("[card index] " + index)
+                console.log(`%ccardIdList[${index}]: ${cardId}`, "color: darkgreen; font-size: 14px; font-weight: bold;")
                 const cardType = cardId.includes("I") ? "ICard" : cardId.includes("H") ? "HCard" : null
 
                 if (cardType) {
@@ -312,8 +329,6 @@ export default class SocketHandler {
 
         scene.socket.on("localInitQuestionCard", (socketId) => {
             console.log("localInitQuestionCard")
-            console.log(socketId)
-            console.log(scene.socket.id)
             if (socketId === scene.socket.id) {
                 scene.QuestionCardHandler.initQuestionCard()
             }
@@ -462,7 +477,6 @@ export default class SocketHandler {
                 }
             })
             // Clear dropZone
-            console.log(scene.ZoneHandler.dropZoneList)
             for (let i = 0; i < scene.ZoneHandler.dropZoneList.length; i++) {
                 scene.ZoneHandler.dropZoneList[i].data.list.cards = 0
             }

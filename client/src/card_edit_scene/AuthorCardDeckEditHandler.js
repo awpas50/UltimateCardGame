@@ -63,6 +63,7 @@ export default class AuthorCardDeckEditHandler {
                 scene.scene.wake("Game")
                 scene.scene.get("Game").sys.setVisible(true)
                 scene.scene.get("Game").sys.setActive(true)
+                console.log(this.authorDeck)
                 scene.scene.stop("AuthorCardEdit")
                 this.areAllAuthorCardsPlaced()
                     ? localStorage.setItem("authorDeck", JSON.stringify(this.authorDeck))
@@ -162,7 +163,7 @@ export default class AuthorCardDeckEditHandler {
                 // Optional: If you want to handle drag events
                 card.on("drag", (pointer, dragX, dragY) => {
                     card.x = dragX + 100
-                    card.y = dragY - 100
+                    card.y = dragY - 150
                     card.setScale(0.8, 0.8)
                 })
                 card.on("dragstart", () => {
@@ -193,9 +194,6 @@ export default class AuthorCardDeckEditHandler {
                 gameObject.y = gameObject.input.dragStartY
                 scene.Toast.showToast("角色卡的LV總和不得超過12")
             } else {
-                console.log("[GameObject] width: " + gameObject.width)
-                console.log("[GameObject] height: " + gameObject.height)
-
                 // gameObject.setPipeline("wipeShader")
 
                 // // Control the shader's progress uniform
@@ -246,7 +244,6 @@ export default class AuthorCardDeckEditHandler {
                     scene.authorCardEditInfoText3.text = `LV: ${this.currentRarity} / ${this.maxRarity}`
                     scene.input.setDraggable(gameObject, false)
                 }
-                console.log(this.authorDeck)
                 if (this.areAllAuthorCardsPlaced()) {
                     scene.buildSaveText.setInteractive()
                     scene.buildSaveText.setColor("#00ffff")
