@@ -30,8 +30,7 @@ export default class SocketHandler {
             if (scene.GameHandler.opponentID.length === 1) {
                 scene.GameHandler.opponentID = scene.GameHandler.opponentID[0]
                 console.log(
-                    "%c[ID] your opponent id is ",
-                    scene.GameHandler.opponentID,
+                    "%c[ID] your opponent id is " + scene.GameHandler.opponentID,
                     "color: salmon; font-size: 14px; font-weight: bold;"
                 )
             }
@@ -261,7 +260,7 @@ export default class SocketHandler {
                 isPlayer ? PositionHandler.playerAuthorCard.y : PositionHandler.opponentAuthorCard.y,
                 "WCard",
                 cardId,
-                "authorCard"
+                isPlayer ? "playerAuthorCard" : "opponentAuthorCard"
             ).setScale(
                 isPlayer ? ScaleHandler.playerAuthorCard.scaleX : ScaleHandler.opponentAuthorCard.scaleX,
                 isPlayer ? ScaleHandler.playerAuthorCard.scaleY : ScaleHandler.opponentAuthorCard.scaleY

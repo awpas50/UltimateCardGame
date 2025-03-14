@@ -72,6 +72,7 @@ export default class InteractiveHandler {
             if (
                 gameObjects[0].type === "Image" &&
                 gameObjects[0].data.list.id.includes("W") &&
+                gameObjects[0].data.list.side === "playerAuthorCard" &&
                 gameObjects[0].data.list.hasActiveSkill === true
             ) {
                 this.selectedWCard = gameObjects[0]

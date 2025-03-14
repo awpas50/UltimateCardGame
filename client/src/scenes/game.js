@@ -488,6 +488,7 @@ export default class Game extends Phaser.Scene {
         // })
 
         this.setupSounds()
+        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa")
 
         this.cameras.main.roundPixels = true
         this.scale.scaleMode = Phaser.Scale.ScaleModes.NEAREST
@@ -522,6 +523,10 @@ export default class Game extends Phaser.Scene {
         this.sound.add("flipCard2")
         this.sound.add("flipCard3")
         this.sound.add("dragCard")
+    }
+
+    showSaveSuccessToast = () => {
+        this.Toast.showToast("儲存成功")
     }
 
     update() {}

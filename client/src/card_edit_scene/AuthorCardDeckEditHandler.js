@@ -8,11 +8,11 @@ export default class AuthorCardDeckEditHandler {
         this.currentRarity = 0
         this.maxRarity = 12
         this.initUI = () => {
-            this.renderZone(90, 330, 330 / 3.25, 430 / 3.25, "authorZone1")
-            this.renderZone(195, 330, 330 / 3.25, 430 / 3.25, "authorZone2")
-            this.renderZone(300, 330, 330 / 3.25, 430 / 3.25, "authorZone3")
-            this.renderZone(405, 330, 330 / 3.25, 430 / 3.25, "authorZone4")
-            this.renderZone(510, 330, 330 / 3.25, 430 / 3.25, "authorZone5")
+            this.renderZone(85, 315, 330 / 3.25, 430 / 3.25, "authorZone1")
+            this.renderZone(190, 315, 330 / 3.25, 430 / 3.25, "authorZone2")
+            this.renderZone(295, 315, 330 / 3.25, 430 / 3.25, "authorZone3")
+            this.renderZone(400, 315, 330 / 3.25, 430 / 3.25, "authorZone4")
+            this.renderZone(505, 315, 330 / 3.25, 430 / 3.25, "authorZone5")
             this.renderOutlineGrid(40, 260, PositionHandler.outlineGrid.width, PositionHandler.outlineGrid.height)
             this.buildSaveAndQuitText()
             this.buildAuthorCardEditInfoText()
@@ -63,6 +63,7 @@ export default class AuthorCardDeckEditHandler {
                 scene.scene.wake("Game")
                 scene.scene.get("Game").sys.setVisible(true)
                 scene.scene.get("Game").sys.setActive(true)
+                scene.scene.get("Game").showSaveSuccessToast()
                 console.log(this.authorDeck)
                 scene.scene.stop("AuthorCardEdit")
                 this.areAllAuthorCardsPlaced()
@@ -152,6 +153,10 @@ export default class AuthorCardDeckEditHandler {
                     .setInteractive()
                     .setScale(0.26, 0.26)
                     .setData({
+                        initialX: x,
+                        initialY: y,
+                        isPlaced: false,
+                        inDropZone: "",
                         id: "24256_W0" + wCardId,
                         rarity: WCard_Data_24256["24256_W0" + wCardId].rarity,
                         zIndex: i,
@@ -176,13 +181,40 @@ export default class AuthorCardDeckEditHandler {
             }
         }
 
-        scene.input.on("pointerdown", (pointer) => {
+        scene.input.on("pointerdown", (pointer, gameObjects) => {
             // Get the x and y coordinates of the mouse pointer
             const x = pointer.x
             const y = pointer.y
 
             // Show the coordinates on the console
             console.log(`Clicked at X: ${Math.round(x)}, Y: ${Math.round(y)}`)
+            if (!gameObjects || gameObjects.length == 0) {
+                return
+            }
+            if (gameObjects[0].type === "Image" && gameObjects[0].data.list.isPlaced === true) {
+                const selectedWCard = gameObjects[0]
+                scene.input.setDraggable(selectedWCard, true)
+                selectedWCard.data.list.isPlaced = false
+                this.currentRarity -= selectedWCard.data.list.rarity
+                scene.authorCardEditInfoText3.text = `LV: ${this.currentRarity} / ${this.maxRarity}`
+                selectedWCard.x = selectedWCard.data.list.initialX
+                selectedWCard.y = selectedWCard.data.list.initialY
+
+                scene.buildSaveText.disableInteractive()
+                scene.buildSaveText.setColor("#fff5fa")
+
+                scene.children.list.forEach((child, index) => {
+                    if (child instanceof Phaser.GameObjects.Zone && child.name) {
+                        console.log(`Checking drop zone: ${child.name}`)
+                        if (child.name === selectedWCard.getData("inDropZone")) {
+                            selectedWCard.setData("inDropZone", "")
+                            child.setData("cards", 0)
+                            this.authorDeck[index] = ""
+                            console.log(this.authorDeck)
+                        }
+                    }
+                })
+            }
         })
 
         scene.input.on("drop", (pointer, gameObject, dropZone) => {
@@ -241,6 +273,8 @@ export default class AuthorCardDeckEditHandler {
                     gameObject.y = dropZone.y
                     dropZone.data.list.cards++
                     this.currentRarity += gameObject.getData("rarity")
+                    gameObject.setData("isPlaced", true)
+                    gameObject.setData("inDropZone", dropZone.name)
                     scene.authorCardEditInfoText3.text = `LV: ${this.currentRarity} / ${this.maxRarity}`
                     scene.input.setDraggable(gameObject, false)
                 }
