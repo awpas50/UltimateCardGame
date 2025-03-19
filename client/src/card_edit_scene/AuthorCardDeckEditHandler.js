@@ -136,15 +136,18 @@ export default class AuthorCardDeckEditHandler {
 
         this.generateWCards = () => {
             const maxCardsInRow = 5
-            const totalCards = 21
+            const totalCards = 5
+            const wCards = ["01", "02", "04", "08", "21"]
             let wCardId
             let counter = 0
 
             for (let i = 0; i < totalCards; i++) {
+                wCardId = wCards[i]
                 counter++
-                wCardId = counter >= 0 && counter <= 9 ? "0" + counter : counter
-                const x = 80 + (i % maxCardsInRow) * 110
-                const y = 500 + Math.floor(i / maxCardsInRow) * 100
+                const x = 80 + i * 110
+                const y = 500
+
+                console.log(wCardId)
 
                 const card = scene.add
                     .image(x, y, "24256_W0" + wCardId)

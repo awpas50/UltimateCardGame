@@ -10,28 +10,7 @@ export default class AuthorCardEdit extends Phaser.Scene {
 
     preload() {
         // missing W013
-        const wCards = [
-            "W001",
-            "W002",
-            "W003",
-            "W004",
-            "W005",
-            "W006",
-            "W007",
-            "W008",
-            "W009",
-            "W010",
-            "W011",
-            "W012",
-            "W014",
-            "W015",
-            "W016",
-            "W017",
-            "W018",
-            "W019",
-            "W020",
-            "W021",
-        ]
+        const wCards = ["W001", "W002", "W004", "W008", "W021"]
         const loadImages = (prefix, cardArray, path, format) => {
             cardArray.forEach((card) => {
                 this.load.image(`${prefix}${card}`, require(`../../public/assets/${path}/${prefix}${card}.${format}`).default)

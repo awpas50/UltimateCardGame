@@ -125,24 +125,41 @@ export const ICard_Data_24256 = {
     "24256_I103": { ID: "24256_I103", name: "彈珠", rarity: 3, element: "金", series: "澳門", tag: "", points: 20 },
     "24256_I104": { ID: "24256_I104", name: "醉龍", rarity: 2, element: "火", series: "澳門", tag: "", points: 90 },
     "24256_I105": { ID: "24256_I105", name: "栗子", rarity: 3, element: "土", series: "澳門", tag: "", points: 10 },
+
+    "24256_I120": { ID: "24256_I120", name: "卑鄙", rarity: 2, element: "土", series: "三國", tag: "", points: 0 },
+    "24256_I123": { ID: "24256_I123", name: "爆竹", rarity: 3, element: "火", series: "新年", tag: "", points: 70 },
+    "24256_I124": { ID: "24256_I124", name: "桃符", rarity: 4, element: "金", series: "新年", tag: "", points: 50 },
+    "24256_I125": { ID: "24256_I125", name: "屠蘇", rarity: 2, element: "土", series: "新年", tag: "", points: 70 },
+    "24256_I128": { ID: "24256_I128", name: "祝融", rarity: 5, element: "火", series: "新年", tag: "神", points: 100 },
+
+    "24256_I130": { ID: "24256_I130", name: "投壺", rarity: 5, element: "土", series: "新年", tag: "", points: 50 },
+    "24256_I140": { ID: "24256_I140", name: "市義", rarity: 5, element: "金", series: "戰國", tag: "", points: 70 },
+    "24256_I143": { ID: "24256_I143", name: "不說", rarity: 2, element: "水", series: "戰國", tag: "", points: 30 },
+    "24256_I144": { ID: "24256_I144", name: "門客", rarity: 2, element: "火", series: "戰國", tag: "", points: 0 },
+    "24256_I145": { ID: "24256_I145", name: "劍舞", rarity: 3, element: "火", series: "史記", tag: "", points: 40 },
+
+    "24256_I146": { ID: "24256_I146", name: "翼蔽", rarity: 2, element: "火", series: "史記", tag: "", points: 30 },
+    "24256_I151": { ID: "24256_I151", name: "刀俎", rarity: 4, element: "土", series: "史記", tag: "", points: 80 },
+    "24256_I153": { ID: "24256_I153", name: "杯杓", rarity: 3, element: "金", series: "史記", tag: "酒", points: 30 },
+    "24256_I155": { ID: "24256_I155", name: "案圖", rarity: 4, element: "土", series: "史記", tag: "", points: 40 },
+    "24256_I157": { ID: "24256_I157", name: "奏瑟", rarity: 5, element: "金", series: "史記", tag: "", points: 50 },
 }
 
-export const HCard_Data_23246 = {
-    "23246_H001": { ID: "23246_H001" },
-    "23246_H013": { ID: "23246_H013" },
-    "23246_H025": { ID: "23246_H025" },
-    "23246_H034": { ID: "23246_H034" },
-    "23246_H036": { ID: "23246_H036" },
-    "23246_H042": { ID: "23246_H042" },
-    "23246_H044": { ID: "23246_H044" },
-    "23246_H045": { ID: "23246_H045" },
-    "23246_H046": { ID: "23246_H046" },
-    "23246_H049": { ID: "23246_H049" },
-    "23246_H050": { ID: "23246_H050" },
-    "23246_H051": { ID: "23246_H051" },
-    "23246_H052": { ID: "23246_H052" },
-    "23246_H054": { ID: "23246_H054" },
-    "23246_H055": { ID: "23246_H055" },
+export const HCard_Data_24256 = {
+    "24256_H019": { ID: "24256_H019" },
+    "24256_H036": { ID: "24256_H036" },
+    "24256_H037": { ID: "24256_H037" },
+    "24256_H042": { ID: "24256_H042" },
+    "24256_H043": { ID: "24256_H043" },
+    "24256_H045": { ID: "24256_H045" },
+    "24256_H053": { ID: "24256_H053" },
+    "24256_H063": { ID: "24256_H063" },
+    "24256_H066": { ID: "24256_H066" },
+    "24256_H068": { ID: "24256_H068" },
+    "24256_H073": { ID: "24256_H073" },
+    "24256_H075": { ID: "24256_H075" },
+    "24256_H090": { ID: "24256_H090" },
+    "24256_H098": { ID: "24256_H098" },
 }
 
 export const QCard_Data = {
@@ -445,6 +462,66 @@ export default class Game extends Phaser.Scene {
     }
 
     preload() {
+        const wCards = ["W001", "W002", "W004", "W008", "W021"]
+        const iCards = [
+            "I019",
+            "I021",
+            "I028",
+            "I029",
+            "I035",
+            "I037",
+            "I040",
+            "I049",
+            "I052",
+            "I059",
+            "I060",
+            "I069",
+            "I071",
+            "I074",
+            "I077",
+            "I080",
+            "I083",
+            "I085",
+            "I086",
+            "I087",
+            "I087",
+            "I097",
+            "I100",
+            "I102",
+            "I103",
+            "I104",
+            "I120",
+            "I123",
+            "I124",
+            "I125",
+            "I128",
+            "I130",
+            "I140",
+            "I143",
+            "I144",
+            "I145",
+            "I146",
+            "I151",
+            "I153",
+            "I155",
+            "I157",
+        ]
+        const hCards = [
+            "H019",
+            "H036",
+            "H037",
+            "H042",
+            "H043",
+            "H045",
+            "H053",
+            "H063",
+            "H066",
+            "H068",
+            "H073",
+            "H075",
+            "H090",
+            "H098",
+        ]
         const loadImages = (prefix, cardArray, path, format) => {
             cardArray.forEach((card) => {
                 this.load.image(`${prefix}${card}`, require(`../../public/assets/${path}/${prefix}${card}.${format}`).default)
@@ -459,9 +536,13 @@ export default class Game extends Phaser.Scene {
         }
 
         // Prefix / card number / path
-        loadImages_new("24256_W", 1, 21, "24256/WCard", "jpg")
-        loadImages_new("24256_I", 1, 105, "24256/ICard", "jpg")
-        loadImages_new("24256_H", 33, 49, "24256/HCard", "jpg")
+        loadImages("24256_", wCards, "24256/WCard", "jpg")
+        loadImages("24256_", iCards, "24256/ICard", "jpg")
+        loadImages("24256_", hCards, "24256/HCard", "jpg")
+
+        // loadImages_new("24256_W", 1, 21, "24256/WCard", "jpg")
+        // loadImages_new("24256_I", 1, 105, "24256/ICard", "jpg")
+        // loadImages_new("24256_H", 33, 49, "24256/HCard", "jpg")
         loadImages_new("Q", 1, 48, "QCard", "png")
 
         this.load.image("image_cardback", require("../../public/assets/others/image_cardback.png").default)
