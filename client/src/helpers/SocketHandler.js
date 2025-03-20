@@ -9,7 +9,7 @@ export default class SocketHandler {
     constructor(scene) {
         // Heroku URL
         // Default: localhost:3000 is where the server is.
-        scene.socket = io("https://ultimate-card-game-f26046605e38.herokuapp.com")
+        scene.socket = io("https://ultimate-card-game-2-48a98fbb145c.herokuapp.com")
         // const hostname = window.location.hostname
         // console.log(window.location.hostname)
         // scene.socket = io("http://" + hostname + ":3000")
