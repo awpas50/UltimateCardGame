@@ -15,44 +15,49 @@ export const ICard_Data_24256 = {
     "24256_I028": { ID: "24256_I028", name: "蓼莪", rarity: 2, element: "木", series: "詩經", tag: "", points: 60 },
     "24256_I029": { ID: "24256_I029", name: "缾罍", rarity: 2, element: "金", series: "詩經", tag: "酒", points: 0 },
     "24256_I035": { ID: "24256_I035", name: "關睢", rarity: 5, element: "木", series: "詩經", tag: "", points: 100 },
+
     "24256_I037": { ID: "24256_I037", name: "荇菜", rarity: 4, element: "水", series: "詩經", tag: "", points: 20 },
     "24256_I040": { ID: "24256_I040", name: "相鼠", rarity: 2, element: "土", series: "詩經", tag: "", points: 50 },
     "24256_I049": { ID: "24256_I049", name: "漁父", rarity: 4, element: "水", series: "楚辭", tag: "", points: 40 },
-
     "24256_I052": { ID: "24256_I052", name: "山鬼", rarity: 5, element: "木", series: "楚辭", tag: "神", points: 90 },
     "24256_I059": { ID: "24256_I059", name: "冠者", rarity: 3, element: "土", series: "孔子", tag: "", points: 20 },
+
     "24256_I060": { ID: "24256_I060", name: "社稷", rarity: 5, element: "土", series: "孔子", tag: "神", points: 100 },
     "24256_I069": { ID: "24256_I069", name: "勿視", rarity: 3, element: "土", series: "孔子", tag: "", points: 90 },
     "24256_I071": { ID: "24256_I071", name: "數罟", rarity: 4, element: "土", series: "孟子", tag: "", points: 0 },
     "24256_I074": { ID: "24256_I074", name: "雞豚", rarity: 2, element: "土", series: "孟子", tag: "", points: 80 },
     "24256_I077": { ID: "24256_I077", name: "四善", rarity: 2, element: "火", series: "孟子", tag: "", points: 40 },
+
+    "24256_I078": { ID: "24256_I078", name: "揠苗", rarity: 2, element: "木", series: "孟子", tag: "", points: 30 },
     "24256_I080": { ID: "24256_I080", name: "觳觫", rarity: 3, element: "水", series: "孟子", tag: "", points: 30 },
     "24256_I083": { ID: "24256_I083", name: "不能", rarity: 2, element: "水", series: "孟子", tag: "", points: 30 },
     "24256_I085": { ID: "24256_I085", name: "知魚", rarity: 2, element: "水", series: "莊子", tag: "", points: 50 },
     "24256_I086": { ID: "24256_I086", name: "解牛", rarity: 3, element: "土", series: "莊子", tag: "", points: 30 },
+
     "24256_I087": { ID: "24256_I087", name: "庖丁", rarity: 5, element: "火", series: "莊子", tag: "", points: 90 },
     "24256_I097": { ID: "24256_I097", name: "猿石", rarity: 3, element: "木", series: "澳門", tag: "", points: 60 },
     "24256_I100": { ID: "24256_I100", name: "哪吒", rarity: 5, element: "火", series: "澳門", tag: "神", points: 100 },
     "24256_I102": { ID: "24256_I102", name: "乞婦", rarity: 4, element: "火", series: "澳門", tag: "", points: 10 },
     "24256_I103": { ID: "24256_I103", name: "彈珠", rarity: 3, element: "金", series: "澳門", tag: "", points: 20 },
-    "24256_I104": { ID: "24256_I104", name: "醉龍", rarity: 2, element: "火", series: "澳門", tag: "", points: 90 },
 
+    "24256_I104": { ID: "24256_I104", name: "醉龍", rarity: 2, element: "火", series: "澳門", tag: "", points: 90 },
     "24256_I120": { ID: "24256_I120", name: "卑鄙", rarity: 2, element: "土", series: "三國", tag: "", points: 0 },
     "24256_I123": { ID: "24256_I123", name: "爆竹", rarity: 3, element: "火", series: "新年", tag: "", points: 70 },
     "24256_I124": { ID: "24256_I124", name: "桃符", rarity: 4, element: "金", series: "新年", tag: "", points: 50 },
     "24256_I125": { ID: "24256_I125", name: "屠蘇", rarity: 2, element: "土", series: "新年", tag: "", points: 70 },
-    "24256_I128": { ID: "24256_I128", name: "祝融", rarity: 5, element: "火", series: "新年", tag: "神", points: 100 },
 
+    "24256_I128": { ID: "24256_I128", name: "祝融", rarity: 5, element: "火", series: "新年", tag: "神", points: 100 },
     "24256_I130": { ID: "24256_I130", name: "投壺", rarity: 5, element: "土", series: "新年", tag: "", points: 50 },
     "24256_I140": { ID: "24256_I140", name: "市義", rarity: 5, element: "金", series: "戰國", tag: "", points: 70 },
     "24256_I143": { ID: "24256_I143", name: "不說", rarity: 2, element: "水", series: "戰國", tag: "", points: 30 },
     "24256_I144": { ID: "24256_I144", name: "門客", rarity: 2, element: "火", series: "戰國", tag: "", points: 0 },
-    "24256_I145": { ID: "24256_I145", name: "劍舞", rarity: 3, element: "火", series: "史記", tag: "", points: 40 },
 
+    "24256_I145": { ID: "24256_I145", name: "劍舞", rarity: 3, element: "火", series: "史記", tag: "", points: 40 },
     "24256_I146": { ID: "24256_I146", name: "翼蔽", rarity: 2, element: "火", series: "史記", tag: "", points: 30 },
     "24256_I151": { ID: "24256_I151", name: "刀俎", rarity: 4, element: "土", series: "史記", tag: "", points: 80 },
     "24256_I153": { ID: "24256_I153", name: "杯杓", rarity: 3, element: "金", series: "史記", tag: "酒", points: 30 },
     "24256_I155": { ID: "24256_I155", name: "案圖", rarity: 4, element: "土", series: "史記", tag: "", points: 40 },
+
     "24256_I157": { ID: "24256_I157", name: "奏瑟", rarity: 5, element: "金", series: "史記", tag: "", points: 50 },
 }
 
