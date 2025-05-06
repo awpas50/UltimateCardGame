@@ -9,7 +9,7 @@ export default class SocketHandler {
     constructor(scene) {
         // Heroku URL
         // Default: localhost:3000 is where the server is.
-        scene.socket = io("https://ultimate-card-game-f26046605e38.herokuapp.com")
+        scene.socket = io("https://ultimatecardgame.onrender.com")
         // scene.socket = io("http://localhost:3000/")
 
         //Create or join a room
