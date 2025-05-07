@@ -13,6 +13,7 @@ export default class SocketHandler {
         const hostname = window.location.hostname
         console.log("%cHostname: " + window.location.hostname, "color: blue; font-size: 14px; font-weight: bold;")
         scene.socket = io("http://" + hostname + ":3000")
+        this.domain = "http://" + hostname + ":3000"
 
         //Create or join a room
         scene.socket.on("connect", () => {

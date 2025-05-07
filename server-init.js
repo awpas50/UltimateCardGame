@@ -7,7 +7,6 @@ server.use(cors())
 const { google } = require("googleapis")
 const fs = require("fs")
 
-const RANGE = "24256 - 作者卡!A5:O25"
 const credentials = JSON.parse(fs.readFileSync("./google-sheets-api-credentials.json", "utf8"))
 
 const SHEET_ID = process.env.GOOGLE_SHEET_ID
@@ -23,16 +22,16 @@ jwtClient.authorize(function (err) {
     }
 })
 
-server.get("/sheet-data", (req, res) => {
+server.get("/account-info", (req, res) => {
     const sheets = google.sheets({ version: "v4", auth: jwtClient })
     sheets.spreadsheets.values.get(
         {
             spreadsheetId: SHEET_ID,
-            range: RANGE,
+            range: "帳號!A2:B200",
         },
         (err, response) => {
             if (err) {
-                console.error("The API returned an error: " + err)
+                console.error("[Error /account-info]" + err)
                 res.status(500).send("Error")
                 return
             }

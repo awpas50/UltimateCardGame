@@ -3,6 +3,8 @@ import PositionHandler from "./PositionHandler"
 
 export default class UIHandler {
     constructor(scene) {
+        this.accountInfo = []
+        this.loginInputText = {}
         this.inputText = {}
         // <------------------------------------ Zone ------------------------------------>
         this.buildZones = () => {
@@ -163,12 +165,6 @@ export default class UIHandler {
                 navigator.clipboard
                     .writeText(scene.GameHandler.currentRoomID)
                     .then(() => {
-                        fetch("http://localhost:3000/sheet-data")
-                            .then((response) => response.json())
-                            .then((data) => {
-                                console.log(data)
-                            })
-                            .catch((error) => console.error("Error:", error))
                         scene.Toast.showToast("已複製房間編號: " + scene.GameHandler.currentRoomID) // Optional feedback for the user
                     })
                     .catch((err) => {
@@ -310,6 +306,26 @@ export default class UIHandler {
             })
         }
 
+        this.buildLoginSection = () => {
+            fetch(`${scene.SocketHandler.domain}/account-info`)
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data)
+                    this.accountInfo = data
+                    this.loginInputText = this.buildLoginInputTextField(this.loginInputText)
+                    this.buildLoginText()
+                    this.buildLoginInputTextDecoration()
+                })
+                .catch((error) => {
+                    console.error("Error:", error)
+                    scene.Toast.showPermanentToast("發生錯誤,請重新載入")
+                })
+        }
+        this.hideLoginSection = () => {
+            scene.loginText.visible = false
+            this.loginInputText.destroy()
+            this.hideLoginInputTextDecoration()
+        }
         // Main
         this.buildPlayArea = () => {
             this.buildZones()
@@ -327,7 +343,70 @@ export default class UIHandler {
             this.buildCreateRoomText()
             this.buildJoinRoomText()
         }
-        // Main
+        // <------------------------------------ Login Field Start ------------------------------------>
+        this.buildLoginText = () => {
+            scene.loginText = scene.add.text(PositionHandler.loginText.x, PositionHandler.loginText.y, "登入", {
+                fontSize: 20,
+                fontFamily: "Trebuchet MS",
+                color: "#00ffff",
+            })
+            scene.loginText.setInteractive()
+            scene.loginText.on("pointerdown", () => {
+                const RNG = Math.floor(Math.random() * 3) + 1
+                scene.sound.play(`flipCard${RNG}`)
+                const USERNAME = this.getInputTextContent(this.loginInputText)
+                console.log(USERNAME)
+                const isUsernameExist = this.accountInfo.some((arr) => arr[0] === USERNAME)
+                if (isUsernameExist) {
+                    scene.Toast.showToast("登入成功")
+                    this.hideLoginSection()
+                    this.inputText = this.buildInputTextField(this.inputText)
+                    this.buildLobby()
+                } else {
+                    scene.Toast.showToast("登入失敗")
+                }
+            })
+            // Card color
+            scene.loginText.on("pointerover", () => {
+                scene.loginText.setColor("#fff5fa")
+            })
+            scene.loginText.on("pointerout", () => {
+                scene.loginText.setColor("#00ffff")
+            })
+        }
+        this.buildLoginInputTextField = (inputText) => {
+            inputText = scene.add.text(PositionHandler.loginInputText.x, PositionHandler.loginInputText.y, "", {
+                fixedWidth: 200,
+                fixedHeight: 36,
+            })
+            inputText.setDepth(10)
+            inputText.setOrigin(0.5, 0.5)
+            inputText.setInteractive().on("pointerdown", () => {
+                const RNG = Math.floor(Math.random() * 3) + 1
+                scene.sound.play(`flipCard${RNG}`)
+                const editor = scene.rexUI.edit(inputText)
+                const elem = editor.inputText.node
+                elem.style.top = "-10px"
+            })
+            return inputText
+        }
+        this.buildLoginInputTextDecoration = () => {
+            scene.loginInputTextRectangle = scene.rexUI.add.roundRectangle(
+                PositionHandler.loginInputTextRectangle.x,
+                PositionHandler.loginInputTextRectangle.y,
+                150,
+                30,
+                0,
+                Color.dimGrey
+            )
+        }
+        this.hideLoginInputTextDecoration = () => {
+            scene.loginInputTextRectangle.setFillStyle(Color.black)
+        }
+
+        // <------------------------------------ Login Field Ends ------------------------------------>
+
+        // <------------------------------------ Room Input Field ------------------------------------>
         this.buildInputTextField = (inputText) => {
             inputText = scene.add.text(PositionHandler.inputText.x, PositionHandler.inputText.y, "", {
                 fixedWidth: 150,
@@ -344,9 +423,6 @@ export default class UIHandler {
             })
             return inputText
         }
-        this.getInputTextContent = (inputText) => {
-            return inputText.text
-        }
         this.buildInputTextDecoration = () => {
             scene.inputTextRectangle = scene.rexUI.add.roundRectangle(
                 PositionHandler.inputTextRectangle.x,
@@ -360,6 +436,7 @@ export default class UIHandler {
         this.hideInputTextDecoration = () => {
             scene.inputTextRectangle.setFillStyle(Color.black)
         }
+        // <------------------------------------ Room Input Field Ends ------------------------------------>
         this.generateRandomRoomID = () => {
             // Generate a random number between 0 and 999999 (inclusive)
             const randomNumber = Math.floor(Math.random() * 1000000)
@@ -368,6 +445,10 @@ export default class UIHandler {
             const randomNumberString = randomNumber.toString().padStart(6, "0")
 
             return randomNumberString
+        }
+        // <------------------------------------ Generic ------------------------------------>
+        this.getInputTextContent = (inputText) => {
+            return inputText.text
         }
     }
 }

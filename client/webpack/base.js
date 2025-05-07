@@ -55,9 +55,9 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: "./index.html",
         }),
-        new webpack.DefinePlugin({
-            "process.env.API_KEY": JSON.stringify(process.env.API_KEY),
-            "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
-        }),
+        // new webpack.DefinePlugin({
+        //     "process.env.API_KEY": JSON.stringify(process.env.API_KEY),
+        //     "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
+        // }),
     ],
 }

@@ -488,7 +488,6 @@ export default class Game extends Phaser.Scene {
         // })
 
         this.setupSounds()
-        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa")
 
         this.cameras.main.roundPixels = true
         this.scale.scaleMode = Phaser.Scale.ScaleModes.NEAREST
@@ -504,10 +503,7 @@ export default class Game extends Phaser.Scene {
         this.QuestionCardHandler = new QuestionCardHandler(this)
         this.InteractiveHandler = new InteractiveHandler(this)
         this.Toast = new Toast(this)
-
-        this.UIHandler.inputText = this.UIHandler.buildInputTextField(this.UIHandler.inputText)
-        this.UIHandler.buildLobby()
-
+        this.UIHandler.buildLoginSection()
         localStorage.removeItem("authorDeck")
     }
 
