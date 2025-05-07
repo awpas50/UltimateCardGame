@@ -163,6 +163,12 @@ export default class UIHandler {
                 navigator.clipboard
                     .writeText(scene.GameHandler.currentRoomID)
                     .then(() => {
+                        fetch("http://localhost:3000/sheet-data")
+                            .then((response) => response.json())
+                            .then((data) => {
+                                console.log(data)
+                            })
+                            .catch((error) => console.error("Error:", error))
                         scene.Toast.showToast("已複製房間編號: " + scene.GameHandler.currentRoomID) // Optional feedback for the user
                     })
                     .catch((err) => {
