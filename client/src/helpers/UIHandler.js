@@ -355,13 +355,17 @@ export default class UIHandler {
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
                 const USERNAME = this.getInputTextContent(this.loginInputText)
-                console.log(USERNAME)
-                const isUsernameExist = this.accountInfo.some((arr) => arr[0] === USERNAME)
-                if (isUsernameExist) {
+                console.log("Input: " + USERNAME)
+                const result = this.accountInfo.find((arr) => arr[0] === USERNAME)
+                if (result) {
                     scene.Toast.showToast("登入成功")
                     this.hideLoginSection()
                     this.inputText = this.buildInputTextField(this.inputText)
+                    console.log("Username exists:", result[0])
+                    console.log("Corresponding value:", result[1])
                     this.buildLobby()
+                    scene.registry.set("username", result[0])
+                    scene.registry.set("accountAuthorDeck", result[1])
                 } else {
                     scene.Toast.showToast("登入失敗")
                 }

@@ -9,7 +9,6 @@ export default class AuthorCardEdit extends Phaser.Scene {
     }
 
     preload() {
-        // missing W013
         const wCards = [
             "W001",
             "W002",
@@ -23,6 +22,7 @@ export default class AuthorCardEdit extends Phaser.Scene {
             "W010",
             "W011",
             "W012",
+            "W013",
             "W014",
             "W015",
             "W016",
