@@ -268,6 +268,9 @@ export const WCard_Data_24256 = {
         ground: ["水", "木"],
         person: ["火", "木"],
         authorBuffs: [10, 0, 20, 0, 0],
+        ability: "轉數值",
+        target: "$target=player$min=0$max=90",
+        hasActiveSkill: true,
     },
 
     "24256_W007": {
@@ -464,6 +467,7 @@ export default class Game extends Phaser.Scene {
         loadImages_new("24256_H", 33, 49, "24256/HCard", "jpg")
         loadImages_new("Q", 1, 48, "QCard", "png")
 
+        this.load.image("24256_W050", require("../../public/assets/others/24256_W050.jpg").default)
         this.load.image("image_cardback", require("../../public/assets/others/image_cardback.png").default)
         this.load.image("BG", require("../../public/assets/others/WoodBackground.jpg").default)
 
@@ -500,10 +504,7 @@ export default class Game extends Phaser.Scene {
         this.QuestionCardHandler = new QuestionCardHandler(this)
         this.InteractiveHandler = new InteractiveHandler(this)
         this.Toast = new Toast(this)
-
-        this.UIHandler.inputText = this.UIHandler.buildInputTextField(this.UIHandler.inputText)
-        this.UIHandler.buildLobby()
-
+        this.UIHandler.buildLoginSection()
         localStorage.removeItem("authorDeck")
     }
 
@@ -519,6 +520,10 @@ export default class Game extends Phaser.Scene {
         this.sound.add("flipCard2")
         this.sound.add("flipCard3")
         this.sound.add("dragCard")
+    }
+
+    showSaveSuccessToast = () => {
+        this.Toast.showToast("儲存成功")
     }
 
     update() {}

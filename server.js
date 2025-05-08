@@ -1,6 +1,5 @@
-const server = require("express")()
+const server = require("./server-init")
 
-const cors = require("cors")
 const serveStatic = require("serve-static")
 const shuffle = require("shuffle-array")
 let players = {}
@@ -9,6 +8,7 @@ let playersInRooms = new Map()
 const fs = require("fs")
 const path = require("path")
 const { Console } = require("console")
+// const { getAccountInfoFromGoogleSheets } = require("./google-sheets-info.js")
 const http = require("http").createServer(server)
 const port = process.env.PORT || 3000
 
@@ -24,11 +24,12 @@ const io = require("socket.io")(http, {
     },
 })
 
-server.use(cors())
 server.use(serveStatic(__dirname + "/client/dist"))
 
-io.on("connection", function (socket) {
+io.on("connection", async function (socket) {
     console.log("A user connected: " + socket.id)
+    // const resp = await getAccountInfoFromGoogleSheets()
+    // console.log(resp)
     // Handle room creation and joining
     socket.on("createRoom", (newRoomId) => {
         socket.join(newRoomId)

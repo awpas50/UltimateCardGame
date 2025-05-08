@@ -7,27 +7,44 @@ export default class InteractiveHandler {
         // Section: Card preview
         // Create cardPreview on pointerdown
         let isCardPreviewActive = false
+        let isSelectingCardWithActiveSkill = false
         let zIndex = 0
         this.cardPreview = null
+        this.selectedWCard = null
 
         scene.input.on("pointerdown", (event, gameObjects) => {
             let pointer = scene.input.activePointer
-            // Check if gameObject is defined
-            //console.log("isCardPreviewActive: " + isCardPreviewActive)
             // If not clicking anything gameObjects returns empty array, like this....... []
             //console.log(gameObjects)
+            // ---------- Clicking anywhere else in the game, except cards: ----------
             if ((gameObjects.length == 0 || gameObjects[0].type === "Zone") && isCardPreviewActive && this.cardPreview !== null) {
                 this.cardPreview.setPosition(PositionHandler.cardPreviewStart.x, PositionHandler.cardPreviewStart.y)
                 this.isCardPreviewActive = false
+                this.isSelectingCardWithActiveSkill = false
             }
+            if (this.selectedWCard !== null) {
+                this.isSelectingCardWithActiveSkill = false
+                let tween = scene.tweens.add({
+                    targets: this.selectedWCard,
+                    y: this.selectedWCard.y + 40,
+                    duration: 100,
+                    ease: "Linear",
+                    yoyo: false, // Don't yoyo (return to start position) after tween ends
+                    repeat: 0,
+                })
+                tween.play()
+                this.selectedWCard = null
+            }
+            //  ---------- Not selected ----------
             if (!gameObjects || gameObjects.length == 0) {
                 return
             }
+            //  ---------- Card preview ----------
             if (gameObjects[0].type === "Image" && gameObjects[0].data.list.id !== "cardBack") {
                 scene.sound.play("dragCard")
                 console.log(gameObjects[0].data)
                 zIndex = gameObjects[0].depth
-                console.log("zIndex: " + zIndex)
+
                 if (this.cardPreview === null) {
                     this.cardPreview = scene.add
                         .image(
@@ -50,6 +67,27 @@ export default class InteractiveHandler {
                 })
                 isCardPreviewActive = true
                 tween.play()
+            }
+            // ---------- Preparation of using active skills ----------
+            if (
+                gameObjects[0].type === "Image" &&
+                gameObjects[0].data.list.id.includes("W") &&
+                gameObjects[0].data.list.side === "playerAuthorCard" &&
+                gameObjects[0].data.list.hasActiveSkill === true
+            ) {
+                this.selectedWCard = gameObjects[0]
+                if (!this.isSelectingCardWithActiveSkill) {
+                    this.isSelectingCardWithActiveSkill = true
+                    let tween = scene.tweens.add({
+                        targets: gameObjects[0],
+                        y: gameObjects[0].data.list.startY - 40,
+                        duration: 100,
+                        ease: "Linear",
+                        yoyo: false, // Don't yoyo (return to start position) after tween ends
+                        repeat: 0,
+                    })
+                    tween.play()
+                }
             }
         })
 
@@ -150,19 +188,30 @@ export default class InteractiveHandler {
                 if (scene.GameHandler.opponentAbility === "限制出牌") {
                     const opponentTarget = scene.GameHandler.opponentTarget
                     const element = AbilityReader.getValueByTag(opponentTarget, "$element")
-                    const elementArray = element.split(",")
-
-                    const isBeingDragged = elementArray.some((element) => {
-                        if (gameObject.getData("element") === element) {
-                            return true
+                    const rules = AbilityReader.getValueByTag(opponentTarget, "$rules")
+                    console.log(
+                        `%c[ability] element: ${element}, rules: ${rules}`,
+                        "color: lightcoral; font-size: 14px; font-weight: bold;"
+                    )
+                    if (element !== null) {
+                        const elementArray = element.split(",")
+                        const isBeingDragged = elementArray.some((element) => {
+                            if (gameObject.getData("element") === element) {
+                                return true
+                            }
+                            return false
+                        })
+                        if (isBeingDragged) {
+                            gameObject.x = gameObject.input.dragStartX
+                            gameObject.y = gameObject.input.dragStartY
+                            scene.Toast.showToast("你的靈感卡受到束縛,無法打出")
+                            return
                         }
-                        return false
-                    })
-                    if (isBeingDragged) {
-                        gameObject.x = gameObject.input.dragStartX
-                        gameObject.y = gameObject.input.dragStartY
-                        scene.Toast.showToast("你的靈感卡受到束縛,無法打出")
-                        return
+                    }
+                    // 24256_W013 屈原: 雙方只可打出火/水/木各一張,不限天地人位置。但會跟 24256_W012 屈原 規則衝突(不能打木屬)?
+                    // ** 暫時設定W013的效果會覆蓋W012的效果
+                    if (rules === "W013") {
+                        console.log("TODO")
                     }
                 }
                 // ---- 正常打出卡牌 ----
@@ -253,6 +302,10 @@ export default class InteractiveHandler {
                     const targetRules = scene.GameHandler.targetRules
                     const score = Number(AbilityReader.getValueByTag(target, "$score"))
                     const series = AbilityReader.getValueByTag(targetRules, "$series")
+                    console.log(
+                        `%c[ability] score: ${score}, series: ${series}`,
+                        "color: lightcoral; font-size: 14px; font-weight: bold;"
+                    )
 
                     let isCardConditionMatch = false
                     if (series !== null && gameObject.getData("series") === series) {
@@ -271,7 +324,10 @@ export default class InteractiveHandler {
                     const operator = AbilityReader.getValueByTag(target, "$operator")
                     const number = AbilityReader.getValueByTag(target, "$number")
 
-                    console.log(`formula: ${formula}, operator: ${operator}, nmuber: ${number}`)
+                    console.log(
+                        `%c[ability] formula: ${formula}, operator: ${operator}, nmuber: ${number}`,
+                        "color: lightcoral; font-size: 14px; font-weight: bold;"
+                    )
 
                     if (formula === "totalRarity") {
                         initialNumber = gameObject.getData("rarity")

@@ -15,7 +15,6 @@ export default class QuestionCardHandler {
             const qCardId = RNG >= 1 && RNG <= 9 ? "0" + RNG : RNG
 
             this.correctAnswer = QCard_Data[`Q0${qCardId}`].answer
-            console.log(this.correctAnswer)
 
             scene.questionCardPreview = scene.add
                 .image(PositionHandler.cardPreviewEnd.x, PositionHandler.cardPreviewEnd.y, "Q0" + qCardId)
@@ -43,12 +42,11 @@ export default class QuestionCardHandler {
             this.interval = setInterval(() => {
                 timer--
                 scene.questionCardTimerText.text = "剩餘時間: " + timer
-                console.log(timer)
                 if (timer < 0) {
                     clearInterval(this.interval)
                     scene.socket.emit("serverUpdateScores", scene.socket.id, -1, scene.GameHandler.currentRoomID)
                     scene.Toast.showToast("沒有回答！扣1分")
-                    console.log("Timer stopped at 20")
+                    console.log("%c[question] Not answer -1", "color: slateblue; font-size: 14px; font-weight: bold;")
                     this.deleteAnswerTextAndResetQuestion()
                     scene.questionCardPreview.destroy()
                 }
@@ -77,14 +75,14 @@ export default class QuestionCardHandler {
                 scene[`answer${key}Text`].setInteractive()
                 scene[`answer${key}Text`].on("pointerdown", () => {
                     this.stopAnswerTimer()
-                    console.log("所選答案:" + key)
+                    console.log("%c[question] selected:" + key, "color: slateblue; font-size: 14px; font-weight: bold;")
                     if (this.correctAnswer === key) {
-                        console.log("正解")
+                        console.log("%c[question] Correct +1", "color: slateblue; font-size: 14px; font-weight: bold;")
                         scene.Toast.showToast("答對！加1分")
                         scene.socket.emit("serverUpdateScores", scene.socket.id, 1, scene.GameHandler.currentRoomID)
                     } else {
-                        console.log("錯誤")
                         scene.Toast.showToast("答錯！扣1分")
+                        console.log("%c[question] Wrong -1", "color: slateblue; font-size: 14px; font-weight: bold;")
                         scene.socket.emit("serverUpdateScores", scene.socket.id, -1, scene.GameHandler.currentRoomID)
                     }
                     this.deleteAnswerTextAndResetQuestion()

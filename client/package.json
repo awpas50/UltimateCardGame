@@ -34,6 +34,7 @@
     "webpack-merge": "^5.10.0"
   },
   "dependencies": {
+    "dotenv": "^16.4.7",
     "phaser": "^3.60.0",
     "phaser3-rex-plugins": "^1.80.2",
     "socket.io-client": "^4.7.2",
