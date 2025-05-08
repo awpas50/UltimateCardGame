@@ -467,6 +467,7 @@ export default class Game extends Phaser.Scene {
         loadImages_new("24256_H", 33, 49, "24256/HCard", "jpg")
         loadImages_new("Q", 1, 48, "QCard", "png")
 
+        this.load.image("24256_W050", require("../../public/assets/others/24256_W050.jpg").default)
         this.load.image("image_cardback", require("../../public/assets/others/image_cardback.png").default)
         this.load.image("BG", require("../../public/assets/others/WoodBackground.jpg").default)
 

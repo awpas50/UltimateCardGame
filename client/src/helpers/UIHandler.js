@@ -1,4 +1,5 @@
 import Color from "./Color"
+import ScaleHandler from "./ScaleHandler.js"
 import PositionHandler from "./PositionHandler"
 
 export default class UIHandler {
@@ -315,6 +316,7 @@ export default class UIHandler {
                     this.loginInputText = this.buildLoginInputTextField(this.loginInputText)
                     this.buildLoginText()
                     this.buildLoginInputTextDecoration()
+                    this.buildLoginPreviewImage()
                 })
                 .catch((error) => {
                     console.error("Error:", error)
@@ -322,8 +324,10 @@ export default class UIHandler {
                 })
         }
         this.hideLoginSection = () => {
+            scene.loginAccountText.visible = false
             scene.loginText.visible = false
             this.loginInputText.destroy()
+            this.loginPreview.destroy()
             this.hideLoginInputTextDecoration()
         }
         // Main
@@ -345,6 +349,16 @@ export default class UIHandler {
         }
         // <------------------------------------ Login Field Start ------------------------------------>
         this.buildLoginText = () => {
+            scene.loginAccountText = scene.add.text(
+                PositionHandler.loginAccountText.x,
+                PositionHandler.loginAccountText.y,
+                "帳號",
+                {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                    color: "#ffffff",
+                }
+            )
             scene.loginText = scene.add.text(PositionHandler.loginText.x, PositionHandler.loginText.y, "登入", {
                 fontSize: 20,
                 fontFamily: "Trebuchet MS",
@@ -406,6 +420,11 @@ export default class UIHandler {
         }
         this.hideLoginInputTextDecoration = () => {
             scene.loginInputTextRectangle.setFillStyle(Color.black)
+        }
+        this.buildLoginPreviewImage = () => {
+            this.loginPreview = scene.add
+                .image(PositionHandler.loginPreviewImage.x, PositionHandler.loginPreviewImage.y, "24256_W050")
+                .setScale(ScaleHandler.loginPreview.scale)
         }
 
         // <------------------------------------ Login Field Ends ------------------------------------>
