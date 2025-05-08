@@ -7,9 +7,7 @@ import { ICard_Data_24256 } from "../scenes/game.js"
 
 export default class SocketHandler {
     constructor(scene) {
-        // Heroku URL
         // Default: localhost:3000 is where the server is.
-        // scene.socket = io("https://ultimate-card-game-f26046605e38.herokuapp.com")
         const hostname = window.location.hostname
         console.log("%cHostname: " + window.location.hostname, "color: blue; font-size: 14px; font-weight: bold;")
         scene.socket = io("http://" + hostname + ":3000")
