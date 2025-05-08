@@ -40,9 +40,11 @@ export default class Card {
                     .image(x, y, sprite)
                     .setInteractive()
                     .setData({
-                        id: this.id,
+                        id: WCard_Data_24256[this.id].ID,
                         side: side,
                         sprite: sprite,
+                        startX: x,
+                        startY: y,
 
                         name: WCard_Data_24256[this.id].name,
                         rarity: WCard_Data_24256[this.id].rarity,
@@ -53,6 +55,7 @@ export default class Card {
                         ability: WCard_Data_24256[this.id].ability || "",
                         target: WCard_Data_24256[this.id].target || "",
                         targetRules: WCard_Data_24256[this.id].targetRules || "",
+                        hasActiveSkill: WCard_Data_24256[this.id].hasActiveSkill || false,
                     })
             }
             if (cardType == "cardBack") {

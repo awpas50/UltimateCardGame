@@ -1,8 +1,11 @@
 import Color from "./Color"
+import ScaleHandler from "./ScaleHandler.js"
 import PositionHandler from "./PositionHandler"
 
 export default class UIHandler {
     constructor(scene) {
+        this.accountInfo = []
+        this.loginInputText = {}
         this.inputText = {}
         // <------------------------------------ Zone ------------------------------------>
         this.buildZones = () => {
@@ -11,7 +14,6 @@ export default class UIHandler {
                 dropZone.setName(config.name)
                 scene.ZoneHandler.dropZoneList.push(dropZone)
             })
-            console.log(scene.ZoneHandler.dropZoneList)
         }
         this.buildZoneOutline = () => {
             scene.ZoneHandler.renderOutlineGrid(
@@ -161,11 +163,9 @@ export default class UIHandler {
                 .setFontFamily("Trebuchet MS")
             scene.roomNumberText.setInteractive()
             scene.roomNumberText.on("pointerdown", () => {
-                console.log("Clicked")
                 navigator.clipboard
                     .writeText(scene.GameHandler.currentRoomID)
                     .then(() => {
-                        console.log("Text copied to clipboard: " + scene.GameHandler.currentRoomID)
                         scene.Toast.showToast("已複製房間編號: " + scene.GameHandler.currentRoomID) // Optional feedback for the user
                     })
                     .catch((err) => {
@@ -258,7 +258,6 @@ export default class UIHandler {
             scene.roomNumberText.text = "房間編號: " + this.getInputTextContent(this.inputText)
 
             scene.GameHandler.currentRoomID = this.getInputTextContent(this.inputText)
-            console.log("Current Room ID: " + scene.GameHandler.currentRoomID)
             // scene.socket.emit("dealDeck", scene.socket.id, scene.GameHandler.currentRoomID)
             scene.authorDeckEditText.visible = false
             scene.createRoomText.visible = false
@@ -308,6 +307,29 @@ export default class UIHandler {
             })
         }
 
+        this.buildLoginSection = () => {
+            fetch(`${scene.SocketHandler.domain}/account-info`)
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data)
+                    this.accountInfo = data
+                    this.loginInputText = this.buildLoginInputTextField(this.loginInputText)
+                    this.buildLoginText()
+                    this.buildLoginInputTextDecoration()
+                    this.buildLoginPreviewImage()
+                })
+                .catch((error) => {
+                    console.error("Error:", error)
+                    scene.Toast.showPermanentToast("發生錯誤,請重新載入")
+                })
+        }
+        this.hideLoginSection = () => {
+            scene.loginAccountText.visible = false
+            scene.loginText.visible = false
+            this.loginInputText.destroy()
+            this.loginPreview.destroy()
+            this.hideLoginInputTextDecoration()
+        }
         // Main
         this.buildPlayArea = () => {
             this.buildZones()
@@ -325,7 +347,89 @@ export default class UIHandler {
             this.buildCreateRoomText()
             this.buildJoinRoomText()
         }
-        // Main
+        // <------------------------------------ Login Field Start ------------------------------------>
+        this.buildLoginText = () => {
+            scene.loginAccountText = scene.add.text(
+                PositionHandler.loginAccountText.x,
+                PositionHandler.loginAccountText.y,
+                "帳號",
+                {
+                    fontSize: 20,
+                    fontFamily: "Trebuchet MS",
+                    color: "#ffffff",
+                }
+            )
+            scene.loginText = scene.add.text(PositionHandler.loginText.x, PositionHandler.loginText.y, "登入", {
+                fontSize: 20,
+                fontFamily: "Trebuchet MS",
+                color: "#00ffff",
+            })
+            scene.loginText.setInteractive()
+            scene.loginText.on("pointerdown", () => {
+                const RNG = Math.floor(Math.random() * 3) + 1
+                scene.sound.play(`flipCard${RNG}`)
+                const USERNAME = this.getInputTextContent(this.loginInputText)
+                console.log("Input: " + USERNAME)
+                const result = this.accountInfo.find((arr) => arr[0] === USERNAME)
+                if (result) {
+                    scene.Toast.showToast("登入成功")
+                    this.hideLoginSection()
+                    this.inputText = this.buildInputTextField(this.inputText)
+                    console.log("Username exists:", result[0])
+                    console.log("Corresponding value:", result[1])
+                    this.buildLobby()
+                    scene.registry.set("username", result[0])
+                    scene.registry.set("accountAuthorDeck", result[1])
+                } else {
+                    scene.Toast.showToast("登入失敗")
+                }
+            })
+            // Card color
+            scene.loginText.on("pointerover", () => {
+                scene.loginText.setColor("#fff5fa")
+            })
+            scene.loginText.on("pointerout", () => {
+                scene.loginText.setColor("#00ffff")
+            })
+        }
+        this.buildLoginInputTextField = (inputText) => {
+            inputText = scene.add.text(PositionHandler.loginInputText.x, PositionHandler.loginInputText.y, "", {
+                fixedWidth: 200,
+                fixedHeight: 36,
+            })
+            inputText.setDepth(10)
+            inputText.setOrigin(0.5, 0.5)
+            inputText.setInteractive().on("pointerdown", () => {
+                const RNG = Math.floor(Math.random() * 3) + 1
+                scene.sound.play(`flipCard${RNG}`)
+                const editor = scene.rexUI.edit(inputText)
+                const elem = editor.inputText.node
+                elem.style.top = "-10px"
+            })
+            return inputText
+        }
+        this.buildLoginInputTextDecoration = () => {
+            scene.loginInputTextRectangle = scene.rexUI.add.roundRectangle(
+                PositionHandler.loginInputTextRectangle.x,
+                PositionHandler.loginInputTextRectangle.y,
+                150,
+                30,
+                0,
+                Color.dimGrey
+            )
+        }
+        this.hideLoginInputTextDecoration = () => {
+            scene.loginInputTextRectangle.setFillStyle(Color.black)
+        }
+        this.buildLoginPreviewImage = () => {
+            this.loginPreview = scene.add
+                .image(PositionHandler.loginPreviewImage.x, PositionHandler.loginPreviewImage.y, "24256_W050")
+                .setScale(ScaleHandler.loginPreview.scale)
+        }
+
+        // <------------------------------------ Login Field Ends ------------------------------------>
+
+        // <------------------------------------ Room Input Field ------------------------------------>
         this.buildInputTextField = (inputText) => {
             inputText = scene.add.text(PositionHandler.inputText.x, PositionHandler.inputText.y, "", {
                 fixedWidth: 150,
@@ -342,9 +446,6 @@ export default class UIHandler {
             })
             return inputText
         }
-        this.getInputTextContent = (inputText) => {
-            return inputText.text
-        }
         this.buildInputTextDecoration = () => {
             scene.inputTextRectangle = scene.rexUI.add.roundRectangle(
                 PositionHandler.inputTextRectangle.x,
@@ -358,6 +459,7 @@ export default class UIHandler {
         this.hideInputTextDecoration = () => {
             scene.inputTextRectangle.setFillStyle(Color.black)
         }
+        // <------------------------------------ Room Input Field Ends ------------------------------------>
         this.generateRandomRoomID = () => {
             // Generate a random number between 0 and 999999 (inclusive)
             const randomNumber = Math.floor(Math.random() * 1000000)
@@ -366,6 +468,10 @@ export default class UIHandler {
             const randomNumberString = randomNumber.toString().padStart(6, "0")
 
             return randomNumberString
+        }
+        // <------------------------------------ Generic ------------------------------------>
+        this.getInputTextContent = (inputText) => {
+            return inputText.text
         }
     }
 }

@@ -6,6 +6,12 @@ export default class PositionHandler {
 
     // -----------------------------------------------------------------------
     // ------ 1.大廳
+    static loginPreviewImage = { x: 300, y: 340 } // 封面圖
+    static loginAccountText = { x: 225, y: 630 } // 帳號
+    static loginText = { x: 280, y: 730 } // 登入
+    static loginInputText = { x: 330, y: 690 } // (輸入帳號位置)
+    static loginInputTextRectangle = { x: 300, y: 680 } // (輸入帳號位置 - Input field)
+
     static authorDeckEditText = { x: 250, y: 330 } // 作者卡編成
     static createRoomText = { x: 260, y: 380 } // 建立房間
     static joinRoomText = { x: 260, y: 430 } // 加入房間

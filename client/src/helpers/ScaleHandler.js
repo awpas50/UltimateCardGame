@@ -18,4 +18,7 @@ export default class ScaleHandler {
     // 預覽 / 題目卡
     static cardPreview = { scale: 0.7 }
     static questionCard = { scale: 0.7 }
+
+    // 登入畫面
+    static loginPreview = { scale: 1.1 }
 }
