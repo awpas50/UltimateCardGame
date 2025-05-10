@@ -505,7 +505,6 @@ export default class Game extends Phaser.Scene {
         this.InteractiveHandler = new InteractiveHandler(this)
         this.Toast = new Toast(this)
         this.UIHandler.buildLoginSection()
-        localStorage.removeItem("authorDeck")
     }
 
     setupSounds = () => {
