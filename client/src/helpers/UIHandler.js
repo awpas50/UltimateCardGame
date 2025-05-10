@@ -298,7 +298,7 @@ export default class UIHandler {
         }
 
         this.buildLoginSection = () => {
-            fetch(`${scene.SocketHandler.domain}/api/account-info`)
+            fetch(`${scene.SocketHandler.domain}/api/get-sheet-data?range=帳號!A2:C200`)
                 .then((response) => response.json())
                 .then((data) => {
                     console.log(data)
