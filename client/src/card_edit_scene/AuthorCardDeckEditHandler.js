@@ -66,9 +66,10 @@ export default class AuthorCardDeckEditHandler {
                 scene.scene.get("Game").showSaveSuccessToast()
                 console.log(this.authorDeck)
                 scene.scene.stop("AuthorCardEdit")
+                const storedAuthorDeck = scene.registry.get("authorDeck")
                 this.areAllAuthorCardsPlaced()
-                    ? localStorage.setItem("authorDeck", JSON.stringify(this.authorDeck))
-                    : localStorage.removeItem("authorDeck")
+                    ? scene.registry.set("authorDeck", JSON.stringify(this.authorDeck))
+                    : scene.registry.remove("authorDeck")
             })
 
             scene.buildSaveText.on("pointerover", () => {
@@ -138,9 +139,16 @@ export default class AuthorCardDeckEditHandler {
 
         this.generateWCards = () => {
             const username = scene.registry.get("username")
+            const nickname = scene.registry.get("nickname")
             const accountAuthorDeck = scene.registry.get("accountAuthorDeck")
-            console.log(`[registry] ${username}`)
-            console.log(`[registry] ${accountAuthorDeck}`)
+            const authorDeck = scene.registry.get("authorDeck") || null
+            console.log(`%c[registry][username] ${username}`, "color: darkcyan; font-size: 14px; font-weight: bold;")
+            console.log(`%c[registry][nickname] ${nickname}`, "color: darkcyan; font-size: 14px; font-weight: bold;")
+            console.log(
+                `%c[registry][accountAuthorDeck] ${accountAuthorDeck}`,
+                "color: darkcyan; font-size: 14px; font-weight: bold;"
+            )
+            console.log(`%c[registry][authorDeck] ${authorDeck}`, "color: darkcyan; font-size: 14px; font-weight: bold;")
             const wCards = accountAuthorDeck.split(", ").map((item) => item.trim())
 
             const maxCardsInRow = 5

@@ -39,16 +39,12 @@ export default class UIHandler {
             scene.opponentRubbishBinArea = createStyledRectangle(PositionHandler.opponentRubbishBinArea, Color.cyan)
         }
         // <------------------------------------ Room number (top right) ------------------------------------>
-        this.buildPlayerNumberText = (playerNumber) => {
+        this.buildPlayerNumberText = (playerNumber, nickname) => {
             scene.playerNumberText = scene.add
                 .text(PositionHandler.playerNumberText.x, PositionHandler.playerNumberText.y, "你是: 玩家 ")
                 .setFontSize(20)
                 .setFontFamily("Trebuchet MS")
-            if (playerNumber == 1) {
-                scene.playerNumberText.text = "你是: 玩家1"
-            } else {
-                scene.playerNumberText.text = "你是: 玩家2"
-            }
+            scene.playerNumberText.text = "你是: " + nickname
         }
         // <------------------------------------ Player turn ------------------------------------>
         this.buildPlayerTurnText = () => {
@@ -59,9 +55,9 @@ export default class UIHandler {
         }
         this.setPlayerTurnText = (b) => {
             if (b === true) {
-                scene.playerTurnText.text = "你的回合"
+                scene.playerTurnText.text = scene.registry.get("nickname") + "的回合"
             } else {
-                scene.playerTurnText.text = "對方的回合"
+                scene.playerTurnText.text = scene.registry.get("opponentNickname") + "的回合"
             }
         }
         // <------------------------------------ Inpsriation points ------------------------------------>
@@ -84,14 +80,8 @@ export default class UIHandler {
             scene.opponentPointText.text = "對方靈感值:" + points
         }
         // <------------------------------------ Points (60 to win) ------------------------------------>
-        this.BuildWhoWinText = (whoWin) => {
-            const messages = {
-                1: "玩家1勝利!",
-                2: "玩家2勝利!",
-                0: "平手!",
-            }
-
-            scene.whoWinText = scene.add.text(PositionHandler.whoWinText.x, PositionHandler.whoWinText.y, messages[whoWin], {
+        this.BuildWhoWinText = (whoWinText) => {
+            scene.whoWinText = scene.add.text(PositionHandler.whoWinText.x, PositionHandler.whoWinText.y, whoWinText, {
                 fontSize: 20,
                 fontFamily: "Trebuchet MS",
                 color: "#00ffff",
@@ -220,7 +210,7 @@ export default class UIHandler {
             )
             scene.createRoomText.setInteractive()
             scene.createRoomText.on("pointerdown", () => {
-                const storedAuthorDeck = localStorage.getItem("authorDeck")
+                const storedAuthorDeck = scene.registry.get("authorDeck")
                 if (storedAuthorDeck) {
                     const myDeck = JSON.parse(storedAuthorDeck)
                     scene.socket.emit("serverUpdateAuthorDeck", scene.socket.id, myDeck)
@@ -281,7 +271,7 @@ export default class UIHandler {
             scene.joinRoomText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
-                const storedAuthorDeck = localStorage.getItem("authorDeck")
+                const storedAuthorDeck = scene.registry.get("authorDeck")
                 if (storedAuthorDeck) {
                     const myDeck = JSON.parse(storedAuthorDeck)
                     scene.socket.emit("serverUpdateAuthorDeck", scene.socket.id, myDeck)
@@ -308,7 +298,7 @@ export default class UIHandler {
         }
 
         this.buildLoginSection = () => {
-            fetch(`${scene.SocketHandler.domain}/account-info`)
+            fetch(`${scene.SocketHandler.domain}/api/get-sheet-data?range=帳號!A2:C200`)
                 .then((response) => response.json())
                 .then((data) => {
                     console.log(data)
@@ -375,11 +365,14 @@ export default class UIHandler {
                     scene.Toast.showToast("登入成功")
                     this.hideLoginSection()
                     this.inputText = this.buildInputTextField(this.inputText)
-                    console.log("Username exists:", result[0])
-                    console.log("Corresponding value:", result[1])
-                    this.buildLobby()
+                    console.log("Username:", result[0])
+                    console.log("nickname:", result[1])
+                    console.log("Corresponding value:", result[2])
                     scene.registry.set("username", result[0])
-                    scene.registry.set("accountAuthorDeck", result[1])
+                    scene.registry.set("nickname", result[1])
+                    scene.registry.set("accountAuthorDeck", result[2])
+                    scene.socket.emit("serverSetNickname", scene.socket.id, result[1])
+                    this.buildLobby()
                 } else {
                     scene.Toast.showToast("登入失敗")
                 }

@@ -22,16 +22,17 @@ jwtClient.authorize(function (err) {
     }
 })
 
-server.get("/account-info", (req, res) => {
+server.get("/api/get-sheet-data", (req, res) => {
+    const { range } = req.query
     const sheets = google.sheets({ version: "v4", auth: jwtClient })
     sheets.spreadsheets.values.get(
         {
             spreadsheetId: SHEET_ID,
-            range: "帳號!A2:B200",
+            range: range,
         },
         (err, response) => {
             if (err) {
-                console.error("[Error /account-info]" + err)
+                console.error("[Error /api/get-sheet-data]" + err)
                 res.status(500).send("Error")
                 return
             }
