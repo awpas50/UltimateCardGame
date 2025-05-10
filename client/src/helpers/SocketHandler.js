@@ -35,6 +35,14 @@ export default class SocketHandler {
             }
         })
 
+        scene.socket.on("localSetOpponentNickname", (nickname) => {
+            scene.registry.set("opponentNickname", nickname)
+            console.log(
+                `%c[registry][opponentNickname] ${scene.registry.get("opponentNickname")}`,
+                "color: darkcyan; font-size: 14px; font-weight: bold;"
+            )
+        })
+
         scene.socket.on("setPlayerTurnText", () => {
             let b = scene.GameHandler.getCurrentTurn()
             scene.UIHandler.setPlayerTurnText(b)
@@ -53,8 +61,8 @@ export default class SocketHandler {
             let points = scene.GameHandler.getOpponentTotalPoint()
             scene.UIHandler.setOpponentPointText(points)
         })
-        scene.socket.on("buildPlayerNumberText", (playerNumber) => {
-            scene.UIHandler.buildPlayerNumberText(playerNumber)
+        scene.socket.on("buildPlayerNumberText", (playerNumber, nickname) => {
+            scene.UIHandler.buildPlayerNumberText(playerNumber, nickname)
         })
         scene.socket.on("hideRollDiceText", () => {
             scene.UIHandler.hideRollDiceText()
@@ -434,8 +442,8 @@ export default class SocketHandler {
             scene.GameHandler.changeTurn()
         })
 
-        scene.socket.on("setPlayerWinText", (whoWin) => {
-            scene.UIHandler.BuildWhoWinText(whoWin)
+        scene.socket.on("setPlayerWinText", (whoWinText) => {
+            scene.UIHandler.BuildWhoWinText(whoWinText)
         })
 
         scene.socket.on("setPlayerWinScoreText", (scores, socketId) => {

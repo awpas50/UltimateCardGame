@@ -34,7 +34,7 @@ io.on("connection", async function (socket) {
     socket.on("createRoom", (newRoomId) => {
         socket.join(newRoomId)
         players[socket.id].currentRoomNumber = newRoomId
-        socket.emit("buildPlayerNumberText", 1)
+        socket.emit("buildPlayerNumberText", 1, players[socket.id].nickname)
         players[socket.id].playerName = 1
 
         console.log(`User ${socket.id} created and joined room ${newRoomId}`)
@@ -73,7 +73,7 @@ io.on("connection", async function (socket) {
             socket.join(roomId)
             socket.emit("joinRoomSucceedSignal")
             players[socket.id].currentRoomNumber = roomId
-            socket.emit("buildPlayerNumberText", 2)
+            socket.emit("buildPlayerNumberText", 2, players[socket.id].nickname)
             players[socket.id].playerName = 2
 
             console.log(`User ${socket.id} joined room ${roomId}`)
@@ -91,7 +91,16 @@ io.on("connection", async function (socket) {
             //     console.log(`Key: ${key}, Value: ${value}`);
             //   }
             // Send the list of players in the room to all clients
-            io.to(roomId).emit("playersInRoom", Array.from(playersInRooms.get(roomId)))
+            const playersInRoomArray = Array.from(playersInRooms.get(roomId))
+            io.to(roomId).emit("playersInRoom", playersInRoomArray)
+            console.log("Players in room (Array): " + playersInRoomArray)
+            const opponentInRoomArray = playersInRoomArray.filter((id) => id !== socket.id)
+            const [opponentId] = opponentInRoomArray
+            console.log("opponentId: " + opponentId)
+            console.log("opponent nickname: " + players[opponentId].nickname)
+
+            io.to(socket.id).emit("localSetOpponentNickname", players[opponentId].nickname)
+            io.to(opponentId).emit("localSetOpponentNickname", players[socket.id].nickname)
 
             for (const [key, value] of playersInRooms.entries()) {
                 console.log(`Room ID: ${key}, Sockets: ${Array.from(value)}`)
@@ -116,6 +125,7 @@ io.on("connection", async function (socket) {
     players[socket.id] = {
         currentRoomNumber: "",
         playerName: "", // 1 or 2
+        nickname: "",
         isReady: false,
         roundCount: 1,
         inDeck: [],
@@ -147,6 +157,10 @@ io.on("connection", async function (socket) {
     console.log("Number of players in the server: " + objLength)
     socket.emit("buildPlayerPointText")
     socket.emit("buildOpponentPointText")
+
+    socket.on("serverSetNickname", function (socketId, nickname) {
+        players[socketId].nickname = nickname
+    })
 
     // populates the players[socketId].inHand array with elements from the players[socketId].inDeck array.
     // If the deck is empty, it shuffles and refills the deck before adding cards to the hand.
@@ -426,14 +440,27 @@ function endRound(roomId) {
     console.log("玩家2額外加分(技能): " + Math.floor(players[player2SocketId].extraScore))
 
     // 計分結果
-    io.to(roomId).emit("setPlayerWinText", whoWin)
+    let whoWinText
+    switch (whoWin) {
+        case 0:
+            whoWinText = "平手!"
+            break
+        case 1:
+            whoWinText = players[player1SocketId].nickname + "勝利!"
+            break
+        case 2:
+            whoWinText = players[player2SocketId].nickname + "勝利!"
+            break
+    }
+    io.to(roomId).emit("setPlayerWinText", whoWinText)
+
     if (whoWinSocketId === player1SocketId) {
-        console.log("玩家1獲得分數: " + baseScore * player1Multiplier)
+        console.log("玩家1(" + players[player1SocketId].nickname + ")獲得分數: " + baseScore * player1Multiplier)
         players[player1SocketId].totalScore += baseScore * player1Multiplier
         io.to(roomId).emit("setPlayerWinScoreText", players[player1SocketId].totalScore, player1SocketId)
         io.to(roomId).emit("setPlayerLoseScoreText", players[player1SocketId].totalScore, player1SocketId)
     } else if (whoWinSocketId === player2SocketId) {
-        console.log("玩家2獲得分數: " + baseScore * player2Multiplier)
+        console.log("玩家2(" + players[player2SocketId].nickname + ")獲得分數: " + baseScore * player2Multiplier)
         players[player2SocketId].totalScore += baseScore * player2Multiplier
         io.to(roomId).emit("setPlayerWinScoreText", players[player2SocketId].totalScore, player2SocketId)
         io.to(roomId).emit("setPlayerLoseScoreText", players[player2SocketId].totalScore, player2SocketId)
@@ -446,8 +473,12 @@ function endRound(roomId) {
         }
     }
 
-    console.log(`玩家1總分: ${player1ScoreBeforeCalculation} >>> ${players[player1SocketId].totalScore}`)
-    console.log(`玩家2總分: ${player2ScoreBeforeCalculation} >>> ${players[player2SocketId].totalScore}`)
+    console.log(
+        `玩家1(${players[player1SocketId].nickname})總分: ${player1ScoreBeforeCalculation} >>> ${players[player1SocketId].totalScore}`
+    )
+    console.log(
+        `玩家2(${players[player2SocketId].nickname})總分: ${player2ScoreBeforeCalculation} >>> ${players[player2SocketId].totalScore}`
+    )
     console.log(players)
 
     // 完場狀態
