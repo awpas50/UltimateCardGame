@@ -362,7 +362,6 @@ export default class UIHandler {
                 console.log("Input: " + USERNAME)
                 const result = this.accountInfo.find((arr) => arr[0] === USERNAME)
                 if (result) {
-                    scene.Toast.showToast("登入成功")
                     this.hideLoginSection()
                     this.inputText = this.buildInputTextField(this.inputText)
                     console.log("Username:", result[0])
@@ -372,6 +371,7 @@ export default class UIHandler {
                     scene.registry.set("nickname", result[1])
                     scene.registry.set("accountAuthorDeck", result[2])
                     scene.socket.emit("serverSetNickname", scene.socket.id, result[1])
+                    scene.Toast.showTopToast(`歡迎回來，${result[1]}`)
                     this.buildLobby()
                 } else {
                     scene.Toast.showToast("登入失敗")

@@ -6,6 +6,7 @@ import QuestionCardHandler from "../helpers/QuestionCardHandler"
 import SocketHandler from "../helpers/SocketHandler"
 import UIHandler from "../helpers/UIHandler"
 import ZoneHandler from "../helpers/ZoneHandler"
+import DebugHandler from "../helpers/DebugHandler"
 import Toast from "../components/Toast"
 
 // 靈感卡：編號/名稱/星數/屬性/系列/標籤/靈感值
@@ -504,6 +505,7 @@ export default class Game extends Phaser.Scene {
         this.QuestionCardHandler = new QuestionCardHandler(this)
         this.InteractiveHandler = new InteractiveHandler(this)
         this.Toast = new Toast(this)
+        this.DebugHandler = new DebugHandler(this)
         this.UIHandler.buildLoginSection()
     }
 
@@ -522,7 +524,7 @@ export default class Game extends Phaser.Scene {
     }
 
     showSaveSuccessToast = () => {
-        this.Toast.showToast("儲存成功")
+        this.Toast.showTopToast("已儲存角色卡組")
     }
 
     update() {}
