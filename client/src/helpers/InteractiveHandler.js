@@ -15,7 +15,6 @@ export default class InteractiveHandler {
         scene.input.on("pointerdown", (event, gameObjects) => {
             let pointer = scene.input.activePointer
             // If not clicking anything gameObjects returns empty array, like this....... []
-            //console.log(gameObjects)
             // ---------- Clicking anywhere else in the game, except cards: ----------
             if ((gameObjects.length == 0 || gameObjects[0].type === "Zone") && isCardPreviewActive && this.cardPreview !== null) {
                 this.cardPreview.setPosition(PositionHandler.cardPreviewStart.x, PositionHandler.cardPreviewStart.y)
@@ -42,7 +41,7 @@ export default class InteractiveHandler {
             //  ---------- Card preview ----------
             if (gameObjects[0].type === "Image" && gameObjects[0].data.list.id !== "cardBack") {
                 scene.sound.play("dragCard")
-                console.log(gameObjects[0].data)
+                console.table(gameObjects[0].data.list)
                 zIndex = gameObjects[0].depth
 
                 if (this.cardPreview === null) {
@@ -362,16 +361,6 @@ export default class InteractiveHandler {
                     scene.Toast.showToast("請先答題!")
                 }
             }
-        })
-
-        //Debug
-        scene.input.on("pointerdown", (pointer) => {
-            // Get the x and y coordinates of the mouse pointer
-            const x = pointer.x
-            const y = pointer.y
-
-            // Show the coordinates on the console
-            console.log(`Clicked at X: ${Math.round(x)}, Y: ${Math.round(y)}`)
         })
     }
 }
