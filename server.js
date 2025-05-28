@@ -325,6 +325,9 @@ io.on("connection", async function (socket) {
         } else {
             io.to(roomId).emit("localGetWhichPlayerWin", player2SocketId)
         }
+        // Excel 結算積分
+        io.to(player1SocketId).emit("addScoresToExcel", players[player1SocketId].totalScore)
+        io.to(player2SocketId).emit("addScoresToExcel", players[player2SocketId].totalScore)
     })
 
     socket.on("serverNotifyCardPlayed", function (cardName, socketId, dropZoneId, roomId, cardType) {
@@ -360,6 +363,76 @@ io.on("connection", async function (socket) {
             console.log(players)
             io.to(roomId).emit("localInitQuestionCard", opponentId)
         }
+    })
+
+    // DEBUG
+    socket.on("serverGetPlayerStats", (socketId, mode = "all", callback) => {
+        switch (mode) {
+            case "scores":
+                const {
+                    isHCardActive,
+                    inSceneElementCalculator,
+                    inSceneIPointCalculator,
+                    inSceneSeriesCalculator,
+                    inSceneRarityCalculator,
+                    inSceneAuthorBoostPt,
+                    cardCount,
+                    totalInspriationPt,
+                    totalScore,
+                    extraScore,
+                } = players[socketId] || {}
+                callback({
+                    isHCardActive,
+                    inSceneElementCalculator,
+                    inSceneIPointCalculator,
+                    inSceneSeriesCalculator,
+                    inSceneRarityCalculator,
+                    inSceneAuthorBoostPt,
+                    cardCount,
+                    totalInspriationPt,
+                    totalScore,
+                    extraScore,
+                })
+                callback(players[socketId])
+                break
+            case "ability-multiplier":
+                const { multiplierSpecialRule, multiplierSpecialRuleCheck, multiplierSpecialCount } = players[socketId] || {}
+                callback({
+                    multiplierSpecialRule,
+                    multiplierSpecialRuleCheck,
+                    multiplierSpecialCount,
+                })
+                callback(players[socketId])
+                break
+            case "cards-in-hand":
+                const { inDeck, inHand, inScene, inRubbishBin } = players[socketId] || {}
+                callback({
+                    inDeck,
+                    inHand,
+                    inScene,
+                    inRubbishBin,
+                })
+                callback(players[socketId])
+                break
+            case "w-cards-in-hand":
+                const { inDeck_customized_WCard, inDeck_WCard, inScene_WCard, inRubbishBin_WCard } = players[socketId] || {}
+                callback({
+                    inDeck_customized_WCard,
+                    inDeck_WCard,
+                    inScene_WCard,
+                    inRubbishBin_WCard,
+                })
+                callback(players[socketId])
+                break
+            case "all":
+                callback(players[socketId])
+                break
+        }
+    })
+
+    socket.on("serverDebugUpdateScores", function (socketId, score, callback) {
+        players[socketId].totalScore += score
+        callback("Now: " + players[socketId].totalScore)
     })
 
     socket.on("disconnect", function () {

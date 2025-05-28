@@ -464,6 +464,34 @@ export default class SocketHandler {
             socketId === scene.socket.id ? scene.Toast.showPermanentToast("勝利") : scene.Toast.showPermanentToast("失敗")
         })
 
+        scene.socket.on("addScoresToExcel", (scoresToAdd) => {
+            const offset = 2
+            const uniqueId = scene.registry.get("uniqueId") || "-1"
+            const totalScoreInExcelNow = Number(scene.registry.get("totalScore")) || 0
+            const newScore = totalScoreInExcelNow + scoresToAdd
+
+            if (uniqueId === "-1") {
+                console.error("[Error] Unique ID not found in registry. Cannot update scores in Excel")
+                scene.Toast.showTopToast("帳號資料出錯，無法更新分數，請聯繫管理員")
+                return
+            }
+            // For example: uniqueID = 6, adds score in field D8. As the first row is the header, and uniqueId starts from 0
+            fetch(
+                `${scene.SocketHandler.domain}/api/update-sheet-data/raw?range=帳號!D${
+                    Number(uniqueId) + offset
+                }&value=${newScore}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            ).catch((error) => {
+                console.error("Error:", error)
+                scene.Toast.showTopToast("網絡問題，無法更新分數，請聯繫管理員")
+            })
+        })
+
         scene.socket.on("clearLocalBattleField", (socketIdToStartLater) => {
             console.log("clearLocalBattleField")
             // Destroy objects in all storage arrays

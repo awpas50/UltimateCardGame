@@ -83,6 +83,7 @@ export default class PositionHandler {
     static questionCardTimer = { x: 470, y: 630 } // 剩餘時間:
     //Toast
     static toast = { x: 300, y: 475 }
+    static topToast = { x: 300, y: 0 }
 
     // -----------------------------------------------------------------------
     // ------ 3.角色卡編成
