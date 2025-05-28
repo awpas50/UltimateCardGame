@@ -22,6 +22,7 @@ jwtClient.authorize(function (err) {
     }
 })
 
+// range: A1 notation (e.g., "Sheet1!A1:B2")
 server.get("/api/get-sheet-data", (req, res) => {
     const { range } = req.query
     const sheets = google.sheets({ version: "v4", auth: jwtClient })
@@ -37,6 +38,34 @@ server.get("/api/get-sheet-data", (req, res) => {
                 return
             }
             res.send(response.data.values)
+        }
+    )
+})
+
+// range: A1 notation (e.g., "Sheet1!A1:B2")
+// value: if bringing multiple values, use a comma-separated string (e.g., "A,B,C")
+server.post("/api/update-sheet-data/raw", (req, res) => {
+    const { range, value } = req.query
+    const sheets = google.sheets({ version: "v4", auth: jwtClient })
+
+    const parsedValue = [[value]]
+
+    sheets.spreadsheets.values.update(
+        {
+            spreadsheetId: SHEET_ID,
+            range: range,
+            valueInputOption: "RAW",
+            resource: {
+                values: parsedValue,
+            },
+        },
+        (err, response) => {
+            if (err) {
+                console.error("[Error /api/update-sheet-data/raw]" + err)
+                res.status(500).send("Error")
+                return
+            }
+            res.send(response.data)
         }
     )
 })

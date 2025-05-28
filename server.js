@@ -325,6 +325,9 @@ io.on("connection", async function (socket) {
         } else {
             io.to(roomId).emit("localGetWhichPlayerWin", player2SocketId)
         }
+        // Excel 結算積分
+        io.to(player1SocketId).emit("addScoresToExcel", players[player1SocketId].totalScore)
+        io.to(player2SocketId).emit("addScoresToExcel", players[player2SocketId].totalScore)
     })
 
     socket.on("serverNotifyCardPlayed", function (cardName, socketId, dropZoneId, roomId, cardType) {
@@ -425,6 +428,11 @@ io.on("connection", async function (socket) {
                 callback(players[socketId])
                 break
         }
+    })
+
+    socket.on("serverDebugUpdateScores", function (socketId, score, callback) {
+        players[socketId].totalScore += score
+        callback("Now: " + players[socketId].totalScore)
     })
 
     socket.on("disconnect", function () {

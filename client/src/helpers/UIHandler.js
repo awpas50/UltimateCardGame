@@ -298,7 +298,7 @@ export default class UIHandler {
         }
 
         this.buildLoginSection = () => {
-            fetch(`${scene.SocketHandler.domain}/api/get-sheet-data?range=帳號!A2:C200`)
+            fetch(`${scene.SocketHandler.domain}/api/get-sheet-data?range=帳號!A2:D200`)
                 .then((response) => response.json())
                 .then((data) => {
                     console.log(data)
@@ -364,12 +364,21 @@ export default class UIHandler {
                 if (result) {
                     this.hideLoginSection()
                     this.inputText = this.buildInputTextField(this.inputText)
+
                     console.log("Username:", result[0])
                     console.log("nickname:", result[1])
                     console.log("Corresponding value:", result[2])
+                    console.log("Unique ID:", this.accountInfo.findIndex((arr) => arr[0] === USERNAME) || "-1")
+                    console.log("Total score:", result[3] || 0)
+
                     scene.registry.set("username", result[0])
                     scene.registry.set("nickname", result[1])
                     scene.registry.set("accountAuthorDeck", result[2])
+                    scene.registry.set("totalScore", result[3] !== undefined ? result[3] : "0")
+                    scene.registry.set(
+                        "uniqueId",
+                        this.accountInfo.findIndex((arr) => arr[0] === USERNAME)
+                    )
                     scene.socket.emit("serverSetNickname", scene.socket.id, result[1])
                     scene.Toast.showTopToast(`歡迎歸來，${result[1]}`)
                     this.buildLobby()

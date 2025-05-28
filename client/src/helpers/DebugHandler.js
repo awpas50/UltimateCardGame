@@ -31,5 +31,11 @@ export default class DebugHandler {
                 console.log("[Debug] 技能類型：倍率加成", response)
             })
         })
+        // disabled in production
+        // scene.input.keyboard.on("keydown-NUMPAD_ADD", () => {
+        //     scene.socket.emit("serverDebugUpdateScores", scene.socket.id, 1, (response) => {
+        //         console.log("[Debug] 強制加分+1", response)
+        //     })
+        // })
     }
 }
