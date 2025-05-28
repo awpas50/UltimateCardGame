@@ -96,6 +96,7 @@ export default class AuthorCardDeckEditHandler {
                 scene.scene.wake("Game")
                 scene.scene.get("Game").sys.setVisible(true)
                 scene.scene.get("Game").sys.setActive(true)
+                scene.scene.get("Game").showSaveFailToast()
                 scene.scene.stop("AuthorCardEdit")
             })
 

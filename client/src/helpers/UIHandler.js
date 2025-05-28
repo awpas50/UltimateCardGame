@@ -371,7 +371,7 @@ export default class UIHandler {
                     scene.registry.set("nickname", result[1])
                     scene.registry.set("accountAuthorDeck", result[2])
                     scene.socket.emit("serverSetNickname", scene.socket.id, result[1])
-                    scene.Toast.showTopToast(`歡迎回來，${result[1]}`)
+                    scene.Toast.showTopToast(`歡迎歸來，${result[1]}`)
                     this.buildLobby()
                 } else {
                     scene.Toast.showToast("登入失敗")

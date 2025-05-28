@@ -527,5 +527,9 @@ export default class Game extends Phaser.Scene {
         this.Toast.showTopToast("已儲存角色卡組")
     }
 
+    showSaveFailToast = () => {
+        this.Toast.showTopToast("已捨棄角色卡組")
+    }
+
     update() {}
 }
