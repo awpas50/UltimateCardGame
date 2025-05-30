@@ -163,6 +163,26 @@ export default class UIHandler {
                     })
             })
         }
+        this.buildScoreBoardText = () => {
+            scene.scoreBoardText = scene.add.text(PositionHandler.scoreBoardText.x, PositionHandler.scoreBoardText.y, "排行榜", {
+                fontSize: 20,
+                fontFamily: "Trebuchet MS",
+                color: "#00ffff",
+            })
+            scene.scoreBoardText.setInteractive()
+            scene.scoreBoardText.on("pointerdown", () => {
+                const RNG = Math.floor(Math.random() * 3) + 1
+                scene.sound.play(`flipCard${RNG}`)
+                scene.scene.sleep("Game")
+                scene.scene.launch("ScoreBoard")
+            })
+            scene.scoreBoardText.on("pointerover", () => {
+                scene.scoreBoardText.setColor("#fff5fa")
+            })
+            scene.scoreBoardText.on("pointerout", () => {
+                scene.scoreBoardText.setColor("#00ffff")
+            })
+        }
         this.buildAuthorDeckEditText = () => {
             scene.authorDeckEditText = scene.add.text(
                 PositionHandler.authorDeckEditText.x,
@@ -332,6 +352,7 @@ export default class UIHandler {
         }
         this.buildLobby = () => {
             this.buildInputTextDecoration()
+            this.buildScoreBoardText()
             this.buildAuthorDeckEditText()
             this.buildRoomNumberText()
             this.buildCreateRoomText()
