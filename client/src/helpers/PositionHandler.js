@@ -12,6 +12,7 @@ export default class PositionHandler {
     static loginInputText = { x: 330, y: 690 } // (輸入帳號位置)
     static loginInputTextRectangle = { x: 300, y: 680 } // (輸入帳號位置 - Input field)
 
+    static scoreBoardText = { x: 270, y: 280 } // 排行榜
     static authorDeckEditText = { x: 250, y: 330 } // 作者卡編成
     static createRoomText = { x: 260, y: 380 } // 建立房間
     static joinRoomText = { x: 260, y: 430 } // 加入房間
@@ -93,4 +94,9 @@ export default class PositionHandler {
     static authorCardEditInfo1 = { x: 40, y: 100 }
     static authorCardEditInfo2 = { x: 40, y: 135 }
     static authorCardEditInfo3 = { x: 40, y: 170 }
+
+    // ------ 4.排行榜
+    static scoreBoardQuitText = { x: 510, y: 30 }
+    static scoreBoardLeft = { x: 160, y: 260 }
+    static scoreBoardRight = { x: 390, y: 260 }
 }

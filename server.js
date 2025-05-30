@@ -572,6 +572,9 @@ function endRound(roomId) {
         } else {
             io.to(roomId).emit("localGetWhichPlayerWin", player2SocketId)
         }
+        // Excel 結算積分
+        io.to(player1SocketId).emit("addScoresToExcel", players[player1SocketId].totalScore)
+        io.to(player2SocketId).emit("addScoresToExcel", players[player2SocketId].totalScore)
     }
     // 繼續
     else {
