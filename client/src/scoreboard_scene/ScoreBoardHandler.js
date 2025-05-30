@@ -11,7 +11,7 @@ export default class ScoreBoardHandler {
         this.fetchPlayerData = () => {
             const domain =
                 window.location.hostname === "ultimatecardgame.onrender.com"
-                    ? "ultimatecardgame.onrender.com"
+                    ? "https://ultimatecardgame.onrender.com"
                     : "http://" + window.location.hostname + ":3000"
             fetch(`${domain}/api/get-sheet-data?range=帳號!B2:D200`)
                 .then((response) => response.json())
