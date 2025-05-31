@@ -467,11 +467,11 @@ export default class SocketHandler {
 
         scene.socket.on("addScoresToExcel", (scoresToAdd) => {
             const offset = 2
-            const uniqueId = scene.registry.get("uniqueId") || "-1"
+            const uniqueId = scene.registry.get("uniqueId") || "0"
             const totalScoreInExcelNow = Number(scene.registry.get("totalScore")) || 0
             const newScore = totalScoreInExcelNow + scoresToAdd
 
-            if (uniqueId === "-1") {
+            if (!uniqueId && uniqueId !== "0") {
                 console.error("[Error] Unique ID not found in registry. Cannot update scores in Excel")
                 scene.Toast.showTopToast("帳號資料出錯，無法更新分數，請聯繫管理員")
                 return
