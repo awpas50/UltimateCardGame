@@ -1,6 +1,7 @@
 import Color from "./Color"
 import ScaleHandler from "./ScaleHandler.js"
 import PositionHandler from "./PositionHandler"
+import ApiDomain from "../mixins/ApiDomain.js"
 
 export default class UIHandler {
     constructor(scene) {
@@ -318,7 +319,7 @@ export default class UIHandler {
         }
 
         this.buildLoginSection = () => {
-            fetch(`${scene.SocketHandler.domain}/api/get-sheet-data?range=帳號!A2:D200`)
+            fetch(`${ApiDomain.name}/api/get-sheet-data?range=帳號!A2:D200`)
                 .then((response) => response.json())
                 .then((data) => {
                     console.log(data)
