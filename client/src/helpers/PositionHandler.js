@@ -3,6 +3,7 @@ export default class PositionHandler {
     // 1.大廳
     // 2.對局
     // 3.角色卡編成
+    // 4.排行榜
 
     // -----------------------------------------------------------------------
     // ------ 1.大廳
@@ -97,6 +98,6 @@ export default class PositionHandler {
 
     // ------ 4.排行榜
     static scoreBoardQuitText = { x: 510, y: 30 }
-    static scoreBoardLeft = { x: 160, y: 260 }
-    static scoreBoardRight = { x: 390, y: 260 }
+    static scoreBoardLeft = { x: 160, y: 210 }
+    static scoreBoardRight = { x: 390, y: 210 }
 }
