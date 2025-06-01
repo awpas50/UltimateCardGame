@@ -150,22 +150,41 @@ export default class SocketHandler {
             }
         })
 
-        scene.socket.on("localCheckIfAbilityIsSearch", (socketId) => {
+        scene.socket.on("localCheckIfAbilityIsSearch", (socketId, rubbishBinWcardList) => {
             // 玩家: 如果作者卡技能(ability)=搜尋,額外出牌
-            // 可選目標(only choose 1): $element, $series, $id, $tag
-            // 數量(required): $count
+            // 可選目標(只可選1種): $element, $series, $id, $tag
+            // 位置: $where 'inDeck' || 'inRubbishBin' (default: 'inDeck')
+            // 數量: $count (default: 1)
             if (socketId === scene.socket.id) {
                 if (scene.GameHandler.ability !== "搜尋") {
                     return
                 }
                 const target = scene.GameHandler.target
+                const targetRules = scene.GameHandler.targetRules
+                // 檢查特定條件 (上回合作者卡)
+                if (scene.GameHandler.targetRules) {
+                    const lastRoundWCard = AbilityReader.getValueByTag(targetRules, "$lastRoundWCard")
+                    console.log(lastRoundWCard)
+                    console.log(rubbishBinWcardList)
+                    const lastRoundWCardList = JSON.parse(lastRoundWCard.replace(/([A-Za-z0-9_]+)/g, '"$1"'))
+                    console.log(lastRoundWCardList)
+                    if (
+                        lastRoundWCardList.length === 0 ||
+                        rubbishBinWcardList.length === 0 ||
+                        !lastRoundWCardList.some((item) => rubbishBinWcardList.includes(item))
+                    ) {
+                        console.log("[ability] 不符合條件，無法使用搜尋技能")
+                        return
+                    }
+                }
                 const element = AbilityReader.getValueByTag(target, "$element")
                 const series = AbilityReader.getValueByTag(target, "$series")
                 const id = AbilityReader.getValueByTag(target, "$id")
                 const tag = AbilityReader.getValueByTag(target, "$tag")
                 const count = Number(AbilityReader.getValueByTag(target, "$count"))
+                const where = Number(AbilityReader.getValueByTag(target, "$where"))
                 console.log(
-                    `%c[ability] element: ${element}, series: ${series}, id: ${id}, tag: ${tag}, count: ${count}`,
+                    `%c[ability] element: ${element}, series: ${series}, id: ${id}, tag: ${tag}, count: ${count}, where: ${where}`,
                     "color: lightcoral; font-size: 14px; font-weight: bold;"
                 )
 
@@ -185,6 +204,8 @@ export default class SocketHandler {
                         .filter(([_, card]) => card.tag === tag)
                         .map(([key]) => key)
                 }
+                const finalLocation = where || "inDeck"
+                const finalCount = count || 1
                 console.log("搜尋的卡組:")
                 console.log(filteredCardArray)
                 scene.socket.emit(
@@ -192,7 +213,8 @@ export default class SocketHandler {
                     scene.socket.id,
                     scene.GameHandler.currentRoomID,
                     filteredCardArray,
-                    count === 0 ? 1 : count
+                    finalLocation,
+                    finalCount
                 )
                 // 對手: TODO (增加對應數量卡牌)
             }

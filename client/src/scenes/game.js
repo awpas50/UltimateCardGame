@@ -282,6 +282,9 @@ export const WCard_Data_24256 = {
         ground: ["火", "水", "木", "金", "土"],
         person: ["火", "水", "木", "金", "土"],
         authorBuffs: [50, 0, 0, 0, 0],
+        ability: "搜尋",
+        target: "$series=袁枚$count=2$where=inRubbishBin",
+        targetRules: "$lastRoundWCard=[24256_W006,24256_W014,24256_W016]",
     },
 
     "24256_W008": {
