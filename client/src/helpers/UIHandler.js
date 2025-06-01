@@ -247,6 +247,7 @@ export default class UIHandler {
                         scene.authorDeckEditText.visible = false
                         scene.createRoomText.visible = false
                         scene.joinRoomText.visible = false
+                        scene.scoreBoardText.visible = false
                         scene.roomNumberText.text = "房間編號: " + randomRoomId
                         this.inputText.visible = false
                         this.hideInputTextDecoration()
@@ -273,6 +274,7 @@ export default class UIHandler {
             scene.authorDeckEditText.visible = false
             scene.createRoomText.visible = false
             scene.joinRoomText.visible = false
+            scene.scoreBoardText.visible = false
             this.inputText.destroy()
             this.hideInputTextDecoration()
         })
@@ -318,6 +320,21 @@ export default class UIHandler {
             })
         }
 
+        this.buildUidText = () => {
+            scene.uidText = scene.add.text(
+                scene.scale.width - 10, // Position near the right edge
+                scene.scale.height - 10, // Position near the bottom
+                `UID: ${scene.registry.get("uniqueId") || "null"}`,
+                {
+                    fontSize: 16,
+                    fontFamily: "Trebuchet MS",
+                    align: "right",
+                }
+            )
+            // Adjust the origin to align properly (bottom-right corner)
+            scene.uidText.setOrigin(1, 1)
+        }
+
         this.buildLoginSection = () => {
             fetch(`${ApiDomain.name}/api/get-sheet-data?range=帳號!A2:D200`)
                 .then((response) => response.json())
@@ -358,6 +375,7 @@ export default class UIHandler {
             this.buildRoomNumberText()
             this.buildCreateRoomText()
             this.buildJoinRoomText()
+            this.buildUidText()
         }
         // <------------------------------------ Login Field Start ------------------------------------>
         this.buildLoginText = () => {
@@ -390,17 +408,14 @@ export default class UIHandler {
                     console.log("Username:", result[0])
                     console.log("nickname:", result[1])
                     console.log("Corresponding value:", result[2])
-                    console.log("Unique ID:", this.accountInfo.findIndex((arr) => arr[0] === USERNAME) || "-1")
+                    console.log("Unique ID:", this.accountInfo.findIndex((arr) => arr[0] === USERNAME) || "0")
                     console.log("Total score:", result[3] || 0)
 
                     scene.registry.set("username", result[0])
                     scene.registry.set("nickname", result[1])
                     scene.registry.set("accountAuthorDeck", result[2])
                     scene.registry.set("totalScore", result[3] !== undefined ? result[3] : "0")
-                    scene.registry.set(
-                        "uniqueId",
-                        this.accountInfo.findIndex((arr) => arr[0] === USERNAME)
-                    )
+                    scene.registry.set("uniqueId", this.accountInfo.findIndex((arr) => arr[0] === USERNAME) || "0")
                     scene.socket.emit("serverSetNickname", scene.socket.id, result[1])
                     scene.Toast.showTopToast(`歡迎歸來，${result[1]}`)
                     this.buildLobby()

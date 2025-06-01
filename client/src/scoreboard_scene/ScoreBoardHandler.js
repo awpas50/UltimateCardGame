@@ -7,6 +7,7 @@ export default class ScoreBoardHandler {
         this.top10Players = []
         this.yourScore = []
         this.initUI = () => {
+            this.buildUidText()
             this.fetchPlayerData()
         }
 
@@ -113,6 +114,21 @@ export default class ScoreBoardHandler {
             scene.scoreBoardQuitText.on("pointerout", () => {
                 scene.scoreBoardQuitText.setColor("#00ffff")
             })
+        }
+
+        this.buildUidText = () => {
+            scene.uidText = scene.add.text(
+                scene.scale.width - 10, // Position near the right edge
+                scene.scale.height - 10, // Position near the bottom
+                `UID: ${scene.registry.get("uniqueId") || "null"}`,
+                {
+                    fontSize: 16,
+                    fontFamily: "Trebuchet MS",
+                    align: "right",
+                }
+            )
+            // Adjust the origin to align properly (bottom-right corner)
+            scene.uidText.setOrigin(1, 1)
         }
     }
 }

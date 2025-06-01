@@ -8,6 +8,7 @@ export default class AuthorCardDeckEditHandler {
         this.currentRarity = 0
         this.maxRarity = 12
         this.initUI = () => {
+            this.buildUidText()
             this.renderZone(85, 315, 330 / 3.25, 430 / 3.25, "authorZone1")
             this.renderZone(190, 315, 330 / 3.25, 430 / 3.25, "authorZone2")
             this.renderZone(295, 315, 330 / 3.25, 430 / 3.25, "authorZone3")
@@ -17,6 +18,21 @@ export default class AuthorCardDeckEditHandler {
             this.buildSaveAndQuitText()
             this.buildAuthorCardEditInfoText()
             this.generateWCards()
+        }
+
+        this.buildUidText = () => {
+            scene.uidText = scene.add.text(
+                scene.scale.width - 10, // Position near the right edge
+                scene.scale.height - 10, // Position near the bottom
+                `UID: ${scene.registry.get("uniqueId") || "null"}`,
+                {
+                    fontSize: 16,
+                    fontFamily: "Trebuchet MS",
+                    align: "right",
+                }
+            )
+            // Adjust the origin to align properly (bottom-right corner)
+            scene.uidText.setOrigin(1, 1)
         }
 
         this.renderZone = (x, y, width, height, name) => {
