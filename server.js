@@ -190,7 +190,11 @@ io.on("connection", async function (socket) {
         io.to(roomId).emit("setAuthorData", socketId, players[socketId].inScene_WCard)
         io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
         io.to(roomId).emit("addICardsHCardsInScene", socketId, players[socketId].inHand)
-        io.to(roomId).emit("localCheckIfAbilityIsSearch", socketId)
+        io.to(roomId).emit(
+            "localCheckIfAbilityIsSearch",
+            socketId,
+            players[socketId].inRubbishBin_WCard.concat(players[opponentId].inRubbishBin_WCard)
+        )
         io.to(roomId).emit("localCheckIfAbilityIsMultiplier", socketId)
 
         players[socketId].isReady = true
@@ -221,7 +225,11 @@ io.on("connection", async function (socket) {
         io.to(roomId).emit("addWCardsInScene", socketId, players[socketId].inScene_WCard)
         io.to(roomId).emit("setAuthorData", socketId, players[socketId].inScene_WCard)
         io.to(roomId).emit("setAuthorRarity", socketId, players[socketId].inScene_WCard)
-        io.to(roomId).emit("localCheckIfAbilityIsSearch", socketId)
+        io.to(roomId).emit(
+            "localCheckIfAbilityIsSearch",
+            socketId,
+            players[socketId].inRubbishBin_WCard.concat(players[opponentId].inRubbishBin_WCard)
+        )
         io.to(roomId).emit("localCheckIfAbilityIsMultiplier", socketId)
 
         players[socketId].isReady = true
@@ -258,13 +266,23 @@ io.on("connection", async function (socket) {
         io.to(roomId).emit("dealOneCardInHand", socketId, players[socketId].inHand[cardIndex], cardIndex)
     })
 
-    socket.on("serverAddExtraCardInHand", function (socketId, roomId, filteredCardArray, count) {
+    socket.on("serverAddExtraCardInHand", function (socketId, roomId, filteredCardArray, whereToSearch, count) {
         let array = shuffle(filteredCardArray)
         for (let i = 0; i < count; i++) {
             // If inDeck contains the desire card, inDeck delete the specific card
-            const index = players[socketId].inDeck.findIndex((cardToRemove) => cardToRemove === array[i])
+            let index
+            if (whereToSearch === "inDeck") {
+                index = players[socketId].inDeck.findIndex((cardToRemove) => cardToRemove === array[i])
+            } else if (whereToSearch === "inRubbishBin") {
+                index = players[socketId].inRubbishBin.findIndex((cardToRemove) => cardToRemove === array[i])
+            }
             console.log(`找到卡牌: ${array[i]} index: ${index}`)
             if (index !== -1) {
+                if (whereToSearch === "inDeck") {
+                    players[socketId].inDeck.splice(index, 1)
+                } else if (whereToSearch === "inRubbishBin") {
+                    players[socketId].inRubbishBin.splice(index, 1)
+                }
                 players[socketId].inDeck.splice(index, 1)
                 players[socketId].inHand.push(array[i])
                 // add 1 card at the right of the inHand deck
