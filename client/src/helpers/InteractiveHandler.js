@@ -12,7 +12,24 @@ export default class InteractiveHandler {
         this.cardPreview = null
         this.selectedWCard = null
 
+        let isSetUpContainer = false
+
         scene.input.on("pointerdown", (event, gameObjects) => {
+            console.log(gameObjects)
+
+            if (!isSetUpContainer) {
+                console.log("Pointer down event triggered")
+                //const container = scene.add.container(400, 300)
+                const card = scene.add.image(400, 300, "24256_I005").setInteractive().setScale(0.35, 0.35)
+                const childImage = scene.add.image(400, 300, "extra_element_1").setInteractive().setScale(0.35, 0.35)
+                //container.add([card, childImage])
+                // Make the container interactive and draggable
+                // container.setSize(0.26, 0.26)
+                // container.setDepth(1000)
+                // container.setInteractive()
+                isSetUpContainer = true
+            }
+
             let pointer = scene.input.activePointer
             // If not clicking anything gameObjects returns empty array, like this....... []
             // ---------- Clicking anywhere else in the game, except cards: ----------
