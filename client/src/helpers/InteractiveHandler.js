@@ -8,6 +8,7 @@ export default class InteractiveHandler {
         // Create cardPreview on pointerdown
         let isCardPreviewActive = false
         let isSelectingCardWithActiveSkill = false
+        let readyToQuitSkillSelectionMode = false
 
         let zIndex = 0
         let allowDragging = true
@@ -161,7 +162,8 @@ export default class InteractiveHandler {
                 cardObject.getAt(1)?.setVisible(true)
                 cardObjectData.modifiedElement = element
                 this.selectedWCard.data.list.abilityCharges--
-                exitSkillSelectionMode()
+                readyToQuitSkillSelectionMode = true
+                // exitSkillSelectionMode handled in dragend
             }
         }
 
@@ -241,6 +243,10 @@ export default class InteractiveHandler {
             }
             if (!dropped && allowDragging) {
                 gameObject.setDepth(zIndex)
+            }
+            if (readyToQuitSkillSelectionMode) {
+                readyToQuitSkillSelectionMode = false
+                exitSkillSelectionMode()
             }
         })
 
