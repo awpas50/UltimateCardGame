@@ -8,102 +8,238 @@ export default class InteractiveHandler {
         // Create cardPreview on pointerdown
         let isCardPreviewActive = false
         let isSelectingCardWithActiveSkill = false
+
         let zIndex = 0
+        let allowDragging = true
         this.cardPreview = null
         this.selectedWCard = null
 
         scene.input.on("pointerdown", (event, gameObjects) => {
+            isSelectingCardWithActiveSkill && this.selectedWCard !== null
+                ? handleClickInSkillSelectionMode(gameObjects)
+                : handleClickInNormalMode(gameObjects)
             let pointer = scene.input.activePointer
+        })
+
+        const handleClickInNormalMode = (gameObjects) => {
             // If not clicking anything gameObjects returns empty array, like this....... []
             // ---------- Clicking anywhere else in the game, except cards: ----------
             if ((gameObjects.length == 0 || gameObjects[0].type === "Zone") && isCardPreviewActive && this.cardPreview !== null) {
+                console.log("[click] disable card preview")
                 this.cardPreview.setPosition(PositionHandler.cardPreviewStart.x, PositionHandler.cardPreviewStart.y)
-                this.isCardPreviewActive = false
-                this.isSelectingCardWithActiveSkill = false
-            }
-            if (this.selectedWCard !== null) {
-                this.isSelectingCardWithActiveSkill = false
-                let tween = scene.tweens.add({
-                    targets: this.selectedWCard,
-                    y: this.selectedWCard.y + 40,
-                    duration: 100,
-                    ease: "Linear",
-                    yoyo: false, // Don't yoyo (return to start position) after tween ends
-                    repeat: 0,
-                })
-                tween.play()
-                this.selectedWCard = null
+                isCardPreviewActive = false
             }
             //  ---------- Not selected ----------
             if (!gameObjects || gameObjects.length == 0) {
+                console.log("[click] Not clicking anything")
                 return
             }
+            if (gameObjects[0].type === "Container" && gameObjects[0].data.list.id === "toast") return
             //  ---------- Card preview ----------
-            if (gameObjects[0].type === "Image" && gameObjects[0].data.list.id !== "cardBack") {
+            if (gameObjects[0].type === "Container" && gameObjects[0].data.list.id !== "cardBack") {
+                const cardObject = gameObjects[0]
+                const cardObjectData = cardObject.data.list
                 scene.sound.play("dragCard")
-                console.table(gameObjects[0].data.list)
+                console.table(cardObjectData)
                 zIndex = gameObjects[0].depth
 
                 if (this.cardPreview === null) {
                     this.cardPreview = scene.add
-                        .image(
-                            PositionHandler.cardPreviewEnd.x,
-                            PositionHandler.cardPreviewEnd.y,
-                            gameObjects[0].data.values.sprite
-                        )
+                        .image(PositionHandler.cardPreviewEnd.x, PositionHandler.cardPreviewEnd.y, cardObjectData.sprite)
                         .setScale(ScaleHandler.cardPreview.scale)
                 } else {
-                    this.cardPreview.setTexture(gameObjects[0].data.values.sprite).setScale(ScaleHandler.cardPreview.scale)
+                    this.cardPreview.setTexture(cardObjectData.sprite).setScale(ScaleHandler.cardPreview.scale)
                     this.cardPreview.setPosition(PositionHandler.cardPreviewEnd.x, PositionHandler.cardPreviewEnd.y)
                 }
-                let tween = scene.tweens.add({
-                    targets: this.cardPreview,
-                    x: 465,
-                    duration: 100,
-                    ease: "Linear",
-                    yoyo: false, // Don't yoyo (return to start position) after tween ends
-                    repeat: 0,
-                })
-                isCardPreviewActive = true
-                tween.play()
-            }
-            // ---------- Preparation of using active skills ----------
-            if (
-                gameObjects[0].type === "Image" &&
-                gameObjects[0].data.list.id.includes("W") &&
-                gameObjects[0].data.list.side === "playerAuthorCard" &&
-                gameObjects[0].data.list.hasActiveSkill === true
-            ) {
-                this.selectedWCard = gameObjects[0]
-                if (!this.isSelectingCardWithActiveSkill) {
-                    this.isSelectingCardWithActiveSkill = true
-                    let tween = scene.tweens.add({
-                        targets: gameObjects[0],
-                        y: gameObjects[0].data.list.startY - 40,
+                let tween = scene.tweens
+                    .add({
+                        targets: this.cardPreview,
+                        x: 465,
                         duration: 100,
                         ease: "Linear",
                         yoyo: false, // Don't yoyo (return to start position) after tween ends
                         repeat: 0,
                     })
-                    tween.play()
-                }
+                    .play()
+                isCardPreviewActive = true
             }
-        })
+            // ---------- Preparation of using active skills (if author card has active skill) ----------
+            if (gameObjects[0].type === "Container") {
+                const cardObject = gameObjects[0]
+                const cardObjectData = cardObject.data.list
+                if (
+                    !cardObjectData.id.includes("W") ||
+                    cardObjectData.side !== "playerAuthorCard" ||
+                    !cardObjectData.hasActiveSkill
+                ) {
+                    return
+                }
+                if (!scene.GameHandler.isMyTurn) {
+                    scene.Toast.showToast("現在不是你的回合")
+                    return
+                } else if (!scene.QuestionCardHandler.hasAnsweredQuestion) {
+                    scene.Toast.showToast("請先答題!")
+                    return
+                } else if (cardObjectData.abilityCharges <= 0) {
+                    scene.Toast.showToast("已耗盡使用次數")
+                    return
+                }
+                enterSkillSelectionMode(cardObject, "請選擇己方靈感卡")
+            }
+        }
+        const handleClickInSkillSelectionMode = (gameObjects) => {
+            // If not clicking anything gameObjects returns empty array, like this....... []
+            // selected Wcard, and clicked another card
+            //  ---------- Not selected ----------
+            if (!gameObjects || gameObjects.length == 0) {
+                console.log("[click] Not clicking anything")
+                return
+            }
+            if (gameObjects[0].type !== "Container") return
+            if (gameObjects[0].type === "Container" && gameObjects[0].data.list.id === "toast") return
+
+            const cardObject = gameObjects[0]
+            const cardObjectData = cardObject.data.list
+            let selectedCardStatus = ""
+            let selectedCardType = ""
+            if (cardObjectData.side === "playerCard") {
+                if (cardObjectData.activeState === "inHand") {
+                    selectedCardStatus = "playerHand"
+                    console.log("點中自己的卡 (手牌)")
+                } else if (cardObjectData.activeState === "inScene") {
+                    selectedCardStatus = "playerScene"
+                    console.log("點中自己的卡 (場上)")
+                } else console.log("點中自己的卡 (不符合條件)")
+            } else if (cardObjectData.side === "opponentCard") {
+                if (cardObjectData.activeState === "inHand") {
+                    selectedCardStatus = "opponentHand"
+                    console.log("點中對手的卡 (手牌)")
+                } else if (cardObjectData.activeState === "inScene") {
+                    selectedCardStatus = "opponentScene"
+                    console.log("點中對手的卡 (場上)")
+                } else console.log("對手的卡(不符合條件)")
+            }
+
+            if (cardObjectData.side === "opponentAuthorCard") {
+                console.log("點中對手的卡 (作者卡)")
+                selectedCardStatus = "opponentScene"
+                selectedCardType = "WCard"
+            } else if (cardObjectData.side === "playerAuthorCard") {
+                console.log("點中自己 (作者卡)")
+                selectedCardStatus = "playerScene"
+                selectedCardType = "WCard"
+                exitSkillSelectionMode()
+                return
+            }
+
+            if (cardObjectData.id.includes("H")) {
+                selectedCardType = "HCard"
+            } else if (cardObjectData.id.includes("I")) {
+                selectedCardType = "ICard"
+            }
+            console.log("selectedCardStatus:", selectedCardStatus)
+            console.log("selectedCardType:", selectedCardType)
+            // selected card that matches the requirements
+            const target = scene.GameHandler.target
+            const targetRules = scene.GameHandler.targetRules
+            const element = AbilityReader.getValueByTag(target, "$element")
+            const cardType = AbilityReader.getValueByTag(target, "$cardType")
+            const range = AbilityReader.getMultipleValueByTag(targetRules, "$range")
+            console.log("cardType:", cardType)
+            console.log("range:", range)
+            if (range.includes(selectedCardStatus) && cardType === selectedCardType) {
+                const elementMap = {
+                    火: 0,
+                    水: 1,
+                    木: 2,
+                    金: 3,
+                    土: 4,
+                    無: 5,
+                }
+                scene.Toast.showToast(`靈感卡轉屬: ${cardObjectData.element} -> ${element}`)
+                cardObject.getAt(1)?.setTexture(`extra_element_${elementMap[element]}`)
+                cardObject.getAt(1)?.setVisible(true)
+                cardObjectData.modifiedElement = element
+                this.selectedWCard.data.list.abilityCharges--
+                exitSkillSelectionMode()
+            }
+        }
+
+        const enterSkillSelectionMode = (wCard, message = null) => {
+            this.selectedWCard = wCard
+            isSelectingCardWithActiveSkill = true
+            const wCardData = wCard.data.list
+            allowDragging = false
+            if (message) {
+                scene.Toast.showActiveSkillTipsToast(message)
+            }
+            // Animation
+            scene.tweens
+                .add({
+                    targets: wCard,
+                    y: wCardData.startY - 40,
+                    duration: 100,
+                    ease: "Linear",
+                    yoyo: false, // Don't yoyo (return to start position) after tween ends
+                    repeat: 0,
+                })
+                .play()
+        }
+
+        const exitSkillSelectionMode = () => {
+            // Animation
+            scene.tweens
+                .add({
+                    targets: this.selectedWCard,
+                    y: this.selectedWCard.y + 40,
+                    duration: 100,
+                    ease: "Linear",
+                })
+                .play()
+            // action
+            isSelectingCardWithActiveSkill = false
+            this.selectedWCard = null
+            scene.Toast.hideActiveSkillTipsToast()
+            allowDragging = true
+        }
 
         scene.input.on("drag", (pointer, gameObject, dragX, dragY) => {
+            if (!allowDragging) {
+                return
+            }
             gameObject.x = dragX
             gameObject.y = dragY
         })
         scene.input.on("dragstart", (pointer, gameObject) => {
-            gameObject.setTint(0xf0ccde)
+            console.log("[dragstart] gameObject: ", gameObject)
+            if (this.selectedWCard) return
+            if (gameObject.type === "Container") {
+                gameObject.iterate((child) => {
+                    if (child.setTint) {
+                        child.setTint(0xf0ccde)
+                    }
+                })
+            } else {
+                gameObject.setTint(0xf0ccde)
+            }
             scene.children.bringToTop(gameObject)
         })
 
         scene.input.on("dragend", (pointer, gameObject, dropped) => {
-            gameObject.setTint()
+            if (gameObject.type === "Container") {
+                gameObject.iterate((child) => {
+                    if (child.setTint) {
+                        child.setTint()
+                    }
+                })
+            } else {
+                gameObject.setTint()
+            }
             if (!dropped) {
                 gameObject.x = gameObject.input.dragStartX
                 gameObject.y = gameObject.input.dragStartY
+            }
+            if (!dropped && allowDragging) {
                 gameObject.setDepth(zIndex)
             }
         })
@@ -222,6 +358,8 @@ export default class InteractiveHandler {
                 // 重設角度
                 gameObject.setRotation(0)
                 scene.input.setDraggable(gameObject, false)
+                // activeState
+                gameObject.setData("activeState", "inScene")
                 // 音效
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
@@ -230,7 +368,8 @@ export default class InteractiveHandler {
                 let elementID = -1
                 // 反轉卡牌判斷
                 if (cardType === "cardBack") {
-                    gameObject.setTexture("image_cardback")
+                    gameObject.getAt(0).setTexture("image_cardback")
+                    gameObject.getAt(1)?.setVisible(false)
                 }
                 // 作者屬性加成  (無屬性不能獲得)
                 if (gameObject.getData("id").includes("I")) {

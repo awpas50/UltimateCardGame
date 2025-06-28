@@ -108,6 +108,7 @@ export default class SocketHandler {
                             .setScale(ScaleHandler.playerInHandCard.scaleX)
                             .setRotation(RotationHandler.playerInHandCard[i] * (Math.PI / 180))
                             .setDepth(i)
+                            .setData({ activeState: "inHand" })
                         console.log(
                             `%ccardIdList[${i}]: ${cardIdList[i]}`,
                             "color: darkgreen; font-size: 14px; font-weight: bold;"
@@ -125,6 +126,7 @@ export default class SocketHandler {
                             .setScale(ScaleHandler.playerInHandCard.scaleX)
                             .setRotation(RotationHandler.playerInHandCard[i] * (Math.PI / 180))
                             .setDepth(i)
+                            .setData({ activeState: "inHand" })
                         console.log(
                             `%ccardIdList[${i}]: ${cardIdList[i]}`,
                             "color: darkgreen; font-size: 14px; font-weight: bold;"
@@ -272,6 +274,7 @@ export default class SocketHandler {
                         .setScale(ScaleHandler.playerInHandCard.scaleX)
                         .setRotation(RotationHandler.playerInHandCard[index > 5 ? 5 : index] * (Math.PI / 180))
                         .setDepth(index)
+                        .setData({ activeState: "inHand" })
                     scene.CardStorage.inHandStorage.push(card)
                 }
                 // scene.GameHandler.playerHand.push(card)
@@ -372,9 +375,10 @@ export default class SocketHandler {
             )
             if (socketId !== scene.socket.id) {
                 // scene.CardStorage.opponentCardBackStorage.shift().destroy()
-                const scaleX = ScaleHandler.opponentInHandCard.scaleX
+                const scaleX =
+                    cardType === "cardBack" ? ScaleHandler.opponentCardBack.scaleX : ScaleHandler.opponentInSceneCard.scaleX
                 const scaleY =
-                    cardType === "cardBack" ? ScaleHandler.opponentCardBack.scaleY : ScaleHandler.opponentInHandCard.scaleY
+                    cardType === "cardBack" ? ScaleHandler.opponentCardBack.scaleY : ScaleHandler.opponentInSceneCard.scaleY
                 let gameObject
                 switch (dropZoneName) {
                     case "dropZone1": //天
@@ -384,7 +388,9 @@ export default class SocketHandler {
                             cardType,
                             cardName,
                             "opponentCard"
-                        ).setScale(scaleX, scaleY)
+                        )
+                            .setScale(scaleX, scaleY)
+                            .setData({ activeState: "inScene" })
                         break
                     case "dropZone2": //地
                         gameObject = scene.DeckHandler.InstantiateCard(
@@ -393,7 +399,9 @@ export default class SocketHandler {
                             cardType,
                             cardName,
                             "opponentCard"
-                        ).setScale(scaleX, scaleY)
+                        )
+                            .setScale(scaleX, scaleY)
+                            .setData({ activeState: "inScene" })
                         break
                     case "dropZone3": //人
                         gameObject = scene.DeckHandler.InstantiateCard(
@@ -402,7 +410,9 @@ export default class SocketHandler {
                             cardType,
                             cardName,
                             "opponentCard"
-                        ).setScale(scaleX, scaleY)
+                        )
+                            .setScale(scaleX, scaleY)
+                            .setData({ activeState: "inScene" })
                         break
                     case "dropZone4": //日
                         gameObject = scene.DeckHandler.InstantiateCard(
@@ -411,7 +421,9 @@ export default class SocketHandler {
                             cardType,
                             cardName,
                             "opponentCard"
-                        ).setScale(scaleX, scaleY)
+                        )
+                            .setScale(scaleX, scaleY)
+                            .setData({ activeState: "inScene" })
                         break
                 }
 

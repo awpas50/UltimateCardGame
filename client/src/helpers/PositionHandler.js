@@ -84,7 +84,8 @@ export default class PositionHandler {
     //計時
     static questionCardTimer = { x: 470, y: 630 } // 剩餘時間:
     //Toast
-    static toast = { x: 300, y: 475 }
+    static toast = { x: 300, y: 325 }
+    static activeSkillToast = { x: 300, y: 175 }
     static topToast = { x: 300, y: 0 }
 
     // -----------------------------------------------------------------------

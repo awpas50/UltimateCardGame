@@ -236,6 +236,11 @@ export const WCard_Data_24256 = {
         ground: ["金", "木"],
         person: ["水", "木"],
         authorBuffs: [0, 0, 30, 20, 0],
+        ability: "轉屬",
+        target: "$element=金$cardType=ICard",
+        targetRules: "$range=playerScene,opponentScene",
+        hasActiveSkill: true,
+        abilityCharges: 1,
     },
 
     "24256_W004": {
@@ -259,6 +264,11 @@ export const WCard_Data_24256 = {
         ground: ["土", "金", "水"],
         person: ["火", "金", "木"],
         authorBuffs: [0, 0, 0, 40, 20],
+        ability: "轉屬",
+        target: "$element=金$cardType=ICard",
+        targetRules: "$range=playerScene,playerHand",
+        hasActiveSkill: true,
+        abilityCharges: 2,
     },
 
     "24256_W006": {
@@ -271,7 +281,6 @@ export const WCard_Data_24256 = {
         authorBuffs: [10, 0, 20, 0, 0],
         ability: "轉數值",
         target: "$target=player$min=0$max=90",
-        hasActiveSkill: true,
     },
 
     "24256_W007": {
@@ -470,6 +479,12 @@ export default class Game extends Phaser.Scene {
         loadImages_new("24256_I", 1, 105, "24256/ICard", "jpg")
         loadImages_new("24256_H", 33, 49, "24256/HCard", "jpg")
         loadImages_new("Q", 1, 48, "QCard", "png")
+
+        // extra elements
+        const extraElements = Array.from({ length: 5 }, (_, i) => `extra_element_${i}`)
+        extraElements.forEach((element) => {
+            this.load.image(element, require(`../../public/assets/extraElements/${element}.png`).default)
+        })
 
         this.load.image("24256_W050", require("../../public/assets/others/24256_W050.jpg").default)
         this.load.image("image_cardback", require("../../public/assets/others/image_cardback.png").default)
