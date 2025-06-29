@@ -266,7 +266,7 @@ export const WCard_Data_24256 = {
         authorBuffs: [0, 0, 0, 40, 20],
         ability: "轉屬",
         target: "$element=金$cardType=ICard",
-        targetRules: "$range=playerScene,playerHand",
+        targetRules: "$range=playerScene",
         hasActiveSkill: true,
         abilityCharges: 2,
     },

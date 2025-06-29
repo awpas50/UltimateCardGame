@@ -141,29 +141,38 @@ export default class InteractiveHandler {
             console.log("selectedCardStatus:", selectedCardStatus)
             console.log("selectedCardType:", selectedCardType)
             // selected card that matches the requirements
-            const target = scene.GameHandler.target
-            const targetRules = scene.GameHandler.targetRules
-            const element = AbilityReader.getValueByTag(target, "$element")
-            const cardType = AbilityReader.getValueByTag(target, "$cardType")
-            const range = AbilityReader.getMultipleValueByTag(targetRules, "$range")
-            console.log("cardType:", cardType)
-            console.log("range:", range)
-            if (range.includes(selectedCardStatus) && cardType === selectedCardType) {
-                const elementMap = {
-                    火: 0,
-                    水: 1,
-                    木: 2,
-                    金: 3,
-                    土: 4,
-                    無: 5,
+            if (scene.GameHandler.ability === "轉屬") {
+                const target = scene.GameHandler.target
+                const targetRules = scene.GameHandler.targetRules
+                const element = AbilityReader.getValueByTag(target, "$element")
+                const cardType = AbilityReader.getValueByTag(target, "$cardType")
+                const range = AbilityReader.getMultipleValueByTag(targetRules, "$range")
+                console.log("cardType:", cardType)
+                console.log("range:", range)
+                if (
+                    range.includes(selectedCardStatus) &&
+                    cardType === selectedCardType &&
+                    cardObjectData.modifiedElement === ""
+                ) {
+                    const elementMap = {
+                        火: 0,
+                        水: 1,
+                        木: 2,
+                        金: 3,
+                        土: 4,
+                        無: 5,
+                    }
+                    scene.Toast.showToast(`靈感卡轉屬: ${cardObjectData.element} -> ${element}`)
+                    cardObject.getAt(1)?.setTexture(`extra_element_${elementMap[element]}`)
+                    cardObject.getAt(1)?.setVisible(true)
+                    cardObjectData.modifiedElement = element
+
+                    this.selectedWCard.data.list.abilityCharges--
+                    readyToQuitSkillSelectionMode = true
+                    // exitSkillSelectionMode handled in dragend
                 }
-                scene.Toast.showToast(`靈感卡轉屬: ${cardObjectData.element} -> ${element}`)
-                cardObject.getAt(1)?.setTexture(`extra_element_${elementMap[element]}`)
-                cardObject.getAt(1)?.setVisible(true)
-                cardObjectData.modifiedElement = element
-                this.selectedWCard.data.list.abilityCharges--
-                readyToQuitSkillSelectionMode = true
-                // exitSkillSelectionMode handled in dragend
+            } else if (scene.GameHandler.ability === "轉數值") {
+                // TODO
             }
         }
 
