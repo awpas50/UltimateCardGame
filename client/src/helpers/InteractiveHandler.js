@@ -12,6 +12,7 @@ export default class InteractiveHandler {
 
         let zIndex = 0
         let allowDragging = true
+        this.currentlyDragging = null
         this.cardPreview = null
         this.selectedWCard = null
 
@@ -82,10 +83,10 @@ export default class InteractiveHandler {
                     scene.Toast.showToast("請先答題!")
                     return
                 } else if (cardObjectData.abilityCharges <= 0) {
-                    scene.Toast.showToast("已耗盡使用次數")
+                    scene.Toast.showToast("技能目前無法施放")
                     return
                 }
-                enterSkillSelectionMode(cardObject, "請選擇己方靈感卡")
+                enterSkillSelectionMode(cardObject, "選擇一張靈感卡")
             }
         }
         const handleClickInSkillSelectionMode = (gameObjects) => {
@@ -263,12 +264,22 @@ export default class InteractiveHandler {
             }
         })
 
+        // scene.events.on("update", (time, delta) => {
+        //     if (!this.currentlyDragging) return
+
+        //     this.currentlyDragging._bounceTime += delta
+        //     this.currentlyDragging._bounceTime += delta
+        //     const bounce = Math.sin(this.currentlyDragging._bounceTime * 0.01) * 10
+        //     this.currentlyDragging._bounceOffset = bounce
+        // })
+
         scene.input.on("drag", (pointer, gameObject, dragX, dragY) => {
             if (!allowDragging) {
                 return
             }
-            gameObject.x = dragX
-            gameObject.y = dragY
+            gameObject._isDragging = true
+            gameObject.x = dragX + 60
+            gameObject.y = dragY - 125 // + (gameObject._bounceOffset || 0)
         })
         scene.input.on("dragstart", (pointer, gameObject) => {
             console.log("[dragstart] gameObject: ", gameObject)
@@ -283,6 +294,15 @@ export default class InteractiveHandler {
                 gameObject.setTint(0xf0ccde)
             }
             scene.children.bringToTop(gameObject)
+            scene.tweens.add({
+                targets: gameObject,
+                scaleX: ScaleHandler.playerInHandCardOnDrag.scaleX,
+                scaleY: ScaleHandler.playerInHandCardOnDrag.scaleY,
+                duration: 150,
+                ease: "Cubic.easeOut",
+            })
+            // this.currentlyDragging = gameObject
+            // gameObject._bounceTime = 0
         })
 
         scene.input.on("dragend", (pointer, gameObject, dropped) => {
@@ -295,9 +315,20 @@ export default class InteractiveHandler {
             } else {
                 gameObject.setTint()
             }
+            // no matter if it's dropped
+            // this.currentlyDragging = null
+            // gameObject._bounceOffset = 0
+            // gameObject._bounceTime = 0
             if (!dropped) {
                 gameObject.x = gameObject.input.dragStartX
                 gameObject.y = gameObject.input.dragStartY
+                scene.tweens.add({
+                    targets: gameObject,
+                    scaleX: ScaleHandler.playerInHandCard.scaleX,
+                    scaleY: ScaleHandler.playerInHandCard.scaleY,
+                    duration: 150,
+                    ease: "Cubic.easeOut",
+                })
             }
             if (!dropped && allowDragging) {
                 gameObject.setDepth(zIndex)
@@ -421,7 +452,13 @@ export default class InteractiveHandler {
                 // 卡牌位置(天(0), 地(1), 人(2), 日(3))
                 gameObject.setData("cardPosition", cardPosition)
                 // 卡牌大小
-                gameObject.setScale(ScaleHandler.playerInSceneCard.scaleX, ScaleHandler.playerInSceneCard.scaleY)
+                scene.tweens.add({
+                    targets: gameObject,
+                    scaleX: ScaleHandler.playerInSceneCard.scaleX,
+                    scaleY: ScaleHandler.playerInSceneCard.scaleY,
+                    duration: 150,
+                    ease: "Cubic.easeOut",
+                })
                 // 重設角度
                 gameObject.setRotation(0)
                 scene.input.setDraggable(gameObject, false)

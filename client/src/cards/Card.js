@@ -1,4 +1,4 @@
-import { ICard_Data_24256, WCard_Data_24256 } from "../scenes/game.js"
+import { ICard_Data_24256, WCard_Data_24256, HCard_Data_24256 } from "../scenes/game.js"
 
 export default class Card {
     constructor(scene) {
@@ -19,6 +19,7 @@ export default class Card {
             if (cardType == "HCard") {
                 container.setData({
                     id: this.id,
+                    // name: HCard_Data_24256[this.id].name, doesn't work? still finding why
                     element: "無",
                     points: -1,
 
@@ -36,6 +37,7 @@ export default class Card {
                 newElementImage.visible = false // hide by default
                 container.setData({
                     id: this.id,
+                    name: ICard_Data_24256[this.id].name,
                     element: ICard_Data_24256[this.id].element,
                     series: ICard_Data_24256[this.id].series,
                     points: ICard_Data_24256[this.id].points, // 對戰中任何情況都不應修改

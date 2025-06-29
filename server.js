@@ -263,7 +263,7 @@ io.on("connection", async function (socket) {
         // inDeck delete 1 card
         players[socketId].inDeck.shift()
         // Tell local to actually show one new card
-        io.to(roomId).emit("dealOneCardInHand", socketId, players[socketId].inHand[cardIndex], cardIndex)
+        io.to(roomId).emit("dealOneCardInHand", socketId, players[socketId].inHand[cardIndex], cardIndex, false)
     })
 
     socket.on("serverAddExtraCardInHand", function (socketId, roomId, filteredCardArray, whereToSearch, count) {
@@ -288,7 +288,7 @@ io.on("connection", async function (socket) {
                 // add 1 card at the right of the inHand deck
                 const cardIndex = players[socketId].inHand.length - 1
                 // Tell local to actually show one new card
-                io.to(roomId).emit("dealOneCardInHand", socketId, array[i], cardIndex)
+                io.to(roomId).emit("dealOneCardInHand", socketId, array[i], cardIndex, true)
             }
         }
     })

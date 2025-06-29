@@ -235,25 +235,25 @@ export default class UIHandler {
                 if (storedAuthorDeck) {
                     const myDeck = JSON.parse(storedAuthorDeck)
                     scene.socket.emit("serverUpdateAuthorDeck", scene.socket.id, myDeck)
+                } else {
+                    scene.Toast.showToast("沒有卡組無法開始遊戲")
+                    return
                 }
-                setTimeout(
-                    () => {
-                        const RNG = Math.floor(Math.random() * 3) + 1
-                        scene.sound.play(`flipCard${RNG}`)
-                        this.buildPlayArea()
-                        scene.GameHandler.currentRoomID = this.generateRandomRoomID()
-                        const randomRoomId = scene.GameHandler.currentRoomID
-                        scene.socket.emit("createRoom", randomRoomId)
-                        scene.authorDeckEditText.visible = false
-                        scene.createRoomText.visible = false
-                        scene.joinRoomText.visible = false
-                        scene.scoreBoardText.visible = false
-                        scene.roomNumberText.text = "房間編號: " + randomRoomId
-                        this.inputText.visible = false
-                        this.hideInputTextDecoration()
-                    },
-                    storedAuthorDeck ? 500 : 0
-                )
+                setTimeout(() => {
+                    const RNG = Math.floor(Math.random() * 3) + 1
+                    scene.sound.play(`flipCard${RNG}`)
+                    this.buildPlayArea()
+                    scene.GameHandler.currentRoomID = this.generateRandomRoomID()
+                    const randomRoomId = scene.GameHandler.currentRoomID
+                    scene.socket.emit("createRoom", randomRoomId)
+                    scene.authorDeckEditText.visible = false
+                    scene.createRoomText.visible = false
+                    scene.joinRoomText.visible = false
+                    scene.scoreBoardText.visible = false
+                    scene.roomNumberText.text = "房間編號: " + randomRoomId
+                    this.inputText.visible = false
+                    this.hideInputTextDecoration()
+                }, 0)
             })
             // Card color
             scene.createRoomText.on("pointerover", () => {
@@ -298,15 +298,11 @@ export default class UIHandler {
                 if (storedAuthorDeck) {
                     const myDeck = JSON.parse(storedAuthorDeck)
                     scene.socket.emit("serverUpdateAuthorDeck", scene.socket.id, myDeck)
-                }
-
-                if (storedAuthorDeck) {
-                    setTimeout(() => {
-                        scene.socket.emit("joinRoom", this.getInputTextContent(this.inputText))
-                    }, 1000)
                 } else {
-                    scene.socket.emit("joinRoom", this.getInputTextContent(this.inputText))
+                    scene.Toast.showToast("沒有卡組無法開始遊戲")
+                    return
                 }
+                scene.socket.emit("joinRoom", this.getInputTextContent(this.inputText))
 
                 // (Runs joinRoomSucceedSignal from server.js if success.)
                 // (Update: Also runs dealCardsFirstRound (in server) for both players)

@@ -257,7 +257,7 @@ export default class SocketHandler {
             //scene.GameHandler.playerHand[2].destroy()
         })
         // * cardId: string * //
-        scene.socket.on("dealOneCardInHand", (socketId, cardId, index) => {
+        scene.socket.on("dealOneCardInHand", (socketId, cardId, index, showMessage = false) => {
             if (socketId === scene.socket.id) {
                 console.log(`%ccardIdList[${index}]: ${cardId}`, "color: darkgreen; font-size: 14px; font-weight: bold;")
                 const cardType = cardId.includes("I") ? "ICard" : cardId.includes("H") ? "HCard" : null
@@ -276,6 +276,9 @@ export default class SocketHandler {
                         .setDepth(index)
                         .setData({ activeState: "inHand" })
                     scene.CardStorage.inHandStorage.push(card)
+                    if (showMessage) {
+                        scene.Toast.showToast(`獲得「${card.data.list.name ? card.data.list.name : ""}」`)
+                    }
                 }
                 // scene.GameHandler.playerHand.push(card)
             } else {

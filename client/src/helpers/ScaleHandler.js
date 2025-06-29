@@ -10,6 +10,7 @@ export default class ScaleHandler {
 
     // 手牌
     static playerInHandCard = { scaleX: 0.35, scaleY: 0.35 }
+    static playerInHandCardOnDrag = { scaleX: 0.5, scaleY: 0.5 }
     static opponentInHandCard = { scaleX: 0.26, scaleY: -0.26 }
 
     // 牌背
