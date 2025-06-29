@@ -25,6 +25,8 @@ export default class Card {
                     side: side,
                     sprite: sprite,
                     activeState: "inDeck", // inDeck (一般不用), inHand, inScene, inRubbishBin (一般不用)
+                    cardPosition: -1, // 0: 天, 1: 地, 2: 人, 3: 日
+                    flipped: false,
                 })
                 card = scene.add.image(0, 0, sprite)
                 container.add([card])
@@ -49,6 +51,8 @@ export default class Card {
 
                     modifiedElement: "", // 是否被轉屬?
                     activeState: "inDeck", // inDeck (一般不用), inHand, inScene, inRubbishBin (一般不用)
+                    cardPosition: -1, // 0: 天, 1: 地, 2: 人, 3: 日
+                    flipped: false,
                 })
                 card = scene.add.image(0, 0, sprite)
                 container.add([card, newElementImage])

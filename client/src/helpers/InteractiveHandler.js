@@ -152,7 +152,8 @@ export default class InteractiveHandler {
                 if (
                     range.includes(selectedCardStatus) &&
                     cardType === selectedCardType &&
-                    cardObjectData.modifiedElement === ""
+                    cardObjectData.modifiedElement === "" &&
+                    !cardObjectData.flipped
                 ) {
                     const elementMap = {
                         火: 0,
@@ -162,14 +163,55 @@ export default class InteractiveHandler {
                         土: 4,
                         無: 5,
                     }
-                    scene.Toast.showToast(`靈感卡轉屬: ${cardObjectData.element} -> ${element}`)
-                    cardObject.getAt(1)?.setTexture(`extra_element_${elementMap[element]}`)
-                    cardObject.getAt(1)?.setVisible(true)
                     cardObjectData.modifiedElement = element
+                    scene.Toast.showToast(`靈感卡轉屬: ${cardObjectData.element} -> ${element}`)
+                    // 檢查作者卡天地人屬性是否符合轉屬後的靈感卡? 不符合則反轉卡牌
+                    let canGetPoints
+                    switch (cardObjectData.cardPosition) {
+                        case 0: // 天
+                            canGetPoints = scene.GameHandler.playerSkyElements.includes(cardObjectData.modifiedElement)
+                            break
+                        case 1: // 地
+                            canGetPoints = scene.GameHandler.playerGroundElements.includes(cardObjectData.modifiedElement)
+                            break
+                        case 2: // 人
+                            canGetPoints = scene.GameHandler.playerPersonElements.includes(cardObjectData.modifiedElement)
+                            break
+                    }
+                    // 反轉卡牌判斷
+                    if (!canGetPoints) {
+                        cardObjectData.flipped = true
+                        cardObject.getAt(0).setTexture("image_cardback")
+                        cardObject.getAt(1)?.setVisible(false)
+                    } else {
+                        cardObject.getAt(1)?.setTexture(`extra_element_${elementMap[element]}`)
+                        cardObject.getAt(1)?.setVisible(true)
+                    }
+
+                    const isVoid = elementMap[element] === 5
+                    const authorBuffPts = isVoid ? 0 : scene.GameHandler.authorBuffs[elementMap[element]]
+                    scene.socket.emit(
+                        "serverSetCardType",
+                        scene.socket.id,
+                        cardObjectData.cardPosition, // 天(0), 地(1), 人(2)
+                        canGetPoints ? elementMap[element] : null,
+                        canGetPoints ? cardObjectData.points + cardObjectData.extraPoints : null,
+                        canGetPoints ? cardObjectData.series : null,
+                        canGetPoints ? cardObjectData.rarity : null,
+                        authorBuffPts
+                    )
+                    // 通知server再call SocketHandler的calculatePoints。
+                    scene.socket.emit(
+                        "serverUpdatePoints",
+                        cardObjectData.points + cardObjectData.extraPoints + authorBuffPts,
+                        scene.socket.id,
+                        "dropZone" + String(cardObjectData.cardPosition + 1), // dropZone1, dropZone2, dropZone3
+                        scene.GameHandler.currentRoomID
+                    )
 
                     this.selectedWCard.data.list.abilityCharges--
                     readyToQuitSkillSelectionMode = true
-                    // exitSkillSelectionMode handled in dragend
+                    // exitSkillSelectionMode handled in pointerout
                 }
             } else if (scene.GameHandler.ability === "轉數值") {
                 // TODO
@@ -214,6 +256,13 @@ export default class InteractiveHandler {
             allowDragging = true
         }
 
+        scene.input.on("pointerout", (event, gameObjects) => {
+            if (readyToQuitSkillSelectionMode) {
+                readyToQuitSkillSelectionMode = false
+                exitSkillSelectionMode()
+            }
+        })
+
         scene.input.on("drag", (pointer, gameObject, dragX, dragY) => {
             if (!allowDragging) {
                 return
@@ -253,10 +302,6 @@ export default class InteractiveHandler {
             if (!dropped && allowDragging) {
                 gameObject.setDepth(zIndex)
             }
-            if (readyToQuitSkillSelectionMode) {
-                readyToQuitSkillSelectionMode = false
-                exitSkillSelectionMode()
-            }
         })
 
         // Card drop
@@ -265,9 +310,11 @@ export default class InteractiveHandler {
         scene.input.on("drop", (pointer, gameObject, dropZone) => {
             let canGetPoints = false
             let cardType = ""
+            let cardPosition = -1 // 0: 天, 1: 地, 2: 人
             // 是否符合屬性/卡牌類型? 不符合條件時卡牌須反轉, 並不能獲得靈感值
             switch (dropZone.name) {
                 case "dropZone1": //天
+                    cardPosition = 0
                     if (gameObject.getData("id").includes("H")) {
                         canGetPoints = false
                         cardType = "cardBack"
@@ -284,6 +331,7 @@ export default class InteractiveHandler {
                     scene.GameHandler.skyCardZoneName = gameObject.getData("id")
                     break
                 case "dropZone2": //地
+                    cardPosition = 1
                     if (gameObject.getData("id").includes("H")) {
                         canGetPoints = false
                         cardType = "cardBack"
@@ -300,6 +348,7 @@ export default class InteractiveHandler {
                     scene.GameHandler.groundCardZoneName = gameObject.getData("id")
                     break
                 case "dropZone3": //人
+                    cardPosition = 2
                     if (gameObject.getData("id").includes("H")) {
                         canGetPoints = false
                         cardType = "cardBack"
@@ -316,6 +365,7 @@ export default class InteractiveHandler {
                     scene.GameHandler.personCardZoneName = gameObject.getData("id")
                     break
                 case "dropZone4": //日
+                    cardPosition = 3
                     if (gameObject.getData("id").includes("I")) {
                         canGetPoints = false
                         cardType = "cardBack"
@@ -368,6 +418,8 @@ export default class InteractiveHandler {
                 // 鎖定卡牌位置
                 gameObject.x = dropZone.x
                 gameObject.y = dropZone.y
+                // 卡牌位置(天(0), 地(1), 人(2), 日(3))
+                gameObject.setData("cardPosition", cardPosition)
                 // 卡牌大小
                 gameObject.setScale(ScaleHandler.playerInSceneCard.scaleX, ScaleHandler.playerInSceneCard.scaleY)
                 // 重設角度
@@ -383,6 +435,7 @@ export default class InteractiveHandler {
                 let elementID = -1
                 // 反轉卡牌判斷
                 if (cardType === "cardBack") {
+                    gameObject.setData("flipped", true)
                     gameObject.getAt(0).setTexture("image_cardback")
                     gameObject.getAt(1)?.setVisible(false)
                 }
@@ -405,17 +458,17 @@ export default class InteractiveHandler {
                 // 積分倍率計算，任何一張靈感卡蓋牌/成語卡蓋牌將無法獲得積分加倍。
                 if (gameObject.getData("id").includes("I") && dropZone.name !== "dropZone4") {
                     // 同屬雙倍,同靈感三倍,同屬+同靈感值四倍。null表示無效積分計算。5表示無屬性。
-                    // 同時存入卡牌的星數。
+                    // 同時存入卡牌的星數。蓋牌能獲得作者屬性加成。
                     scene.socket.emit(
                         "serverSetCardType",
                         scene.socket.id,
+                        cardPosition, // 天(0), 地(1), 人(2)
                         canGetPoints ? elementID : null,
-                        canGetPoints ? gameObject.getData("points") : null,
+                        canGetPoints ? gameObject.getData("points") + gameObject.getData("extraPoints") : null,
                         canGetPoints ? gameObject.getData("series") : null,
-                        canGetPoints ? gameObject.getData("rarity") : null
+                        canGetPoints ? gameObject.getData("rarity") : null,
+                        authorBuffPts
                     )
-                    // 作者屬性加成
-                    scene.socket.emit("serverUpdateAuthorBuff", scene.socket.id, authorBuffPts)
                 }
                 // ** "日"(成語卡格)不能蓋牌，否則無法獲得積分加倍
                 if (gameObject.getData("id").includes("H") && dropZone.name === "dropZone4") {
@@ -424,7 +477,9 @@ export default class InteractiveHandler {
 
                 // 計算總得分。卡反轉時能不能獲得作者屬性
                 const totalPointsToUpdate =
-                    canGetPoints && cardType !== "cardBack" ? gameObject.getData("points") + authorBuffPts : 0
+                    canGetPoints && cardType !== "cardBack"
+                        ? gameObject.getData("points") + gameObject.getData("extraPoints") + authorBuffPts
+                        : 0
                 // 通知server更新雙方卡牌位置。server再call SocketHandler的cardPlayed。對方能見到你打出手牌。
                 scene.socket.emit(
                     "serverNotifyCardPlayed",

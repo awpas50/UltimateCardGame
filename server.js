@@ -142,11 +142,11 @@ io.on("connection", async function (socket) {
         multiplierSpecialRuleCheck: null,
         multiplierSpecialCount: 1,
         isHCardActive: false, // for multiplier
-        inSceneElementCalculator: [], // for multiplier
-        inSceneIPointCalculator: [], // for multiplier
-        inSceneSeriesCalculator: [], // for multiplier
-        inSceneRarityCalculator: [],
-        inSceneAuthorBoostPt: [],
+        inSceneElementCalculator: [null, null, null], // for multiplier
+        inSceneIPointCalculator: [null, null, null], // for multiplier
+        inSceneSeriesCalculator: [null, null, null], // for multiplier
+        inSceneRarityCalculator: [null, null, null],
+        inSceneAuthorBoostPt: [0, 0, 0],
         cardCount: 0,
         totalInspriationPt: 0,
         totalScore: 0, // 60 to win
@@ -294,11 +294,13 @@ io.on("connection", async function (socket) {
     })
 
     // Used for setting score multiplier at the end of the round
-    socket.on("serverSetCardType", function (socketId, elementId, inspriationPt, series, rarity) {
-        players[socketId].inSceneElementCalculator.push(elementId) // double scores if all elements match
-        players[socketId].inSceneIPointCalculator.push(inspriationPt) // triple scores if all inspriation points match
-        players[socketId].inSceneSeriesCalculator.push(series) // triple scores if all series match
-        players[socketId].inSceneRarityCalculator.push(rarity)
+    // position: 天(0), 地(1), 人(2)
+    socket.on("serverSetCardType", function (socketId, position, elementId, inspriationPt, series, rarity, authorBuffPt) {
+        players[socketId].inSceneElementCalculator[position] = elementId // double scores if all elements match
+        players[socketId].inSceneIPointCalculator[position] = inspriationPt // triple scores if all inspriation points match
+        players[socketId].inSceneSeriesCalculator[position] = series // triple scores if all series match
+        players[socketId].inSceneRarityCalculator[position] = rarity
+        players[socketId].inSceneAuthorBoostPt[position] = authorBuffPt
     })
     socket.on("serverSetHCardActiveState", function (socketId, state) {
         players[socketId].isHCardActive = state
@@ -361,10 +363,6 @@ io.on("connection", async function (socket) {
     // authorDeck: array (length of 5)
     socket.on("serverUpdateAuthorDeck", function (socketId, authorDeck) {
         players[socketId].inDeck_customized_WCard = authorDeck
-    })
-
-    socket.on("serverUpdateAuthorBuff", function (socketId, authorBuffPt) {
-        players[socketId].inSceneAuthorBoostPt.push(authorBuffPt)
     })
 
     socket.on("serverEndRoundAfterPlayingCard", function (socketId, opponentId, roomId) {
@@ -605,11 +603,11 @@ function endRound(roomId) {
 // endRoundRoom: array (string)
 function resetBattleField(roomId, endRoundRoom) {
     for (let i = 0; i < endRoundRoom.length; i++) {
-        players[endRoundRoom[i]].inSceneElementCalculator = []
-        players[endRoundRoom[i]].inSceneIPointCalculator = []
-        players[endRoundRoom[i]].inSceneSeriesCalculator = []
-        players[endRoundRoom[i]].inSceneRarityCalculator = []
-        players[endRoundRoom[i]].inSceneAuthorBoostPt = []
+        players[endRoundRoom[i]].inSceneElementCalculator = [null, null, null]
+        players[endRoundRoom[i]].inSceneIPointCalculator = [null, null, null]
+        players[endRoundRoom[i]].inSceneSeriesCalculator = [null, null, null]
+        players[endRoundRoom[i]].inSceneRarityCalculator = [null, null, null]
+        players[endRoundRoom[i]].inSceneAuthorBoostPt = [0, 0, 0]
         players[endRoundRoom[i]].totalInspriationPt = 0
         players[endRoundRoom[i]].cardCount = 0
         players[endRoundRoom[i]].roundCount++
