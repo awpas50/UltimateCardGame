@@ -19,7 +19,7 @@ export default class Card {
             if (cardType == "HCard") {
                 container.setData({
                     id: this.id,
-                    // name: HCard_Data_24256[this.id].name, doesn't work? still finding why
+                    name: HCard_Data_24256[this.id].name,
                     element: "無",
                     points: -1,
 

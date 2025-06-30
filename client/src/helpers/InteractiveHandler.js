@@ -319,6 +319,7 @@ export default class InteractiveHandler {
             // this.currentlyDragging = null
             // gameObject._bounceOffset = 0
             // gameObject._bounceTime = 0
+
             if (!dropped) {
                 gameObject.x = gameObject.input.dragStartX
                 gameObject.y = gameObject.input.dragStartY
@@ -451,14 +452,6 @@ export default class InteractiveHandler {
                 gameObject.y = dropZone.y
                 // 卡牌位置(天(0), 地(1), 人(2), 日(3))
                 gameObject.setData("cardPosition", cardPosition)
-                // 卡牌大小
-                scene.tweens.add({
-                    targets: gameObject,
-                    scaleX: ScaleHandler.playerInSceneCard.scaleX,
-                    scaleY: ScaleHandler.playerInSceneCard.scaleY,
-                    duration: 150,
-                    ease: "Cubic.easeOut",
-                })
                 // 重設角度
                 gameObject.setRotation(0)
                 scene.input.setDraggable(gameObject, false)
@@ -473,9 +466,36 @@ export default class InteractiveHandler {
                 // 反轉卡牌判斷
                 if (cardType === "cardBack") {
                     gameObject.setData("flipped", true)
-                    gameObject.getAt(0).setTexture("image_cardback")
                     gameObject.getAt(1)?.setVisible(false)
                 }
+                // 動畫 (反轉卡牌/常規放牌)
+                scene.tweens.add({
+                    targets: gameObject,
+                    scaleX: ScaleHandler.playerInSceneCard.scaleX,
+                    scaleY: ScaleHandler.playerInSceneCard.scaleY,
+                    duration: 150,
+                    ease: "Cubic.easeOut",
+                    onComplete: () => {
+                        if (cardType === "cardBack") {
+                            scene.tweens.add({
+                                targets: gameObject,
+                                scaleX: 0,
+                                duration: 150,
+                                ease: "Cubic.easeIn",
+                                onComplete: () => {
+                                    gameObject.getAt(0).setTexture("image_cardback")
+                                    scene.tweens.add({
+                                        targets: gameObject,
+                                        scaleX: 0.26,
+                                        duration: 150,
+                                        ease: "Cubic.easeOut",
+                                    })
+                                },
+                            })
+                        }
+                    },
+                })
+
                 // 作者屬性加成  (無屬性不能獲得)
                 if (gameObject.getData("id").includes("I")) {
                     const elementMap = {

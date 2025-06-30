@@ -277,7 +277,17 @@ export default class SocketHandler {
                         .setData({ activeState: "inHand" })
                     scene.CardStorage.inHandStorage.push(card)
                     if (showMessage) {
-                        scene.Toast.showToast(`獲得「${card.data.list.name ? card.data.list.name : ""}」`)
+                        let cardTypeInChinese
+                        if (cardType === "ICard") {
+                            cardTypeInChinese = "靈感卡"
+                        } else if (cardType === "HCard") {
+                            cardTypeInChinese = "輔助卡"
+                        }
+                        scene.Toast.showToast(
+                            `獲得${cardTypeInChinese ? cardTypeInChinese : ""}「${
+                                card.data.list.name ? card.data.list.name : ""
+                            }」`
+                        )
                     }
                 }
                 // scene.GameHandler.playerHand.push(card)
