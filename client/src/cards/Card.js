@@ -25,6 +25,9 @@ export default class Card {
 
                     side: side,
                     sprite: sprite,
+                    initialX: x,
+                    initialY: y,
+
                     activeState: "inDeck", // inDeck (一般不用), inHand, inScene, inRubbishBin (一般不用)
                     cardPosition: -1, // 0: 天, 1: 地, 2: 人, 3: 日
                     flipped: false,
@@ -46,6 +49,8 @@ export default class Card {
 
                     side: side,
                     sprite: sprite,
+                    initialX: x,
+                    initialY: y,
 
                     isForcedSetPoints: false, // 是否被強制設定靈感值, true: 靈感值 = modifiedPoints, false: 靈感值 = points + extraPoints
                     modifiedPoints: 0,

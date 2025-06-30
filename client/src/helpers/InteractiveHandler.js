@@ -1,6 +1,7 @@
 import PositionHandler from "./PositionHandler.js"
 import ScaleHandler from "./ScaleHandler.js"
 import AbilityReader from "./AbilityReader"
+import AnimationHandler from "./AnimationHandler.js"
 
 export default class InteractiveHandler {
     constructor(scene) {
@@ -434,8 +435,28 @@ export default class InteractiveHandler {
                             return false
                         })
                         if (isBeingDragged) {
-                            gameObject.x = gameObject.input.dragStartX
-                            gameObject.y = gameObject.input.dragStartY
+                            // Spin 3 times at release point
+                            allowDragging = false
+                            AnimationHandler.flipCardMultipleTimes(gameObject, ["image_cardback"], 2, scene, () => {
+                                scene.tweens.add({
+                                    targets: gameObject,
+                                    x: gameObject.data.list.initialX || gameObject.input.dragStartX,
+                                    y: gameObject.data.list.initialY || gameObject.input.dragStartY,
+                                    duration: 300,
+                                    ease: "Cubic.easeOut",
+                                    onComplete: () => {
+                                        scene.tweens.add({
+                                            targets: gameObject,
+                                            scaleX: ScaleHandler.playerInHandCard.scaleX,
+                                            scaleY: ScaleHandler.playerInHandCard.scaleY,
+                                            duration: 50,
+                                            ease: "Cubic.easeOut",
+                                        })
+                                        allowDragging = true
+                                    },
+                                })
+                            })
+
                             scene.Toast.showToast("你的靈感卡受到束縛,無法打出")
                             return
                         }
