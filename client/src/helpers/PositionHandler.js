@@ -28,6 +28,7 @@ export default class PositionHandler {
     static opponentPointText = { x: 350, y: 300 } // 靈感值: x
     static playerNumberText = { x: 350, y: 350 } // "你是: 玩家1 / 2
     static playerTurnText = { x: 350, y: 400 } // 你的回合 / 對方的回合
+    static playerEndTurnText = { x: 350, y: 450 } // 結束回合
     static whoWinText = { x: 350, y: 550 } // 玩家1勝利 / 平手
     static playerPointText = { x: 350, y: 630 } // 靈感值: x
     static playerWinScoreText = { x: 350, y: 680 } // (玩家)總分
@@ -84,7 +85,8 @@ export default class PositionHandler {
     //計時
     static questionCardTimer = { x: 470, y: 630 } // 剩餘時間:
     //Toast
-    static toast = { x: 300, y: 475 }
+    static toast = { x: 300, y: 325 }
+    static activeSkillToast = { x: 300, y: 175 }
     static topToast = { x: 300, y: 0 }
 
     // -----------------------------------------------------------------------

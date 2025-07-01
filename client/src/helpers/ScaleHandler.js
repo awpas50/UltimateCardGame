@@ -6,14 +6,16 @@ export default class ScaleHandler {
 
     // 已打出的卡牌
     static playerInSceneCard = { scaleX: 0.26, scaleY: 0.26 }
-    static opponentInSceneCard = { scaleX: 0.26, scaleY: -0.26 }
+    static opponentInSceneCard = { scaleX: -0.26, scaleY: -0.26 }
 
     // 手牌
     static playerInHandCard = { scaleX: 0.35, scaleY: 0.35 }
+    static playerInHandCardOnDrag = { scaleX: 0.5, scaleY: 0.5 }
     static opponentInHandCard = { scaleX: 0.26, scaleY: -0.26 }
 
     // 牌背
-    static opponentCardBack = { scaleX: 0.26, scaleY: 0.26 }
+    static playerCardBack = { scaleX: 0.26, scaleY: 0.26 }
+    static opponentCardBack = { scaleX: -0.26, scaleY: -0.26 }
 
     // 預覽 / 題目卡
     static cardPreview = { scale: 0.7 }
