@@ -210,10 +210,23 @@ export default class InteractiveHandler {
                         "dropZone" + String(cardObjectData.cardPosition + 1), // dropZone1, dropZone2, dropZone3
                         scene.GameHandler.currentRoomID
                     )
+                    // 通知server再call SocketHandler的localUpdateOpponentCard。對方能見到你更新了卡牌
+                    // 用法:傳入cardPosition和side,如果side = playerCard則opponentCard狀態更新(結果相反)。反之亦然。
+                    scene.socket.emit(
+                        "serverNotifyCardUpdated",
+                        scene.socket.id,
+                        cardObjectData.cardPosition,
+                        cardObjectData.side,
+                        canGetPoints,
+                        elementMap[element],
+                        scene.GameHandler.currentRoomID
+                    )
 
                     this.selectedWCard.data.list.abilityCharges--
                     readyToQuitSkillSelectionMode = true
                     // exitSkillSelectionMode handled in pointerout
+                } else {
+                    scene.Toast.showToast("無效目標")
                 }
             } else if (scene.GameHandler.ability === "轉數值") {
                 // TODO
@@ -558,7 +571,7 @@ export default class InteractiveHandler {
                     canGetPoints && cardType !== "cardBack"
                         ? gameObject.getData("points") + gameObject.getData("extraPoints") + authorBuffPts
                         : 0
-                // 通知server更新雙方卡牌位置。server再call SocketHandler的cardPlayed。對方能見到你打出手牌。
+                // 通知server更新雙方卡牌位置。再call SocketHandler的localInstantiateOpponentCard。對方能見到你打出手牌。
                 scene.socket.emit(
                     "serverNotifyCardPlayed",
                     gameObject.getData("id"),
@@ -641,6 +654,13 @@ export default class InteractiveHandler {
             } else {
                 gameObject.x = gameObject.input.dragStartX
                 gameObject.y = gameObject.input.dragStartY
+                scene.tweens.add({
+                    targets: gameObject,
+                    scaleX: ScaleHandler.playerInHandCard.scaleX,
+                    scaleY: ScaleHandler.playerInHandCard.scaleY,
+                    duration: 150,
+                    ease: "Cubic.easeOut",
+                })
 
                 if (!scene.GameHandler.isMyTurn) {
                     scene.Toast.showToast("現在不是你的回合")

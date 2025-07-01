@@ -352,8 +352,12 @@ io.on("connection", async function (socket) {
 
     socket.on("serverNotifyCardPlayed", function (cardName, socketId, dropZoneId, roomId, cardType) {
         io.to(roomId).emit("localInstantiateOpponentCard", cardName, socketId, dropZoneId, cardType)
-        io.to(roomId).emit("changeTurn")
+        // io.to(roomId).emit("changeTurn")
         io.to(roomId).emit("setPlayerTurnText")
+    })
+
+    socket.on("serverNotifyCardUpdated", function (socketId, cardPosition, side, canGetPoints, elementId, roomId) {
+        io.to(roomId).emit("localUpdateOpponentCard", socketId, cardPosition, side, canGetPoints, elementId)
     })
 
     socket.on("serverHideRollDiceText", function (socketId, roomId) {
@@ -368,6 +372,7 @@ io.on("connection", async function (socket) {
     socket.on("serverEndRoundAfterPlayingCard", function (socketId, opponentId, roomId) {
         players[socketId].cardCount++
         calculateTotalInspriationPts(socketId)
+        io.to(roomId).emit("changeTurn")
         console.log(`場上有${players[socketId].cardCount}+${players[opponentId].cardCount}張牌`)
 
         if (players[socketId].cardCount >= 4 && players[opponentId].cardCount >= 4) {

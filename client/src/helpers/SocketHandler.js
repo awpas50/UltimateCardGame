@@ -403,7 +403,7 @@ export default class SocketHandler {
                             "opponentCard"
                         )
                             .setScale(scaleX, scaleY)
-                            .setData({ activeState: "inScene" })
+                            .setData({ activeState: "inScene", cardPosition: 0 })
                         break
                     case "dropZone2": //地
                         gameObject = scene.DeckHandler.InstantiateCard(
@@ -414,7 +414,7 @@ export default class SocketHandler {
                             "opponentCard"
                         )
                             .setScale(scaleX, scaleY)
-                            .setData({ activeState: "inScene" })
+                            .setData({ activeState: "inScene", cardPosition: 1 })
                         break
                     case "dropZone3": //人
                         gameObject = scene.DeckHandler.InstantiateCard(
@@ -425,7 +425,7 @@ export default class SocketHandler {
                             "opponentCard"
                         )
                             .setScale(scaleX, scaleY)
-                            .setData({ activeState: "inScene" })
+                            .setData({ activeState: "inScene", cardPosition: 2 })
                         break
                     case "dropZone4": //日
                         gameObject = scene.DeckHandler.InstantiateCard(
@@ -436,11 +436,39 @@ export default class SocketHandler {
                             "opponentCard"
                         )
                             .setScale(scaleX, scaleY)
-                            .setData({ activeState: "inScene" })
+                            .setData({ activeState: "inScene", cardPosition: 3 })
                         break
                 }
 
                 scene.CardStorage.opponentCardStorage.push(gameObject)
+            }
+        })
+
+        // Only updates opponent. usage: update element switch / card status if other player did use abilities.
+        scene.socket.on("localUpdateOpponentCard", (socketId, cardPosition, side, canGetPoints, elementId) => {
+            console.log(`socketId: ${socketId}, cardPosition: ${cardPosition}, side: ${side}, canGetPoints: ${canGetPoints}`)
+            if (socketId === scene.socket.id) {
+                console.log("localUpdateOpponentCard: you won't trigger this action")
+                return
+            }
+            let targetCard
+            if (side === "playerCard") {
+                targetCard = scene.CardStorage.opponentCardStorage.find((card) => card.getData("cardPosition") === cardPosition)
+            } else if (side === "opponentCard") {
+                targetCard = scene.CardStorage.inSceneStorage.find((card) => card.getData("cardPosition") === cardPosition)
+            }
+            if (!targetCard) return
+
+            const baseSprite = targetCard.getAt(0)
+            const overlaySprite = targetCard.getAt(1)
+
+            if (!canGetPoints) {
+                targetCard.setData("flipped", true)
+                baseSprite?.setTexture("image_cardback")
+                overlaySprite?.setVisible(false)
+            } else {
+                overlaySprite?.setTexture(`extra_element_${elementId}`)
+                overlaySprite?.setVisible(true)
             }
         })
         // * pointsString: String, socketId: string, dropZoneName: string * //
