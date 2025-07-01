@@ -383,6 +383,7 @@ io.on("connection", async function (socket) {
             console.log(`開始下一回合，對手收到題目`)
             console.log(players)
             io.to(roomId).emit("localInitQuestionCard", opponentId)
+            io.to(roomId).emit("localResetCardPlayedState", opponentId)
         }
     })
 

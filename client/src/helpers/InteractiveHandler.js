@@ -155,6 +155,7 @@ export default class InteractiveHandler {
                     range.includes(selectedCardStatus) &&
                     cardType === selectedCardType &&
                     cardObjectData.modifiedElement === "" &&
+                    cardObjectData.modifiedElement !== cardObjectData.element &&
                     !cardObjectData.flipped
                 ) {
                     const elementMap = {
@@ -169,15 +170,25 @@ export default class InteractiveHandler {
                     scene.Toast.showToast(`靈感卡轉屬: ${cardObjectData.element} -> ${element}`)
                     // 檢查作者卡天地人屬性是否符合轉屬後的靈感卡? 不符合則反轉卡牌
                     let canGetPoints
+
                     switch (cardObjectData.cardPosition) {
                         case 0: // 天
-                            canGetPoints = scene.GameHandler.playerSkyElements.includes(cardObjectData.modifiedElement)
+                            canGetPoints =
+                                cardObjectData.side === "playerCard"
+                                    ? scene.GameHandler.playerSkyElements.includes(cardObjectData.modifiedElement)
+                                    : scene.GameHandler.opponentSkyElements.includes(cardObjectData.modifiedElement)
                             break
                         case 1: // 地
-                            canGetPoints = scene.GameHandler.playerGroundElements.includes(cardObjectData.modifiedElement)
+                            canGetPoints =
+                                cardObjectData.side === "playerCard"
+                                    ? scene.GameHandler.playerGroundElements.includes(cardObjectData.modifiedElement)
+                                    : scene.GameHandler.opponentGroundElements.includes(cardObjectData.modifiedElement)
                             break
                         case 2: // 人
-                            canGetPoints = scene.GameHandler.playerPersonElements.includes(cardObjectData.modifiedElement)
+                            canGetPoints =
+                                cardObjectData.side === "playerCard"
+                                    ? scene.GameHandler.playerPersonElements.includes(cardObjectData.modifiedElement)
+                                    : scene.GameHandler.opponentPersonElements.includes(cardObjectData.modifiedElement)
                             break
                     }
                     // 反轉卡牌判斷
@@ -194,7 +205,7 @@ export default class InteractiveHandler {
                     const authorBuffPts = isVoid ? 0 : scene.GameHandler.authorBuffs[elementMap[element]]
                     scene.socket.emit(
                         "serverSetCardType",
-                        scene.socket.id,
+                        cardObjectData.side === "playerCard" ? scene.socket.id : scene.GameHandler.opponentID,
                         cardObjectData.cardPosition, // 天(0), 地(1), 人(2)
                         canGetPoints ? elementMap[element] : null,
                         canGetPoints ? cardObjectData.points + cardObjectData.extraPoints : null,
@@ -428,7 +439,8 @@ export default class InteractiveHandler {
                 scene.GameHandler.isMyTurn &&
                 scene.QuestionCardHandler.hasAnsweredQuestion &&
                 scene.GameHandler.gameState === "Ready" &&
-                dropZone.data.list.cards == 0
+                dropZone.data.list.cards == 0 &&
+                !scene.GameHandler.hasPlayedCardThisTurn
             ) {
                 // 是否受到對方作者技能"限制出牌"影響?
                 if (scene.GameHandler.opponentAbility === "限制出牌") {
@@ -644,13 +656,12 @@ export default class InteractiveHandler {
 
                 scene.socket.emit("serverHideRollDiceText", scene.socket.id, scene.GameHandler.currentRoomID)
                 dropZone.data.list.cards++
+                // 防止出多張牌
+                scene.GameHandler.hasPlayedCardThisTurn = true
+                // 暫時打完卡才能"結束回合"
+                scene.UIHandler.showEndTurnText()
+                // 更新:點"結束回合"後再金all serverEndRoundAfterPlayingCard檢查對局是否結束。如未結束，對方會得到一張題目卡。
                 // 同時檢查對局是否結束。如未結束，對方會得到一張題目卡。
-                scene.socket.emit(
-                    "serverEndRoundAfterPlayingCard",
-                    scene.socket.id,
-                    scene.GameHandler.opponentID,
-                    scene.GameHandler.currentRoomID
-                )
             } else {
                 gameObject.x = gameObject.input.dragStartX
                 gameObject.y = gameObject.input.dragStartY
@@ -666,6 +677,8 @@ export default class InteractiveHandler {
                     scene.Toast.showToast("現在不是你的回合")
                 } else if (!scene.QuestionCardHandler.hasAnsweredQuestion) {
                     scene.Toast.showToast("請先答題!")
+                } else if (scene.GameHandler.hasPlayedCardThisTurn) {
+                    scene.Toast.showToast("每回合只能出一張牌")
                 }
             }
         })

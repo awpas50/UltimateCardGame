@@ -32,12 +32,12 @@ export default class UIHandler {
             }
 
             scene.playerHandArea = createStyledRectangle(PositionHandler.playerHandArea, Color.hotPink)
-            scene.playerDeckArea = createStyledRectangle(PositionHandler.playerDeckArea, Color.cyan)
-            scene.playerRubbishBinArea = createStyledRectangle(PositionHandler.playerRubbishBinArea, Color.cyan)
+            // scene.playerDeckArea = createStyledRectangle(PositionHandler.playerDeckArea, Color.cyan)
+            // scene.playerRubbishBinArea = createStyledRectangle(PositionHandler.playerRubbishBinArea, Color.cyan)
 
             scene.opponentHandArea = createStyledRectangle(PositionHandler.opponentHandArea, Color.hotPink)
-            scene.opponentDeckArea = createStyledRectangle(PositionHandler.opponentDeckArea, Color.cyan)
-            scene.opponentRubbishBinArea = createStyledRectangle(PositionHandler.opponentRubbishBinArea, Color.cyan)
+            // scene.opponentDeckArea = createStyledRectangle(PositionHandler.opponentDeckArea, Color.cyan)
+            // scene.opponentRubbishBinArea = createStyledRectangle(PositionHandler.opponentRubbishBinArea, Color.cyan)
         }
         // <------------------------------------ Room number (top right) ------------------------------------>
         this.buildPlayerNumberText = (playerNumber, nickname) => {
@@ -60,6 +60,36 @@ export default class UIHandler {
             } else {
                 scene.playerTurnText.text = scene.registry.get("opponentNickname") + "的回合"
             }
+        }
+        // Won't set interactive for now, unless game starts
+        this.buildEndTurnText = () => {
+            scene.playerEndTurnText = scene.add
+                .text(PositionHandler.playerEndTurnText.x, PositionHandler.playerEndTurnText.y, "結束回合", {
+                    backgroundColor: "#f28650",
+                    padding: { x: 16, y: 16 },
+                })
+                .setFontSize(26)
+                .setFontFamily("Trebuchet MS")
+                .setVisible(false)
+                .on("pointerdown", () => {
+                    console.log("End turn button clicked")
+                    scene.socket.emit(
+                        "serverEndRoundAfterPlayingCard",
+                        scene.socket.id,
+                        scene.GameHandler.opponentID,
+                        scene.GameHandler.currentRoomID
+                    )
+                    this.hideEndTurnText()
+                })
+        }
+
+        this.hideEndTurnText = () => {
+            scene.playerEndTurnText.setVisible(false)
+            scene.playerEndTurnText.disableInteractive()
+        }
+        this.showEndTurnText = () => {
+            scene.playerEndTurnText.setVisible(true)
+            scene.playerEndTurnText.setInteractive({ useHandCursor: true })
         }
         // <------------------------------------ Inpsriation points ------------------------------------>
         this.buildPlayerPointText = () => {
@@ -360,6 +390,7 @@ export default class UIHandler {
             this.buildZoneOutline()
             this.buildPlayerAreas()
             this.buildPlayerTurnText()
+            this.buildEndTurnText() // won't be active for now (invisible) unless game starts
             this.buildRollDiceText()
             this.buildPlayerWinScoreText()
             this.buildOpponentWinScoreText()

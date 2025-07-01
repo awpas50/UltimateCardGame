@@ -378,6 +378,12 @@ export default class SocketHandler {
                 scene.QuestionCardHandler.initQuestionCard()
             }
         })
+        scene.socket.on("localResetCardPlayedState", (socketId) => {
+            console.log("localResetCardPlayedState")
+            if (socketId === scene.socket.id) {
+                scene.GameHandler.hasPlayedCardThisTurn = false
+            }
+        })
 
         // Called in server.js
         // Where does Player 2 cards display in Player 1 scene??
