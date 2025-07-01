@@ -128,22 +128,24 @@ export const ICard_Data_24256 = {
     "24256_I105": { ID: "24256_I105", name: "栗子", rarity: 3, element: "土", series: "澳門", tag: "", points: 10 },
 }
 
-export const HCard_Data_23246 = {
-    "23246_H001": { ID: "23246_H001" },
-    "23246_H013": { ID: "23246_H013" },
-    "23246_H025": { ID: "23246_H025" },
-    "23246_H034": { ID: "23246_H034" },
-    "23246_H036": { ID: "23246_H036" },
-    "23246_H042": { ID: "23246_H042" },
-    "23246_H044": { ID: "23246_H044" },
-    "23246_H045": { ID: "23246_H045" },
-    "23246_H046": { ID: "23246_H046" },
-    "23246_H049": { ID: "23246_H049" },
-    "23246_H050": { ID: "23246_H050" },
-    "23246_H051": { ID: "23246_H051" },
-    "23246_H052": { ID: "23246_H052" },
-    "23246_H054": { ID: "23246_H054" },
-    "23246_H055": { ID: "23246_H055" },
+export const HCard_Data_24256 = {
+    "24256_H033": { ID: "24256_H033", name: "禮儀遊戲" },
+    "24256_H034": { ID: "24256_H034", name: "論語" },
+    "24256_H035": { ID: "24256_H035", name: "不患寡貧" },
+    "24256_H036": { ID: "24256_H036", name: "學而時習" },
+    "24256_H037": { ID: "24256_H037", name: "非禮勿動" },
+    "24256_H038": { ID: "24256_H038", name: "殺身成仁" },
+    "24256_H039": { ID: "24256_H039", name: "過勿憚改" },
+    "24256_H040": { ID: "24256_H040", name: "病無能焉" },
+    "24256_H041": { ID: "24256_H041", name: "患不知人" },
+    "24256_H042": { ID: "24256_H042", name: "溫故知新" },
+    "24256_H043": { ID: "24256_H043", name: "欲速不達" },
+    "24256_H044": { ID: "24256_H044", name: "己立立人" },
+    "24256_H045": { ID: "24256_H045", name: "不相為謀" },
+    "24256_H046": { ID: "24256_H046", name: "孟子" },
+    "24256_H047": { ID: "24256_H047", name: "養生喪死" },
+    "24256_H048": { ID: "24256_H048", name: "食不知檢" },
+    "24256_H049": { ID: "24256_H049", name: "斷機教子" },
 }
 
 export const QCard_Data = {
@@ -236,6 +238,11 @@ export const WCard_Data_24256 = {
         ground: ["金", "木"],
         person: ["水", "木"],
         authorBuffs: [0, 0, 30, 20, 0],
+        ability: "轉屬",
+        target: "$element=金$cardType=ICard",
+        targetRules: "$range=playerScene,opponentScene",
+        hasActiveSkill: true,
+        abilityCharges: 1,
     },
 
     "24256_W004": {
@@ -259,6 +266,11 @@ export const WCard_Data_24256 = {
         ground: ["土", "金", "水"],
         person: ["火", "金", "木"],
         authorBuffs: [0, 0, 0, 40, 20],
+        ability: "轉屬",
+        target: "$element=金$cardType=ICard",
+        targetRules: "$range=playerScene",
+        hasActiveSkill: true,
+        abilityCharges: 2,
     },
 
     "24256_W006": {
@@ -271,7 +283,6 @@ export const WCard_Data_24256 = {
         authorBuffs: [10, 0, 20, 0, 0],
         ability: "轉數值",
         target: "$target=player$min=0$max=90",
-        hasActiveSkill: true,
     },
 
     "24256_W007": {
@@ -470,6 +481,12 @@ export default class Game extends Phaser.Scene {
         loadImages_new("24256_I", 1, 105, "24256/ICard", "jpg")
         loadImages_new("24256_H", 33, 49, "24256/HCard", "jpg")
         loadImages_new("Q", 1, 48, "QCard", "png")
+
+        // extra elements
+        const extraElements = Array.from({ length: 5 }, (_, i) => `extra_element_${i}`)
+        extraElements.forEach((element) => {
+            this.load.image(element, require(`../../public/assets/extraElements/${element}.png`).default)
+        })
 
         this.load.image("24256_W050", require("../../public/assets/others/24256_W050.jpg").default)
         this.load.image("image_cardback", require("../../public/assets/others/image_cardback.png").default)

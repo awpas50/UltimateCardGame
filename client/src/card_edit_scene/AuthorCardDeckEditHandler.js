@@ -235,13 +235,14 @@ export default class AuthorCardDeckEditHandler {
                 scene.buildSaveText.disableInteractive()
                 scene.buildSaveText.setColor("#fff5fa")
 
+                // index starts from 1
                 scene.children.list.forEach((child, index) => {
                     if (child instanceof Phaser.GameObjects.Zone && child.name) {
                         console.log(`Checking drop zone: ${child.name}`)
                         if (child.name === selectedWCard.getData("inDropZone")) {
                             selectedWCard.setData("inDropZone", "")
                             child.setData("cards", 0)
-                            this.authorDeck[index] = ""
+                            this.authorDeck[index - 1] = ""
                             console.log(this.authorDeck)
                         }
                     }

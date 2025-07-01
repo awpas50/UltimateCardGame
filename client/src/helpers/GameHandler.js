@@ -8,6 +8,7 @@ export default class GameHandler {
 
         this.gameState = "Initializing"
         this.isMyTurn = false
+        this.hasPlayedCardThisTurn = false
         this.playerDeck = []
         this.opponentDeck = []
         this.playerHand = []

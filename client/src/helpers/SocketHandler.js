@@ -108,6 +108,7 @@ export default class SocketHandler {
                             .setScale(ScaleHandler.playerInHandCard.scaleX)
                             .setRotation(RotationHandler.playerInHandCard[i] * (Math.PI / 180))
                             .setDepth(i)
+                            .setData({ activeState: "inHand" })
                         console.log(
                             `%ccardIdList[${i}]: ${cardIdList[i]}`,
                             "color: darkgreen; font-size: 14px; font-weight: bold;"
@@ -125,6 +126,7 @@ export default class SocketHandler {
                             .setScale(ScaleHandler.playerInHandCard.scaleX)
                             .setRotation(RotationHandler.playerInHandCard[i] * (Math.PI / 180))
                             .setDepth(i)
+                            .setData({ activeState: "inHand" })
                         console.log(
                             `%ccardIdList[${i}]: ${cardIdList[i]}`,
                             "color: darkgreen; font-size: 14px; font-weight: bold;"
@@ -255,7 +257,7 @@ export default class SocketHandler {
             //scene.GameHandler.playerHand[2].destroy()
         })
         // * cardId: string * //
-        scene.socket.on("dealOneCardInHand", (socketId, cardId, index) => {
+        scene.socket.on("dealOneCardInHand", (socketId, cardId, index, showMessage = false) => {
             if (socketId === scene.socket.id) {
                 console.log(`%ccardIdList[${index}]: ${cardId}`, "color: darkgreen; font-size: 14px; font-weight: bold;")
                 const cardType = cardId.includes("I") ? "ICard" : cardId.includes("H") ? "HCard" : null
@@ -272,7 +274,21 @@ export default class SocketHandler {
                         .setScale(ScaleHandler.playerInHandCard.scaleX)
                         .setRotation(RotationHandler.playerInHandCard[index > 5 ? 5 : index] * (Math.PI / 180))
                         .setDepth(index)
+                        .setData({ activeState: "inHand" })
                     scene.CardStorage.inHandStorage.push(card)
+                    if (showMessage) {
+                        let cardTypeInChinese
+                        if (cardType === "ICard") {
+                            cardTypeInChinese = "靈感卡"
+                        } else if (cardType === "HCard") {
+                            cardTypeInChinese = "輔助卡"
+                        }
+                        scene.Toast.showToast(
+                            `獲得${cardTypeInChinese ? cardTypeInChinese : ""}「${
+                                card.data.list.name ? card.data.list.name : ""
+                            }」`
+                        )
+                    }
                 }
                 // scene.GameHandler.playerHand.push(card)
             } else {
@@ -362,6 +378,12 @@ export default class SocketHandler {
                 scene.QuestionCardHandler.initQuestionCard()
             }
         })
+        scene.socket.on("localResetCardPlayedState", (socketId) => {
+            console.log("localResetCardPlayedState")
+            if (socketId === scene.socket.id) {
+                scene.GameHandler.hasPlayedCardThisTurn = false
+            }
+        })
 
         // Called in server.js
         // Where does Player 2 cards display in Player 1 scene??
@@ -372,9 +394,10 @@ export default class SocketHandler {
             )
             if (socketId !== scene.socket.id) {
                 // scene.CardStorage.opponentCardBackStorage.shift().destroy()
-                const scaleX = ScaleHandler.opponentInHandCard.scaleX
+                const scaleX =
+                    cardType === "cardBack" ? ScaleHandler.opponentCardBack.scaleX : ScaleHandler.opponentInSceneCard.scaleX
                 const scaleY =
-                    cardType === "cardBack" ? ScaleHandler.opponentCardBack.scaleY : ScaleHandler.opponentInHandCard.scaleY
+                    cardType === "cardBack" ? ScaleHandler.opponentCardBack.scaleY : ScaleHandler.opponentInSceneCard.scaleY
                 let gameObject
                 switch (dropZoneName) {
                     case "dropZone1": //天
@@ -384,7 +407,9 @@ export default class SocketHandler {
                             cardType,
                             cardName,
                             "opponentCard"
-                        ).setScale(scaleX, scaleY)
+                        )
+                            .setScale(scaleX, scaleY)
+                            .setData({ activeState: "inScene", cardPosition: 0 })
                         break
                     case "dropZone2": //地
                         gameObject = scene.DeckHandler.InstantiateCard(
@@ -393,7 +418,9 @@ export default class SocketHandler {
                             cardType,
                             cardName,
                             "opponentCard"
-                        ).setScale(scaleX, scaleY)
+                        )
+                            .setScale(scaleX, scaleY)
+                            .setData({ activeState: "inScene", cardPosition: 1 })
                         break
                     case "dropZone3": //人
                         gameObject = scene.DeckHandler.InstantiateCard(
@@ -402,7 +429,9 @@ export default class SocketHandler {
                             cardType,
                             cardName,
                             "opponentCard"
-                        ).setScale(scaleX, scaleY)
+                        )
+                            .setScale(scaleX, scaleY)
+                            .setData({ activeState: "inScene", cardPosition: 2 })
                         break
                     case "dropZone4": //日
                         gameObject = scene.DeckHandler.InstantiateCard(
@@ -411,11 +440,41 @@ export default class SocketHandler {
                             cardType,
                             cardName,
                             "opponentCard"
-                        ).setScale(scaleX, scaleY)
+                        )
+                            .setScale(scaleX, scaleY)
+                            .setData({ activeState: "inScene", cardPosition: 3 })
                         break
                 }
 
                 scene.CardStorage.opponentCardStorage.push(gameObject)
+            }
+        })
+
+        // Only updates opponent. usage: update element switch / card status if other player did use abilities.
+        scene.socket.on("localUpdateOpponentCard", (socketId, cardPosition, side, canGetPoints, elementId) => {
+            console.log(`socketId: ${socketId}, cardPosition: ${cardPosition}, side: ${side}, canGetPoints: ${canGetPoints}`)
+            if (socketId === scene.socket.id) {
+                console.log("localUpdateOpponentCard: you won't trigger this action")
+                return
+            }
+            let targetCard
+            if (side === "playerCard") {
+                targetCard = scene.CardStorage.opponentCardStorage.find((card) => card.getData("cardPosition") === cardPosition)
+            } else if (side === "opponentCard") {
+                targetCard = scene.CardStorage.inSceneStorage.find((card) => card.getData("cardPosition") === cardPosition)
+            }
+            if (!targetCard) return
+
+            const baseSprite = targetCard.getAt(0)
+            const overlaySprite = targetCard.getAt(1)
+
+            if (!canGetPoints) {
+                targetCard.setData("flipped", true)
+                baseSprite?.setTexture("image_cardback")
+                overlaySprite?.setVisible(false)
+            } else {
+                overlaySprite?.setTexture(`extra_element_${elementId}`)
+                overlaySprite?.setVisible(true)
             }
         })
         // * pointsString: String, socketId: string, dropZoneName: string * //
