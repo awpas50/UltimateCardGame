@@ -31,6 +31,9 @@ export default class DebugHandler {
                 console.log("[Debug] 技能類型：倍率加成", response)
             })
         })
+        scene.input.keyboard.on("keydown-SIX", () => {
+            console.log("[Debug] 你的回合? ", scene.GameHandler.isMyTurn)
+        })
         // disabled in production
         // scene.input.keyboard.on("keydown-NUMPAD_ADD", () => {
         //     scene.socket.emit("serverDebugUpdateScores", scene.socket.id, 1, (response) => {
