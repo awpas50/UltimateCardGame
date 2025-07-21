@@ -358,6 +358,7 @@ export default class SocketHandler {
                 (playerAuthorRarity === opponentAuthorRarity && playerDiceValue > opponentDiceValue)
             ) {
                 scene.GameHandler.setTurn(true)
+                scene.GameHandler.hasPlayedCardThisTurn = false
                 scene.QuestionCardHandler.initQuestionCard()
             } else {
                 scene.GameHandler.setTurn(false)
