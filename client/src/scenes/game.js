@@ -282,7 +282,10 @@ export const WCard_Data_24256 = {
         person: ["火", "木"],
         authorBuffs: [10, 0, 20, 0, 0],
         ability: "轉數值",
-        target: "$target=player$min=0$max=90",
+        target: "$element=木,水$type=fixed$min=0$max=90",
+        targetRules: "$range=playerScene",
+        hasActiveSkill: true,
+        abilityCharges: 9999,
     },
 
     "24256_W007": {
@@ -343,7 +346,7 @@ export const WCard_Data_24256 = {
         person: ["金", "土"],
         authorBuffs: [0, 0, 0, 30, -30],
         ability: "限制出牌",
-        target: "$element=土,金",
+        target: "$element=金,土",
     },
 
     "24256_W012": {
@@ -366,6 +369,8 @@ export const WCard_Data_24256 = {
         ground: ["木", "水", "火"],
         person: ["木", "水", "火"],
         authorBuffs: [10, 10, 10, 0, 0],
+        target: "$element=金,土$rules=W013",
+        globalEffect: true,
     },
 
     "24256_W014": {
@@ -420,6 +425,10 @@ export const WCard_Data_24256 = {
         ground: ["火", "水", "木", "金", "土"],
         person: ["木", "土", "水"],
         authorBuffs: [0, 0, 0, 0, 50],
+        target: "$type=relative$min=-50$max=50",
+        targetRules: "$range=playerScene$position=ground",
+        hasActiveSkill: true,
+        abilityCharges: 9999,
     },
 
     "24256_W019": {
@@ -486,6 +495,11 @@ export default class Game extends Phaser.Scene {
         const extraElements = Array.from({ length: 5 }, (_, i) => `extra_element_${i}`)
         extraElements.forEach((element) => {
             this.load.image(element, require(`../../public/assets/extraElements/${element}.png`).default)
+        })
+        // extra Ipoints
+        const extraIpoints = Array.from({ length: 10 }, (_, i) => `extra_number_${i * 10}`)
+        extraIpoints.forEach((element) => {
+            this.load.image(element, require(`../../public/assets/extraNumber/${element}.png`).default)
         })
 
         this.load.image("24256_W050", require("../../public/assets/others/24256_W050.jpg").default)
