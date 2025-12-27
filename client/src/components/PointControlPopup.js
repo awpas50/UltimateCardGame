@@ -1,4 +1,5 @@
 import CardPointConverter from "../helpers/CardPointConverter"
+import AbilityReader from "../helpers/AbilityReader"
 
 export default class PointControlPopup {
     constructor(scene) {
@@ -85,21 +86,58 @@ export default class PointControlPopup {
         }
     }
 
-    add() {
+    // calculation: '+', '-'
+    modify(calculation) {
+        const numToModify = 10 // + or - 10 points every time
+        if (calculation !== "+" && calculation !== "-") {
+            console.error(
+                "%c[PointControlPopup Error] Invalid calculation parameter.",
+                "color: red; font-size: 18px; font-weight: bold;"
+            )
+            return
+        }
+
         const gameObject = this.cardRef
         const scene = this.scene
-        // temp debug: set modifiedPoints to 30
-        gameObject.getAt(2)?.setTexture(`extra_number_30`)
-        gameObject.getAt(2)?.setVisible(true)
+        const cardObjectData = gameObject.data.list
+
+        // e.g. $element=木,水$type=fixed$min=0$max=90
+        const target = scene.GameHandler.target
+        const type = AbilityReader.getValueByTag(target, "$type") // type: fixed / relative
+        const min = AbilityReader.getValueByTag(target, "$min")
+        const max = AbilityReader.getValueByTag(target, "$max")
+
         const originalPoints = CardPointConverter.getPoints(gameObject)
+        console.log(`[PointControlPopup] Original points: ${originalPoints}`)
+        console.log(`max: ${max}, min: ${min}`)
+        if (originalPoints + numToModify > Number(max) && calculation === "+") {
+            console.log("[PointControlPopup] Reached + limit, cannot modify further.")
+            return
+        }
+        if (originalPoints - numToModify < Number(min) && calculation === "-") {
+            console.log("[PointControlPopup] Reached - limit, cannot modify further.")
+            return
+        }
+
         if (type === "fixed") {
+            // must run before cardObjectData.isForcedSetPoints true
+            const currentPoints = CardPointConverter.getPoints(gameObject)
             cardObjectData.isForcedSetPoints = true
-            cardObjectData.modifiedPoints = parseInt(debug)
+            cardObjectData.modifiedPoints = currentPoints + parseInt(numToModify) * (calculation === "+" ? 1 : -1)
         } else if (type === "relative") {
             cardObjectData.isForcedSetPoints = false
-            cardObjectData.extraPoints = parseInt(debug)
+            cardObjectData.extraPoints += parseInt(numToModify) * (calculation === "+" ? 1 : -1)
         }
-        scene.Toast.showToast(`${originalPoints} -> ${debug}`)
+        scene.Toast.showToast(`${originalPoints} -> ${CardPointConverter.getPoints(gameObject)}`)
+
+        if (CardPointConverter.getPoints(gameObject) < 0) {
+            gameObject.getAt(2)?.setTexture(`extra_number_0`)
+        } else if (CardPointConverter.getPoints(gameObject) >= 90) {
+            gameObject.getAt(2)?.setTexture(`extra_number_90`)
+        } else {
+            gameObject.getAt(2)?.setTexture(`extra_number_${CardPointConverter.getPoints(gameObject)}`)
+        }
+        gameObject.getAt(2)?.setVisible(true)
 
         const authorBuffPts = CardPointConverter.setAuthorBuffPointForICard(gameObject, scene.GameHandler.authorBuffs)
         scene.socket.emit(
@@ -129,7 +167,7 @@ export default class PointControlPopup {
             cardObjectData.side,
             true,
             null,
-            debug,
+            CardPointConverter.getPoints(gameObject),
             scene.GameHandler.currentRoomID
         )
     }

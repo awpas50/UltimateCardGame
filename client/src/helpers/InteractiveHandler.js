@@ -109,13 +109,14 @@ export default class InteractiveHandler {
                         // prevent unexpected behavior
                         return
                     case "leftPointControl":
+                        scene.PointControlPopup.modify("-")
                         return
                     case "rightPointControl":
-                        scene.PointControlPopup.add()
+                        scene.PointControlPopup.modify("+")
                         return
                     case "bottomPointControl":
                         scene.PointControlPopup.close()
-                        readyToQuitSkillSelectionMode = true
+                        exitSkillSelectionMode()
                         return
                 }
             }
@@ -151,6 +152,7 @@ export default class InteractiveHandler {
                 console.log("點中自己 (作者卡)")
                 selectedCardStatus = "playerScene"
                 selectedCardType = "WCard"
+                scene.PointControlPopup.close()
                 exitSkillSelectionMode()
                 return
             }
@@ -672,16 +674,13 @@ export default class InteractiveHandler {
         // [ability] 轉數值
         const ability_handleActionForIPointSwitch = (gameObject, selectedCardType, selectedCardStatus) => {
             const cardObjectData = gameObject.data.list
-            // $element=木,水$type=fixed$min=0$max=90
+            // e.g. $element=木,水$type=fixed$min=0$max=90
             const target = scene.GameHandler.target
             const targetRules = scene.GameHandler.targetRules
             const elements = AbilityReader.getMultipleValueByTag(target, "$element")
-            const type = AbilityReader.getValueByTag(target, "$type")
             const cardType = AbilityReader.getValueByTag(target, "$cardType")
-            const min = AbilityReader.getValueByTag(target, "$min")
-            const max = AbilityReader.getValueByTag(target, "$max")
             const range = AbilityReader.getMultipleValueByTag(targetRules, "$range")
-            console.log(`type: ${type}, min: ${min}, max: ${max}, range: ${range}`) // type: fixed / relative
+            console.log(`range: ${range}`)
             console.log("elements:", elements)
             console.log(`selectedCardType: ${selectedCardType}, cardType: ${cardType}`)
             if (
@@ -736,8 +735,7 @@ export default class InteractiveHandler {
                 //     scene.GameHandler.currentRoomID
                 // )
                 this.selectedWCard.data.list.abilityCharges--
-                // readyToQuitSkillSelectionMode = true
-                // exitSkillSelectionMode handled in pointerout
+                // exitSkillSelectionMode handled in bottomPointControl
             } else {
                 scene.Toast.showToast("無效目標")
             }
