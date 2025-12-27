@@ -72,7 +72,7 @@ export default class QuestionCardHandler {
                     .setFontSize(24)
                     .setFontFamily("Trebuchet MS")
 
-                scene[`answer${key}Text`].setInteractive()
+                scene[`answer${key}Text`].setInteractive({ useHandCursor: true })
                 scene[`answer${key}Text`].on("pointerdown", () => {
                     this.stopAnswerTimer()
                     console.log("%c[question] selected:" + key, "color: slateblue; font-size: 14px; font-weight: bold;")

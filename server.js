@@ -234,6 +234,7 @@ io.on("connection", async function (socket) {
 
         players[socketId].isReady = true
 
+        // Only the player who joins the room triggers it.....
         if (players[opponentId].isReady === true) {
             // Roll dice: generates a random number between 1 and 6
             let roll1 = Math.floor(Math.random() * 6) + 1
@@ -312,7 +313,7 @@ io.on("connection", async function (socket) {
     })
 
     // Called in InteractiveHandler.js
-    socket.on("serverUpdatePoints", function (points, socketId, dropZoneId, roomId) {
+    socket.on("serverUpdatePoints", function (socketId, points, dropZoneId, roomId) {
         io.to(roomId).emit("calculatePoints", points, socketId, dropZoneId, roomId)
         io.to(roomId).emit("setPlayerPointText")
         io.to(roomId).emit("setOpponentPointText")
@@ -356,8 +357,8 @@ io.on("connection", async function (socket) {
         io.to(roomId).emit("setPlayerTurnText")
     })
 
-    socket.on("serverNotifyCardUpdated", function (socketId, cardPosition, side, canGetPoints, elementId, roomId) {
-        io.to(roomId).emit("localUpdateOpponentCard", socketId, cardPosition, side, canGetPoints, elementId)
+    socket.on("serverNotifyCardUpdated", function (socketId, cardPosition, side, canGetPoints, elementId, points, roomId) {
+        io.to(roomId).emit("localUpdateOpponentCard", socketId, cardPosition, side, canGetPoints, elementId, points)
     })
 
     socket.on("serverHideRollDiceText", function (socketId, roomId) {

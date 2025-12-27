@@ -32,7 +32,11 @@ export default class Toast {
             .fillRoundedRect(x - increasedWidth / 2, y - reducedHeight / 2, increasedWidth, reducedHeight, 8)
 
         // Group everything
-        const container = this.scene.add.container(0, 0, [graphics, text]).setDepth(100).setAlpha(0).setData({ id: "toast" })
+        const container = this.scene.add
+            .container(0, 0, [graphics, text])
+            .setDepth(100)
+            .setAlpha(0)
+            .setData({ id: "notInteractable" })
 
         return container
     }

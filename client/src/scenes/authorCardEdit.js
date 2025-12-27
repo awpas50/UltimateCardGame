@@ -1,5 +1,6 @@
 import AuthorCardDeckEditHandler from "../card_edit_scene/AuthorCardDeckEditHandler"
 import Toast from "../components/Toast"
+import PointControlPopup from "../components/PointControlPopup"
 
 export default class AuthorCardEdit extends Phaser.Scene {
     constructor() {
@@ -79,6 +80,7 @@ export default class AuthorCardEdit extends Phaser.Scene {
         this.scale.canvas.setAttribute("image-rendering", "pixelated")
         this.AuthorCardDeckEditHandler = new AuthorCardDeckEditHandler(this)
         this.Toast = new Toast(this)
+        this.PointControlPopup = new PointControlPopup(this)
 
         this.AuthorCardDeckEditHandler.initUI()
     }

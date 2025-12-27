@@ -56,19 +56,21 @@ export default class GameHandler {
         this.playerDiceValue = 0
         this.opponentDiceValue = 0
 
-        //基礎分數:8張卡,8分
-        this.baseTotalScoreWillGet = 8
-
         //技能
+        this.playerWCardId = ""
         this.ability = ""
         this.target = ""
         this.targetRules = ""
+        this.hasGlobalEffect = false
         //技能 (對手)
+        this.opponentWCardId = ""
         this.opponentAbility = ""
         this.opponentTarget = ""
         this.opponentTargetRules = ""
+        this.opponentHasGlobalEffect = false
 
         this.setPlayerAuthorData = (authorCardName) => {
+            this.playerWCardId = WCard_Data_24256[authorCardName].ID
             this.playerSkyElements = WCard_Data_24256[authorCardName].sky
             this.playerGroundElements = WCard_Data_24256[authorCardName].ground
             this.playerPersonElements = WCard_Data_24256[authorCardName].person
@@ -81,9 +83,11 @@ export default class GameHandler {
             this.ability = WCard_Data_24256[authorCardName].ability || null
             this.target = WCard_Data_24256[authorCardName].target || null
             this.targetRules = WCard_Data_24256[authorCardName].targetRules || null
+            this.hasGlobalEffect = WCard_Data_24256[authorCardName].globalEffect || false
         }
 
         this.setOpponentAuthorData = (authorCardName) => {
+            this.opponentWCardId = WCard_Data_24256[authorCardName].ID
             this.opponentSkyElements = WCard_Data_24256[authorCardName].sky
             this.opponentGroundElements = WCard_Data_24256[authorCardName].ground
             this.opponentPersonElements = WCard_Data_24256[authorCardName].person
@@ -95,6 +99,7 @@ export default class GameHandler {
             this.opponentAbility = WCard_Data_24256[authorCardName].ability || null
             this.opponentTarget = WCard_Data_24256[authorCardName].target || null
             this.opponentTargetRules = WCard_Data_24256[authorCardName].targetRules || null
+            this.opponentHasGlobalEffect = WCard_Data_24256[authorCardName].globalEffect || false
         }
 
         this.addAuthorBuffsPoints = (points) => {
@@ -161,15 +166,5 @@ export default class GameHandler {
         this.getOpponentTotalPoint = () => {
             return this.opponentTotalPoints
         }
-
-        // this.setPlayerTotalWinScore = () => {
-        //     let multiplier = 1
-        //     this.playerTotalWinScore = this.baseTotalScoreWillGet * multiplier
-        //     console.log("Player Win Score: " + this.playerTotalWinScore + " " + "Opponent Win Score: " + this.opponentTotalWinScore)
-        // }
-        // this.setOpponentTotalWinScore = () => {
-        //     this.opponentTotalWinScore = this.opponentSkyPoint + this.opponentGroundPoint + this.opponentPersonPoint
-        //     console.log("Player Win Score: " + this.playerTotalWinScore + " " + "Opponent Win Score: " + this.opponentTotalWinScore)
-        // }
     }
 }
