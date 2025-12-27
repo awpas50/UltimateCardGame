@@ -8,6 +8,7 @@ import UIHandler from "../helpers/UIHandler"
 import ZoneHandler from "../helpers/ZoneHandler"
 import DebugHandler from "../helpers/DebugHandler"
 import Toast from "../components/Toast"
+import PointControlPopup from "../components/PointControlPopup"
 
 // 靈感卡：編號/名稱/星數/屬性/系列/標籤/靈感值
 export const ICard_Data_24256 = {
@@ -282,7 +283,7 @@ export const WCard_Data_24256 = {
         person: ["火", "木"],
         authorBuffs: [10, 0, 20, 0, 0],
         ability: "轉數值",
-        target: "$element=木,水$type=fixed$min=0$max=90",
+        target: "$element=木,水$type=fixed$min=0$max=90$cardType=ICard",
         targetRules: "$range=playerScene",
         hasActiveSkill: true,
         abilityCharges: 9999,
@@ -539,6 +540,7 @@ export default class Game extends Phaser.Scene {
         this.QuestionCardHandler = new QuestionCardHandler(this)
         this.InteractiveHandler = new InteractiveHandler(this)
         this.Toast = new Toast(this)
+        this.PointControlPopup = new PointControlPopup(this)
         this.DebugHandler = new DebugHandler(this)
         this.UIHandler.buildLoginSection()
     }

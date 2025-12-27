@@ -100,7 +100,7 @@ export default class Card {
                 container.add([card])
             }
             container.setSize(card.displayWidth, card.displayHeight)
-            container.setInteractive()
+            container.setInteractive({ useHandCursor: true })
             if (side === "playerCard") {
                 scene.input.setDraggable(container)
             }

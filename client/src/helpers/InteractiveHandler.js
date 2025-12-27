@@ -20,6 +20,7 @@ export default class InteractiveHandler {
         this.selectedWCard = null
 
         scene.input.on("pointerdown", (event, gameObjects) => {
+            console.log("[pointerdown] gameObjects:", gameObjects)
             isSelectingCardWithActiveSkill && this.selectedWCard !== null
                 ? handleClickInSkillSelectionMode(gameObjects)
                 : handleClickInNormalMode(gameObjects)
@@ -97,20 +98,28 @@ export default class InteractiveHandler {
             // selected Wcard, and clicked another card
             //  ---------- Not selected ----------
             if (!gameObjects || gameObjects.length == 0) {
-                console.log("[click] Not clicking anything")
+                console.log("[Skill select click] Not clicking anything")
                 return
             }
-            if (gameObjects[0].type !== "Container") return
-            if (gameObjects[0].type === "Container" && gameObjects[0].data.list.id === "toast") return
-
-            const elementMap = {
-                火: 0,
-                水: 1,
-                木: 2,
-                金: 3,
-                土: 4,
-                無: 5,
+            if (gameObjects[0].type === "Text") {
+                const id = gameObjects[0].data.list.id
+                if (!id) return
+                switch (id) {
+                    case "notInteractable":
+                        // prevent unexpected behavior
+                        return
+                    case "leftPointControl":
+                        return
+                    case "rightPointControl":
+                        scene.PointControlPopup.add()
+                        return
+                    case "bottomPointControl":
+                        scene.PointControlPopup.close()
+                        readyToQuitSkillSelectionMode = true
+                        return
+                }
             }
+            if (gameObjects[0].type !== "Container") return
 
             const cardObject = gameObjects[0]
             const cardObjectData = cardObject.data.list
@@ -155,156 +164,9 @@ export default class InteractiveHandler {
             console.log("selectedCardType:", selectedCardType)
             // selected card that matches the requirements
             if (scene.GameHandler.ability === "轉屬") {
-                const target = scene.GameHandler.target
-                const targetRules = scene.GameHandler.targetRules
-                const element = AbilityReader.getValueByTag(target, "$element")
-                const cardType = AbilityReader.getValueByTag(target, "$cardType")
-                const range = AbilityReader.getMultipleValueByTag(targetRules, "$range")
-                console.log("cardType:", cardType)
-                console.log("range:", range)
-                if (
-                    range.includes(selectedCardStatus) &&
-                    cardType === selectedCardType &&
-                    cardObjectData.modifiedElement === "" &&
-                    cardObjectData.modifiedElement !== cardObjectData.element &&
-                    !cardObjectData.flipped
-                ) {
-                    cardObjectData.modifiedElement = element
-                    scene.Toast.showToast(`靈感卡轉屬: ${cardObjectData.element} -> ${element}`)
-                    // 檢查作者卡天地人屬性是否符合轉屬後的靈感卡? 不符合則反轉卡牌
-                    let canGetPoints
-
-                    switch (cardObjectData.cardPosition) {
-                        case 0: // 天
-                            canGetPoints =
-                                cardObjectData.side === "playerCard"
-                                    ? scene.GameHandler.playerSkyElements.includes(cardObjectData.modifiedElement)
-                                    : scene.GameHandler.opponentSkyElements.includes(cardObjectData.modifiedElement)
-                            break
-                        case 1: // 地
-                            canGetPoints =
-                                cardObjectData.side === "playerCard"
-                                    ? scene.GameHandler.playerGroundElements.includes(cardObjectData.modifiedElement)
-                                    : scene.GameHandler.opponentGroundElements.includes(cardObjectData.modifiedElement)
-                            break
-                        case 2: // 人
-                            canGetPoints =
-                                cardObjectData.side === "playerCard"
-                                    ? scene.GameHandler.playerPersonElements.includes(cardObjectData.modifiedElement)
-                                    : scene.GameHandler.opponentPersonElements.includes(cardObjectData.modifiedElement)
-                            break
-                    }
-                    // 反轉卡牌判斷
-                    if (!canGetPoints) {
-                        cardObjectData.flipped = true
-                        cardObject.getAt(0).setTexture("image_cardback")
-                        cardObject.getAt(1)?.setVisible(false)
-                    } else {
-                        cardObject.getAt(1)?.setTexture(`extra_element_${elementMap[element]}`)
-                        cardObject.getAt(1)?.setVisible(true)
-                    }
-
-                    const isVoid = elementMap[element] === 5
-                    const authorBuffPts = isVoid ? 0 : scene.GameHandler.authorBuffs[elementMap[element]]
-                    scene.socket.emit(
-                        "serverSetCardType",
-                        cardObjectData.side === "playerCard" ? scene.socket.id : scene.GameHandler.opponentID,
-                        cardObjectData.cardPosition, // 天(0), 地(1), 人(2)
-                        canGetPoints ? elementMap[element] : null,
-                        canGetPoints ? CardPointConverter.getPoints(cardObject) : null,
-                        canGetPoints ? cardObjectData.series : null,
-                        canGetPoints ? cardObjectData.rarity : null,
-                        authorBuffPts
-                    )
-                    // 通知server再call SocketHandler的calculatePoints。
-                    scene.socket.emit(
-                        "serverUpdatePoints",
-                        CardPointConverter.getPoints(cardObject) + authorBuffPts,
-                        scene.socket.id,
-                        "dropZone" + String(cardObjectData.cardPosition + 1), // dropZone1, dropZone2, dropZone3
-                        scene.GameHandler.currentRoomID
-                    )
-                    // 通知server再call SocketHandler的localUpdateOpponentCard。對方能見到你更新了卡牌
-                    // 用法:傳入cardPosition和side,如果side = playerCard則opponentCard狀態更新(結果相反)。反之亦然。
-                    scene.socket.emit(
-                        "serverNotifyCardUpdated",
-                        scene.socket.id,
-                        cardObjectData.cardPosition,
-                        cardObjectData.side,
-                        canGetPoints,
-                        elementMap[element],
-                        null,
-                        scene.GameHandler.currentRoomID
-                    )
-
-                    this.selectedWCard.data.list.abilityCharges--
-                    readyToQuitSkillSelectionMode = true
-                    // exitSkillSelectionMode handled in pointerout
-                } else {
-                    scene.Toast.showToast("無效目標")
-                }
+                ability_handleActionForElementSwitch(cardObject, selectedCardType, selectedCardStatus)
             } else if (scene.GameHandler.ability === "轉數值") {
-                // $element=木,水$type=fixed$min=0$max=90
-                const target = scene.GameHandler.target
-                const targetRules = scene.GameHandler.targetRules
-                const elements = AbilityReader.getMultipleValueByTag(target, "$element")
-                const type = AbilityReader.getValueByTag(target, "$type")
-                const min = AbilityReader.getValueByTag(target, "$min")
-                const max = AbilityReader.getValueByTag(target, "$max")
-                const range = AbilityReader.getMultipleValueByTag(targetRules, "$range")
-                console.log(`type: ${type}, min: ${min}, max: ${max}, range: ${range}`) // type: fixed / relative
-                const debug = Number("30")
-                if (range.includes(selectedCardStatus) && elements.includes(cardObjectData.element) && !cardObjectData.flipped) {
-                    // temp debug: set modifiedPoints to min
-                    cardObject.getAt(2)?.setTexture(`extra_number_${debug}`)
-                    cardObject.getAt(2)?.setVisible(true)
-                    const originalPoints = CardPointConverter.getPoints(cardObject)
-                    if (type === "fixed") {
-                        cardObjectData.isForcedSetPoints = true
-                        cardObjectData.modifiedPoints = parseInt(debug)
-                    } else if (type === "relative") {
-                        cardObjectData.isForcedSetPoints = false
-                        cardObjectData.extraPoints = parseInt(debug)
-                    }
-                    scene.Toast.showToast(`${originalPoints} -> ${debug}`)
-
-                    const isVoid = ElementChecker.isVoid(cardObject)
-                    const authorBuffPts = isVoid ? 0 : scene.GameHandler.authorBuffs[elementMap[cardObjectData.element]]
-                    scene.socket.emit(
-                        "serverSetCardType",
-                        cardObjectData.side === "playerCard" ? scene.socket.id : scene.GameHandler.opponentID,
-                        cardObjectData.cardPosition, // 天(0), 地(1), 人(2)
-                        cardObjectData.element,
-                        CardPointConverter.getPoints(cardObject),
-                        cardObjectData.series,
-                        cardObjectData.rarity,
-                        authorBuffPts
-                    )
-                    // 通知server再call SocketHandler的calculatePoints。
-                    scene.socket.emit(
-                        "serverUpdatePoints",
-                        CardPointConverter.getPoints(cardObject) + authorBuffPts,
-                        scene.socket.id,
-                        "dropZone" + String(cardObjectData.cardPosition + 1), // dropZone1, dropZone2, dropZone3
-                        scene.GameHandler.currentRoomID
-                    )
-                    // 通知server再call SocketHandler的localUpdateOpponentCard。對方能見到你更新了卡牌
-                    // 用法:傳入cardPosition和side,如果side = playerCard則opponentCard狀態更新(結果相反)。反之亦然。
-                    scene.socket.emit(
-                        "serverNotifyCardUpdated",
-                        scene.socket.id,
-                        cardObjectData.cardPosition,
-                        cardObjectData.side,
-                        true,
-                        null,
-                        debug,
-                        scene.GameHandler.currentRoomID
-                    )
-                    this.selectedWCard.data.list.abilityCharges--
-                    readyToQuitSkillSelectionMode = true
-                } else {
-                    scene.Toast.showToast("無效目標")
-                }
+                ability_handleActionForIPointSwitch(cardObject, selectedCardType, selectedCardStatus)
             }
         }
 
@@ -558,6 +420,8 @@ export default class InteractiveHandler {
                             return
                         }
                     }
+                    // const canContinue = ability_checkCardPlayRestriction(gameObject)
+                    // if (!canContinue) return
                 }
                 // ---- 正常打出卡牌 ----
                 // 鎖定卡牌位置
@@ -660,8 +524,8 @@ export default class InteractiveHandler {
                 // 通知server再call SocketHandler的calculatePoints。
                 scene.socket.emit(
                     "serverUpdatePoints",
-                    totalPointsToUpdate,
                     scene.socket.id,
+                    totalPointsToUpdate,
                     dropZone.name,
                     scene.GameHandler.currentRoomID
                 )
@@ -672,61 +536,20 @@ export default class InteractiveHandler {
                     scene.GameHandler.currentRoomID
                 )
 
-                // !! 技能:打牌加成
-                if (scene.GameHandler.ability === "打牌加成") {
-                    const target = scene.GameHandler.target
-                    const targetRules = scene.GameHandler.targetRules
-                    const score = Number(AbilityReader.getValueByTag(target, "$score"))
-                    const series = AbilityReader.getValueByTag(targetRules, "$series")
-                    console.log(
-                        `%c[ability] score: ${score}, series: ${series}`,
-                        "color: lightcoral; font-size: 14px; font-weight: bold;"
-                    )
-
-                    let isCardConditionMatch = false
-                    if (series !== null && gameObject.getData("series") === series) {
-                        isCardConditionMatch = true
-                    }
-                    if (score !== null && isCardConditionMatch && canGetPoints) {
-                        scene.socket.emit("serverUpdateScores", scene.socket.id, score, scene.GameHandler.currentRoomID)
-                    }
+                if (scene.GameHandler.ability === "打牌加成" && canGetPoints) {
+                    ability_handleActionForPlayCardBonus(gameObject)
                 }
-
-                // !! 技能:結算加分 (先save extraScore落server, 對局結束後先一次過加算extraScore)
                 if (scene.GameHandler.ability === "結算加分" && gameObject.getData("id").includes("I") && canGetPoints) {
-                    let initialNumber = 0
-                    const target = scene.GameHandler.target
-                    const formula = AbilityReader.getValueByTag(target, "$formula")
-                    const operator = AbilityReader.getValueByTag(target, "$operator")
-                    const number = AbilityReader.getValueByTag(target, "$number")
-
-                    console.log(
-                        `%c[ability] formula: ${formula}, operator: ${operator}, nmuber: ${number}`,
-                        "color: lightcoral; font-size: 14px; font-weight: bold;"
-                    )
-
-                    if (formula === "totalRarity") {
-                        initialNumber = gameObject.getData("rarity")
-                        console.log(`initialNumber: ${initialNumber}`)
-                    }
-                    // assert number !== null
-                    if (operator === "/") {
-                        initialNumber /= number
-                        console.log(`initialNumber: ${initialNumber}`)
-                    }
-                    const extraScore = initialNumber
-                    console.log(`extraScore: ${extraScore}`)
-                    scene.socket.emit("serverUpdateExtraScores", scene.socket.id, extraScore)
+                    ability_handleExtraScoreOnRoundEnd(gameObject)
                 }
 
                 scene.socket.emit("serverHideRollDiceText", scene.socket.id, scene.GameHandler.currentRoomID)
                 dropZone.data.list.cards++
                 // 防止出多張牌
                 scene.GameHandler.hasPlayedCardThisTurn = true
-                // 暫時打完卡才能"結束回合"
+                // 打完卡才能"結束回合"
                 scene.UIHandler.showEndTurnText()
-                // 更新:點"結束回合"後再金all serverEndRoundAfterPlayingCard檢查對局是否結束。如未結束，對方會得到一張題目卡。
-                // 同時檢查對局是否結束。如未結束，對方會得到一張題目卡。
+                // 點"結束回合"後再call serverEndRoundAfterPlayingCard檢查對局是否結束。如未結束，對方會得到一張題目卡。
             } else {
                 gameObject.x = gameObject.input.dragStartX
                 gameObject.y = gameObject.input.dragStartY
@@ -747,6 +570,224 @@ export default class InteractiveHandler {
                 }
             }
         })
+
+        // [ability] 轉屬
+        const ability_handleActionForElementSwitch = (gameObject, selectedCardType, selectedCardStatus) => {
+            const cardObjectData = gameObject.data.list
+            const target = scene.GameHandler.target
+            const targetRules = scene.GameHandler.targetRules
+            const element = AbilityReader.getValueByTag(target, "$element")
+            const cardType = AbilityReader.getValueByTag(target, "$cardType")
+            const range = AbilityReader.getMultipleValueByTag(targetRules, "$range")
+            console.log("range:", range)
+            if (
+                range.includes(selectedCardStatus) &&
+                cardType === selectedCardType &&
+                cardObjectData.modifiedElement === "" &&
+                cardObjectData.modifiedElement !== cardObjectData.element &&
+                !cardObjectData.flipped
+            ) {
+                const elementMap = {
+                    火: 0,
+                    水: 1,
+                    木: 2,
+                    金: 3,
+                    土: 4,
+                    無: 5,
+                }
+
+                cardObjectData.modifiedElement = element
+                scene.Toast.showToast(`靈感卡轉屬: ${cardObjectData.element} -> ${element}`)
+                // 檢查作者卡天地人屬性是否符合轉屬後的靈感卡? 不符合則反轉卡牌
+                let canGetPoints
+
+                switch (cardObjectData.cardPosition) {
+                    case 0: // 天
+                        canGetPoints =
+                            cardObjectData.side === "playerCard"
+                                ? scene.GameHandler.playerSkyElements.includes(cardObjectData.modifiedElement)
+                                : scene.GameHandler.opponentSkyElements.includes(cardObjectData.modifiedElement)
+                        break
+                    case 1: // 地
+                        canGetPoints =
+                            cardObjectData.side === "playerCard"
+                                ? scene.GameHandler.playerGroundElements.includes(cardObjectData.modifiedElement)
+                                : scene.GameHandler.opponentGroundElements.includes(cardObjectData.modifiedElement)
+                        break
+                    case 2: // 人
+                        canGetPoints =
+                            cardObjectData.side === "playerCard"
+                                ? scene.GameHandler.playerPersonElements.includes(cardObjectData.modifiedElement)
+                                : scene.GameHandler.opponentPersonElements.includes(cardObjectData.modifiedElement)
+                        break
+                }
+                // 反轉卡牌判斷
+                if (!canGetPoints) {
+                    cardObjectData.flipped = true
+                    gameObject.getAt(0).setTexture("image_cardback")
+                    gameObject.getAt(1)?.setVisible(false)
+                } else {
+                    gameObject.getAt(1)?.setTexture(`extra_element_${elementMap[element]}`)
+                    gameObject.getAt(1)?.setVisible(true)
+                }
+                const authorBuffPts = CardPointConverter.setAuthorBuffPointForICard(gameObject, scene.GameHandler.authorBuffs)
+                scene.socket.emit(
+                    "serverSetCardType",
+                    cardObjectData.side === "playerCard" ? scene.socket.id : scene.GameHandler.opponentID,
+                    cardObjectData.cardPosition, // 天(0), 地(1), 人(2)
+                    canGetPoints ? elementMap[element] : null,
+                    canGetPoints ? CardPointConverter.getPoints(gameObject) : null,
+                    canGetPoints ? cardObjectData.series : null,
+                    canGetPoints ? cardObjectData.rarity : null,
+                    authorBuffPts
+                )
+                // 通知server再call SocketHandler的calculatePoints。
+                scene.socket.emit(
+                    "serverUpdatePoints",
+                    scene.socket.id,
+                    CardPointConverter.getPoints(gameObject) + authorBuffPts,
+                    "dropZone" + String(cardObjectData.cardPosition + 1), // dropZone1, dropZone2, dropZone3
+                    scene.GameHandler.currentRoomID
+                )
+                // 通知server再call SocketHandler的localUpdateOpponentCard。對方能見到你更新了卡牌
+                // 用法:傳入cardPosition和side,如果side = playerCard則opponentCard狀態更新(結果相反)。反之亦然。
+                scene.socket.emit(
+                    "serverNotifyCardUpdated",
+                    scene.socket.id,
+                    cardObjectData.cardPosition,
+                    cardObjectData.side,
+                    canGetPoints,
+                    elementMap[element],
+                    null,
+                    scene.GameHandler.currentRoomID
+                )
+
+                this.selectedWCard.data.list.abilityCharges--
+                readyToQuitSkillSelectionMode = true
+                // exitSkillSelectionMode handled in pointerout
+            } else {
+                scene.Toast.showToast("無效目標")
+            }
+        }
+        // [ability] 轉數值
+        const ability_handleActionForIPointSwitch = (gameObject, selectedCardType, selectedCardStatus) => {
+            const cardObjectData = gameObject.data.list
+            // $element=木,水$type=fixed$min=0$max=90
+            const target = scene.GameHandler.target
+            const targetRules = scene.GameHandler.targetRules
+            const elements = AbilityReader.getMultipleValueByTag(target, "$element")
+            const type = AbilityReader.getValueByTag(target, "$type")
+            const cardType = AbilityReader.getValueByTag(target, "$cardType")
+            const min = AbilityReader.getValueByTag(target, "$min")
+            const max = AbilityReader.getValueByTag(target, "$max")
+            const range = AbilityReader.getMultipleValueByTag(targetRules, "$range")
+            console.log(`type: ${type}, min: ${min}, max: ${max}, range: ${range}`) // type: fixed / relative
+            console.log("elements:", elements)
+            console.log(`selectedCardType: ${selectedCardType}, cardType: ${cardType}`)
+            if (
+                range.includes(selectedCardStatus) &&
+                cardType === selectedCardType &&
+                elements.includes(cardObjectData.element) &&
+                !cardObjectData.flipped
+            ) {
+                scene.PointControlPopup.open(gameObject, gameObject.x, gameObject.y)
+                // // temp debug: set modifiedPoints to 30
+                // gameObject.getAt(2)?.setTexture(`extra_number_30`)
+                // gameObject.getAt(2)?.setVisible(true)
+                // const originalPoints = CardPointConverter.getPoints(gameObject)
+                // if (type === "fixed") {
+                //     cardObjectData.isForcedSetPoints = true
+                //     cardObjectData.modifiedPoints = parseInt(debug)
+                // } else if (type === "relative") {
+                //     cardObjectData.isForcedSetPoints = false
+                //     cardObjectData.extraPoints = parseInt(debug)
+                // }
+                // scene.Toast.showToast(`${originalPoints} -> ${debug}`)
+
+                // const authorBuffPts = CardPointConverter.setAuthorBuffPointForICard(gameObject, scene.GameHandler.authorBuffs)
+                // scene.socket.emit(
+                //     "serverSetCardType",
+                //     cardObjectData.side === "playerCard" ? scene.socket.id : scene.GameHandler.opponentID,
+                //     cardObjectData.cardPosition, // 天(0), 地(1), 人(2)
+                //     cardObjectData.element,
+                //     CardPointConverter.getPoints(gameObject),
+                //     cardObjectData.series,
+                //     cardObjectData.rarity,
+                //     authorBuffPts
+                // )
+                // // 通知server再call SocketHandler的calculatePoints。
+                // scene.socket.emit(
+                //     "serverUpdatePoints",
+                //     scene.socket.id,
+                //     CardPointConverter.getPoints(gameObject) + authorBuffPts,
+                //     "dropZone" + String(cardObjectData.cardPosition + 1), // dropZone1, dropZone2, dropZone3
+                //     scene.GameHandler.currentRoomID
+                // )
+                // // 通知server再call SocketHandler的localUpdateOpponentCard。對方能見到你更新了卡牌
+                // // 用法:傳入cardPosition和side,如果side = playerCard則opponentCard狀態更新。反之亦然。
+                // scene.socket.emit(
+                //     "serverNotifyCardUpdated",
+                //     scene.socket.id,
+                //     cardObjectData.cardPosition,
+                //     cardObjectData.side,
+                //     true,
+                //     null,
+                //     debug,
+                //     scene.GameHandler.currentRoomID
+                // )
+                this.selectedWCard.data.list.abilityCharges--
+                // readyToQuitSkillSelectionMode = true
+                // exitSkillSelectionMode handled in pointerout
+            } else {
+                scene.Toast.showToast("無效目標")
+            }
+        }
+        // [ability] 打牌加成
+        const ability_handleActionForPlayCardBonus = (gameObject) => {
+            const target = scene.GameHandler.target
+            const targetRules = scene.GameHandler.targetRules
+            const score = Number(AbilityReader.getValueByTag(target, "$score"))
+            const series = AbilityReader.getValueByTag(targetRules, "$series")
+            console.log(
+                `%c[ability] score: ${score}, series: ${series}`,
+                "color: lightcoral; font-size: 14px; font-weight: bold;"
+            )
+
+            let isCardConditionMatch = false
+            if (series !== null && gameObject.getData("series") === series) {
+                isCardConditionMatch = true
+            }
+            if (score !== null && isCardConditionMatch) {
+                scene.socket.emit("serverUpdateScores", scene.socket.id, score, scene.GameHandler.currentRoomID)
+            }
+        }
+        // [ability] 結算加分
+        // 先計算額外積分並預先放入server。對局結束時會在server一併結算
+        const ability_handleExtraScoreOnRoundEnd = (gameObject) => {
+            let initialNumber = 0
+            const target = scene.GameHandler.target
+            const formula = AbilityReader.getValueByTag(target, "$formula")
+            const operator = AbilityReader.getValueByTag(target, "$operator")
+            const number = AbilityReader.getValueByTag(target, "$number")
+
+            console.log(
+                `%c[ability] formula: ${formula}, operator: ${operator}, nmuber: ${number}`,
+                "color: lightcoral; font-size: 14px; font-weight: bold;"
+            )
+
+            if (formula === "totalRarity") {
+                initialNumber = gameObject.getData("rarity")
+                console.log(`initialNumber: ${initialNumber}`)
+            }
+            // assert number !== null
+            if (operator === "/") {
+                initialNumber /= number
+                console.log(`initialNumber: ${initialNumber}`)
+            }
+            const extraScore = initialNumber
+            console.log(`extraScore: ${extraScore}`)
+            scene.socket.emit("serverUpdateExtraScores", scene.socket.id, extraScore)
+        }
 
         function hasGlobalEffectForCard(cardId) {
             const handler = scene.GameHandler

@@ -313,7 +313,7 @@ io.on("connection", async function (socket) {
     })
 
     // Called in InteractiveHandler.js
-    socket.on("serverUpdatePoints", function (points, socketId, dropZoneId, roomId) {
+    socket.on("serverUpdatePoints", function (socketId, points, dropZoneId, roomId) {
         io.to(roomId).emit("calculatePoints", points, socketId, dropZoneId, roomId)
         io.to(roomId).emit("setPlayerPointText")
         io.to(roomId).emit("setOpponentPointText")

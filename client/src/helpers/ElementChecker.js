@@ -19,8 +19,7 @@ export default class ElementChecker {
             )
             return null
         }
-
-        const currentElement = gameObjectData.modifiedElement ?? gameObjectData.element
+        const currentElement = gameObjectData.modifiedElement ? gameObjectData.modifiedElement : gameObjectData.element
         return currentElement === "無"
     }
 }

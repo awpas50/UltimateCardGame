@@ -14,4 +14,21 @@ export default class CardPointConverter {
             return Number(gameObjectData.points) + Number(gameObjectData.extraPoints)
         }
     }
+    static setAuthorBuffPointForICard = (gameObject, authorBuffsArray) => {
+        const gameObjectData = gameObject.data.list
+        const elementMap = {
+            火: 0,
+            水: 1,
+            木: 2,
+            金: 3,
+            土: 4,
+            無: 5,
+        }
+
+        const currentElement = gameObjectData.modifiedElement ? gameObjectData.modifiedElement : gameObjectData.element
+        const elementID = elementMap[currentElement]
+
+        const isVoid = elementID === 5
+        return isVoid ? 0 : authorBuffsArray[elementID]
+    }
 }

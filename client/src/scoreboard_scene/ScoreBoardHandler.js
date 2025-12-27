@@ -98,7 +98,7 @@ export default class ScoreBoardHandler {
                     color: "#00ffff",
                 }
             )
-            scene.scoreBoardQuitText.setInteractive()
+            scene.scoreBoardQuitText.setInteractive({ useHandCursor: true })
             scene.scoreBoardQuitText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
