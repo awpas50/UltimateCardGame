@@ -105,7 +105,7 @@ export default class AuthorCardDeckEditHandler {
                     color: "#00ffff",
                 }
             )
-            scene.buildQuitText.setInteractive()
+            scene.buildQuitText.setInteractive({ useHandCursor: true })
             scene.buildQuitText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
@@ -182,7 +182,7 @@ export default class AuthorCardDeckEditHandler {
                 console.log(wCardId)
                 const card = scene.add
                     .image(x, y, "24256_W0" + wCardId)
-                    .setInteractive()
+                    .setInteractive({ useHandCursor: true })
                     .setScale(0.26, 0.26)
                     .setData({
                         initialX: x,
@@ -312,7 +312,7 @@ export default class AuthorCardDeckEditHandler {
                     scene.input.setDraggable(gameObject, false)
                 }
                 if (this.areAllAuthorCardsPlaced()) {
-                    scene.buildSaveText.setInteractive()
+                    scene.buildSaveText.setInteractive({ useHandCursor: true })
                     scene.buildSaveText.setColor("#00ffff")
                 }
             }

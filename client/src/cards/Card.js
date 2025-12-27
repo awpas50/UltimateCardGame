@@ -38,6 +38,8 @@ export default class Card {
             if (cardType == "ICard") {
                 newElementImage = scene.add.image(0, 0, "extra_element_0")
                 newElementImage.visible = false // hide by default
+                newIPointImage = scene.add.image(0, 0, "extra_number_0")
+                newIPointImage.visible = false // hide by default
                 container.setData({
                     id: this.id,
                     name: ICard_Data_24256[this.id].name,
@@ -62,7 +64,7 @@ export default class Card {
                     flipped: false,
                 })
                 card = scene.add.image(0, 0, sprite)
-                container.add([card, newElementImage])
+                container.add([card, newElementImage, newIPointImage])
             }
             if (cardType == "WCard") {
                 container.setData({
@@ -83,6 +85,7 @@ export default class Card {
                     targetRules: WCard_Data_24256[this.id].targetRules || "",
                     hasActiveSkill: WCard_Data_24256[this.id].hasActiveSkill || false,
                     abilityCharges: WCard_Data_24256[this.id].abilityCharges || 0,
+                    globalEffect: WCard_Data_24256[this.id].globalEffect || false,
                 })
                 card = scene.add.image(0, 0, sprite)
                 container.add([card])
@@ -97,7 +100,7 @@ export default class Card {
                 container.add([card])
             }
             container.setSize(card.displayWidth, card.displayHeight)
-            container.setInteractive()
+            container.setInteractive({ useHandCursor: true })
             if (side === "playerCard") {
                 scene.input.setDraggable(container)
             }

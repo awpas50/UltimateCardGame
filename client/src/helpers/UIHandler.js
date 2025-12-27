@@ -182,7 +182,7 @@ export default class UIHandler {
                 .text(PositionHandler.roomNumberText.x, PositionHandler.roomNumberText.y, "房間編號: ")
                 .setFontSize(20)
                 .setFontFamily("Trebuchet MS")
-            scene.roomNumberText.setInteractive()
+            scene.roomNumberText.setInteractive({ useHandCursor: true })
             scene.roomNumberText.on("pointerdown", () => {
                 navigator.clipboard
                     .writeText(scene.GameHandler.currentRoomID)
@@ -200,7 +200,7 @@ export default class UIHandler {
                 fontFamily: "Trebuchet MS",
                 color: "#00ffff",
             })
-            scene.scoreBoardText.setInteractive()
+            scene.scoreBoardText.setInteractive({ useHandCursor: true })
             scene.scoreBoardText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
@@ -225,7 +225,7 @@ export default class UIHandler {
                     color: "#00ffff",
                 }
             )
-            scene.authorDeckEditText.setInteractive()
+            scene.authorDeckEditText.setInteractive({ useHandCursor: true })
             scene.authorDeckEditText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
@@ -259,7 +259,7 @@ export default class UIHandler {
                     color: "#00ffff",
                 }
             )
-            scene.createRoomText.setInteractive()
+            scene.createRoomText.setInteractive({ useHandCursor: true })
             scene.createRoomText.on("pointerdown", () => {
                 const storedAuthorDeck = scene.registry.get("authorDeck")
                 if (storedAuthorDeck) {
@@ -320,7 +320,7 @@ export default class UIHandler {
                 fontFamily: "Trebuchet MS",
                 color: "#00ffff",
             })
-            scene.joinRoomText.setInteractive()
+            scene.joinRoomText.setInteractive({ useHandCursor: true })
             scene.joinRoomText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
@@ -421,7 +421,7 @@ export default class UIHandler {
                 fontFamily: "Trebuchet MS",
                 color: "#00ffff",
             })
-            scene.loginText.setInteractive()
+            scene.loginText.setInteractive({ useHandCursor: true })
             scene.loginText.on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
@@ -465,7 +465,7 @@ export default class UIHandler {
             })
             inputText.setDepth(10)
             inputText.setOrigin(0.5, 0.5)
-            inputText.setInteractive().on("pointerdown", () => {
+            inputText.setInteractive({ useHandCursor: true }).on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
                 const editor = scene.rexUI.edit(inputText)
@@ -503,7 +503,7 @@ export default class UIHandler {
             })
             inputText.setDepth(10)
             inputText.setOrigin(0.5, 0.5)
-            inputText.setInteractive().on("pointerdown", () => {
+            inputText.setInteractive({ useHandCursor: true }).on("pointerdown", () => {
                 const RNG = Math.floor(Math.random() * 3) + 1
                 scene.sound.play(`flipCard${RNG}`)
                 const editor = scene.rexUI.edit(inputText)

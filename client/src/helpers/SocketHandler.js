@@ -244,6 +244,12 @@ export default class SocketHandler {
             }
         })
 
+        scene.socket.on("localCheckIfHasGlobalEffectAbility", (socketId) => {
+            // 玩家: 如果其中一方為領域技能
+            if (socketId === scene.socket.id) {
+            }
+        })
+
         scene.socket.on("deleteOneCardInHand", (socketId, cardIdToRemove) => {
             const fromArray = scene.CardStorage.inHandStorage
             const toArray = scene.CardStorage.inSceneStorage
@@ -452,7 +458,7 @@ export default class SocketHandler {
         })
 
         // Only updates opponent. usage: update element switch / card status if other player did use abilities.
-        scene.socket.on("localUpdateOpponentCard", (socketId, cardPosition, side, canGetPoints, elementId) => {
+        scene.socket.on("localUpdateOpponentCard", (socketId, cardPosition, side, canGetPoints, elementId, points) => {
             console.log(`socketId: ${socketId}, cardPosition: ${cardPosition}, side: ${side}, canGetPoints: ${canGetPoints}`)
             if (socketId === scene.socket.id) {
                 console.log("localUpdateOpponentCard: you won't trigger this action")
@@ -467,19 +473,27 @@ export default class SocketHandler {
             if (!targetCard) return
 
             const baseSprite = targetCard.getAt(0)
-            const overlaySprite = targetCard.getAt(1)
+            const elementSprite = targetCard.getAt(1)
+            const pointSprite = targetCard.getAt(2)
 
             if (!canGetPoints) {
                 targetCard.setData("flipped", true)
                 baseSprite?.setTexture("image_cardback")
-                overlaySprite?.setVisible(false)
+                elementSprite?.setVisible(false)
             } else {
-                overlaySprite?.setTexture(`extra_element_${elementId}`)
-                overlaySprite?.setVisible(true)
+                if (elementId) {
+                    elementSprite?.setTexture(`extra_element_${elementId}`)
+                    elementSprite?.setVisible(true)
+                }
+                if (points) {
+                    pointSprite?.setTexture(`extra_number_${points}`)
+                    pointSprite?.setVisible(true)
+                }
             }
         })
         // * pointsString: String, socketId: string, dropZoneName: string * //
         scene.socket.on("calculatePoints", (pointsString, socketId, dropZoneName) => {
+            console.log("pointsString: " + pointsString + " socketId:" + socketId + " dropZoneID:" + dropZoneName)
             let points = parseInt(pointsString)
             if (socketId === scene.socket.id) {
                 switch (dropZoneName) {

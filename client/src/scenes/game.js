@@ -8,6 +8,7 @@ import UIHandler from "../helpers/UIHandler"
 import ZoneHandler from "../helpers/ZoneHandler"
 import DebugHandler from "../helpers/DebugHandler"
 import Toast from "../components/Toast"
+import PointControlPopup from "../components/PointControlPopup"
 
 // 靈感卡：編號/名稱/星數/屬性/系列/標籤/靈感值
 export const ICard_Data_24256 = {
@@ -282,7 +283,10 @@ export const WCard_Data_24256 = {
         person: ["火", "木"],
         authorBuffs: [10, 0, 20, 0, 0],
         ability: "轉數值",
-        target: "$target=player$min=0$max=90",
+        target: "$element=木,水$type=fixed$min=0$max=90$cardType=ICard",
+        targetRules: "$range=playerScene",
+        hasActiveSkill: true,
+        abilityCharges: 9999,
     },
 
     "24256_W007": {
@@ -343,7 +347,7 @@ export const WCard_Data_24256 = {
         person: ["金", "土"],
         authorBuffs: [0, 0, 0, 30, -30],
         ability: "限制出牌",
-        target: "$element=土,金",
+        target: "$element=金,土",
     },
 
     "24256_W012": {
@@ -366,6 +370,8 @@ export const WCard_Data_24256 = {
         ground: ["木", "水", "火"],
         person: ["木", "水", "火"],
         authorBuffs: [10, 10, 10, 0, 0],
+        target: "$element=金,土$rules=W013",
+        globalEffect: true,
     },
 
     "24256_W014": {
@@ -420,6 +426,10 @@ export const WCard_Data_24256 = {
         ground: ["火", "水", "木", "金", "土"],
         person: ["木", "土", "水"],
         authorBuffs: [0, 0, 0, 0, 50],
+        target: "$type=relative$min=-50$max=50",
+        targetRules: "$range=playerScene$position=ground",
+        hasActiveSkill: true,
+        abilityCharges: 9999,
     },
 
     "24256_W019": {
@@ -487,6 +497,11 @@ export default class Game extends Phaser.Scene {
         extraElements.forEach((element) => {
             this.load.image(element, require(`../../public/assets/extraElements/${element}.png`).default)
         })
+        // extra Ipoints
+        const extraIpoints = Array.from({ length: 10 }, (_, i) => `extra_number_${i * 10}`)
+        extraIpoints.forEach((element) => {
+            this.load.image(element, require(`../../public/assets/extraNumber/${element}.png`).default)
+        })
 
         this.load.image("24256_W050", require("../../public/assets/others/24256_W050.jpg").default)
         this.load.image("image_cardback", require("../../public/assets/others/image_cardback.png").default)
@@ -525,6 +540,7 @@ export default class Game extends Phaser.Scene {
         this.QuestionCardHandler = new QuestionCardHandler(this)
         this.InteractiveHandler = new InteractiveHandler(this)
         this.Toast = new Toast(this)
+        this.PointControlPopup = new PointControlPopup(this)
         this.DebugHandler = new DebugHandler(this)
         this.UIHandler.buildLoginSection()
     }
