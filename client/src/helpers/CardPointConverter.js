@@ -1,9 +1,20 @@
 export default class CardPointConverter {
+    static getCardBasePoints = (gameObject) => {
+        const gameObjectData = gameObject.data.list
+        if (!gameObjectData?.id?.includes("I")) {
+            console.error(
+                "%c[CardPointConverter Error - getCardBasePoints] It shouldn't happen....",
+                "color: red; font-size: 18px; font-weight: bold;"
+            )
+            return
+        }
+        return Number(gameObjectData.points)
+    }
     static getPoints = (gameObject) => {
         const gameObjectData = gameObject.data.list
         if (!gameObjectData?.id?.includes("I")) {
             console.error(
-                "%c[CardPointConverter Error] It shouldn't happen....",
+                "%c[CardPointConverter Error - getPoints] It shouldn't happen....",
                 "color: red; font-size: 18px; font-weight: bold;"
             )
             return
