@@ -7,6 +7,6 @@ export default class AbilityReader {
     static getMultipleValueByTag = (text, tag) => {
         const regex = new RegExp(`\\${tag}=([^$]+)`)
         const match = text.match(regex)
-        return match ? match[1].split(",") : []
+        return match ? match[1].split(",") : null
     }
 }
