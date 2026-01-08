@@ -19,14 +19,15 @@ export default class PointControlPopup {
                 fontFamily: "Trebuchet MS",
                 color: "#ffffff",
                 align: "center",
+                padding: { x: 10, y: 6 },
             })
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .setData({ id: id })
 
         const { width, height } = text
-        const bgWidth = width + 35
-        const bgHeight = height + 20
+        const bgWidth = width + 25
+        const bgHeight = height + 10
 
         graphics
             .fillStyle(0x302e2e, 1) // grey background
@@ -104,31 +105,48 @@ export default class PointControlPopup {
         // e.g. $element=木,水$type=fixed$min=0$max=90
         const target = scene.GameHandler.target
         const type = AbilityReader.getValueByTag(target, "$type") // type: fixed / relative
-        const min = AbilityReader.getValueByTag(target, "$min")
-        const max = AbilityReader.getValueByTag(target, "$max")
+        const min = Number(AbilityReader.getValueByTag(target, "$min"))
+        const max = Number(AbilityReader.getValueByTag(target, "$max"))
 
-        const originalPoints = CardPointConverter.getPoints(gameObject)
-        console.log(`[PointControlPopup] Original points: ${originalPoints}`)
+        const currentCardPoints = CardPointConverter.getPoints(gameObject)
+        console.log(`[PointControlPopup] Original points: ${currentCardPoints}`)
         console.log(`max: ${max}, min: ${min}`)
-        if (originalPoints + numToModify > Number(max) && calculation === "+") {
-            console.log("[PointControlPopup] Reached + limit, cannot modify further.")
-            return
-        }
-        if (originalPoints - numToModify < Number(min) && calculation === "-") {
-            console.log("[PointControlPopup] Reached - limit, cannot modify further.")
-            return
-        }
 
         if (type === "fixed") {
+            // 例子: W006 - 童年袁枚: 數值調整設置為0到90之間。假設 min = 0, max = 90，則設置範圍為 0 到 90。
+            if (currentCardPoints + numToModify > max && calculation === "+") {
+                console.log("[PointControlPopup - fixed] Reached + limit, cannot modify further.")
+                return
+            }
+            if (currentCardPoints - numToModify < min && calculation === "-") {
+                console.log("[PointControlPopup - fixed] Reached - limit, cannot modify further.")
+                return
+            }
             // must run before cardObjectData.isForcedSetPoints true
-            const currentPoints = CardPointConverter.getPoints(gameObject)
             cardObjectData.isForcedSetPoints = true
-            cardObjectData.modifiedPoints = currentPoints + parseInt(numToModify) * (calculation === "+" ? 1 : -1)
+            cardObjectData.modifiedPoints =
+                CardPointConverter.getPoints(gameObject) + parseInt(numToModify) * (calculation === "+" ? 1 : -1)
         } else if (type === "relative") {
+            // 例子: W018 - 莊子: 數值調整加或減50點以內（以靈感卡數值為中心）。假設originalPoints = 30, min = -50, max = 50，則設置範圍為 0 (最小為0) 到 80。
+            if (
+                currentCardPoints + numToModify > Number(CardPointConverter.getCardBasePoints(gameObject) + max) &&
+                calculation === "+"
+            ) {
+                console.log("[PointControlPopup - relative] Reached + limit, cannot modify further.")
+                return
+            }
+            if (
+                calculation === "-" &&
+                (currentCardPoints - numToModify < Number(CardPointConverter.getCardBasePoints(gameObject) + min) ||
+                    currentCardPoints - numToModify < 0)
+            ) {
+                console.log("[PointControlPopup - relative] Reached - limit, cannot modify further.")
+                return
+            }
             cardObjectData.isForcedSetPoints = false
             cardObjectData.extraPoints += parseInt(numToModify) * (calculation === "+" ? 1 : -1)
         }
-        scene.Toast.showToast(`${originalPoints} -> ${CardPointConverter.getPoints(gameObject)}`)
+        scene.Toast.showToast(`${currentCardPoints} -> ${CardPointConverter.getPoints(gameObject)}`)
 
         if (CardPointConverter.getPoints(gameObject) < 0) {
             gameObject.getAt(2)?.setTexture(`extra_number_0`)

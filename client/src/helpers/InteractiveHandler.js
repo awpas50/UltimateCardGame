@@ -678,62 +678,25 @@ export default class InteractiveHandler {
             const target = scene.GameHandler.target
             const targetRules = scene.GameHandler.targetRules
             const elements = AbilityReader.getMultipleValueByTag(target, "$element")
+            const cardPosition = AbilityReader.getValueByTag(target, "$cardPosition")
             const cardType = AbilityReader.getValueByTag(target, "$cardType")
             const range = AbilityReader.getMultipleValueByTag(targetRules, "$range")
             console.log(`range: ${range}`)
-            console.log("elements:", elements)
+            console.log("elements:", elements + "cardPosition:", cardPosition)
             console.log(`selectedCardType: ${selectedCardType}, cardType: ${cardType}`)
+
+            // 如沒有指定屬性，則可轉任何屬性
+            const isElementValid = !elements || elements.includes(cardObjectData.element)
+            // 如沒有指定位置(天/地/人)，則可轉任何位置 (兩個等於符號 ==)
+            const isPositionValid = !cardPosition || cardObjectData.cardPosition == cardPosition
             if (
                 range.includes(selectedCardStatus) &&
                 cardType === selectedCardType &&
-                elements.includes(cardObjectData.element) &&
+                isElementValid &&
+                isPositionValid &&
                 !cardObjectData.flipped
             ) {
                 scene.PointControlPopup.open(gameObject, gameObject.x, gameObject.y)
-                // // temp debug: set modifiedPoints to 30
-                // gameObject.getAt(2)?.setTexture(`extra_number_30`)
-                // gameObject.getAt(2)?.setVisible(true)
-                // const originalPoints = CardPointConverter.getPoints(gameObject)
-                // if (type === "fixed") {
-                //     cardObjectData.isForcedSetPoints = true
-                //     cardObjectData.modifiedPoints = parseInt(debug)
-                // } else if (type === "relative") {
-                //     cardObjectData.isForcedSetPoints = false
-                //     cardObjectData.extraPoints = parseInt(debug)
-                // }
-                // scene.Toast.showToast(`${originalPoints} -> ${debug}`)
-
-                // const authorBuffPts = CardPointConverter.setAuthorBuffPointForICard(gameObject, scene.GameHandler.authorBuffs)
-                // scene.socket.emit(
-                //     "serverSetCardType",
-                //     cardObjectData.side === "playerCard" ? scene.socket.id : scene.GameHandler.opponentID,
-                //     cardObjectData.cardPosition, // 天(0), 地(1), 人(2)
-                //     cardObjectData.element,
-                //     CardPointConverter.getPoints(gameObject),
-                //     cardObjectData.series,
-                //     cardObjectData.rarity,
-                //     authorBuffPts
-                // )
-                // // 通知server再call SocketHandler的calculatePoints。
-                // scene.socket.emit(
-                //     "serverUpdatePoints",
-                //     scene.socket.id,
-                //     CardPointConverter.getPoints(gameObject) + authorBuffPts,
-                //     "dropZone" + String(cardObjectData.cardPosition + 1), // dropZone1, dropZone2, dropZone3
-                //     scene.GameHandler.currentRoomID
-                // )
-                // // 通知server再call SocketHandler的localUpdateOpponentCard。對方能見到你更新了卡牌
-                // // 用法:傳入cardPosition和side,如果side = playerCard則opponentCard狀態更新。反之亦然。
-                // scene.socket.emit(
-                //     "serverNotifyCardUpdated",
-                //     scene.socket.id,
-                //     cardObjectData.cardPosition,
-                //     cardObjectData.side,
-                //     true,
-                //     null,
-                //     debug,
-                //     scene.GameHandler.currentRoomID
-                // )
                 this.selectedWCard.data.list.abilityCharges--
                 // exitSkillSelectionMode handled in bottomPointControl
             } else {
