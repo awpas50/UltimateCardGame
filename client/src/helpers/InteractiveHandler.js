@@ -371,10 +371,9 @@ export default class InteractiveHandler {
                 !scene.GameHandler.hasPlayedCardThisTurn
             ) {
                 let isBeingTrapped = false
-                // 24256_W013 屈原: 雙方只可打出火/水/木各一張,不限天地人位置
+                // 25266_W013 屈原: 雙方只可打出火/水/木各一張,不限天地人位置
                 // ** 全局效果，覆蓋其他限制出牌的效果如"無法打出木屬"
-                if (hasGlobalEffectForCard("24256_W013")) {
-                    console.log('Has global effect for card "24256_W013"')
+                if (hasGlobalEffectForCard("25266_W013")) {
                     const elementMap = {
                         火: 0,
                         水: 1,
@@ -386,7 +385,7 @@ export default class InteractiveHandler {
                     let target
                     let elementArray
                     let rules
-                    switch (getGlobalEffectOwner("24256_W013")) {
+                    switch (getGlobalEffectOwner("25266_W013")) {
                         case "player":
                             console.log("Effect owner: player")
                             target = scene.GameHandler.target
@@ -410,7 +409,7 @@ export default class InteractiveHandler {
                         // true: 無法出卡
                         isBeingTrapped = elementArray.some((element) => {
                             if (gameObject.getData("element") === element) {
-                                scene.Toast.showToast("你的靈感卡受到束縛,無法打出")
+                                scene.Toast.showToast("你只可打出火/水/木各一張")
                                 return true
                             }
                             return false

@@ -1,6 +1,6 @@
 import Color from "../helpers/Color"
 import PositionHandler from "../helpers/PositionHandler"
-import { WCard_Data_24256 } from "../scenes/game.js"
+import { WCard_Data_25266 } from "../scenes/game.js"
 
 export default class AuthorCardDeckEditHandler {
     constructor(scene) {
@@ -181,7 +181,7 @@ export default class AuthorCardDeckEditHandler {
 
                 console.log(wCardId)
                 const card = scene.add
-                    .image(x, y, "24256_W0" + wCardId)
+                    .image(x, y, "25266_W0" + wCardId)
                     .setInteractive({ useHandCursor: true })
                     .setScale(0.26, 0.26)
                     .setData({
@@ -189,8 +189,8 @@ export default class AuthorCardDeckEditHandler {
                         initialY: y,
                         isPlaced: false,
                         inDropZone: "",
-                        id: "24256_W0" + wCardId,
-                        rarity: WCard_Data_24256["24256_W0" + wCardId].rarity,
+                        id: "25266_W0" + wCardId,
+                        rarity: WCard_Data_25266["25266_W0" + wCardId].rarity,
                         zIndex: i,
                     })
                     .setDepth(i)

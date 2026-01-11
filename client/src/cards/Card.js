@@ -1,4 +1,4 @@
-import { ICard_Data_24256, WCard_Data_24256, HCard_Data_24256 } from "../scenes/game.js"
+import { ICard_Data_24256, WCard_Data_25266, HCard_Data_24256 } from "../scenes/game.js"
 
 export default class Card {
     constructor(scene) {
@@ -68,24 +68,24 @@ export default class Card {
             }
             if (cardType == "WCard") {
                 container.setData({
-                    id: WCard_Data_24256[this.id].ID,
+                    id: WCard_Data_25266[this.id].ID,
                     side: side, // playerCard || opponentCard
                     sprite: sprite,
                     startX: x,
                     startY: y,
 
-                    name: WCard_Data_24256[this.id].name,
-                    rarity: WCard_Data_24256[this.id].rarity,
-                    sky: WCard_Data_24256[this.id].sky,
-                    ground: WCard_Data_24256[this.id].ground,
-                    person: WCard_Data_24256[this.id].person,
-                    authorBuffs: WCard_Data_24256[this.id].authorBuffs,
-                    ability: WCard_Data_24256[this.id].ability || "",
-                    target: WCard_Data_24256[this.id].target || "",
-                    targetRules: WCard_Data_24256[this.id].targetRules || "",
-                    hasActiveSkill: WCard_Data_24256[this.id].hasActiveSkill || false,
-                    abilityCharges: WCard_Data_24256[this.id].abilityCharges || 0,
-                    globalEffect: WCard_Data_24256[this.id].globalEffect || false,
+                    name: WCard_Data_25266[this.id].name,
+                    rarity: WCard_Data_25266[this.id].rarity,
+                    sky: WCard_Data_25266[this.id].sky,
+                    ground: WCard_Data_25266[this.id].ground,
+                    person: WCard_Data_25266[this.id].person,
+                    authorBuffs: WCard_Data_25266[this.id].authorBuffs,
+                    ability: WCard_Data_25266[this.id].ability || "",
+                    target: WCard_Data_25266[this.id].target || "",
+                    targetRules: WCard_Data_25266[this.id].targetRules || "",
+                    hasActiveSkill: WCard_Data_25266[this.id].hasActiveSkill || false,
+                    abilityCharges: WCard_Data_25266[this.id].abilityCharges || 0,
+                    globalEffect: WCard_Data_25266[this.id].globalEffect || false,
                 })
                 card = scene.add.image(0, 0, sprite)
                 container.add([card])
