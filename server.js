@@ -117,7 +117,7 @@ io.on("connection", async function (socket) {
     let folderPathHCard = "./client/dist/assets/24256/HCard"
     let imageNamesHCard = getImageNamesInFolder(folderPathHCard)
 
-    let folderPathWCard = "./client/dist/assets/24256/WCard"
+    let folderPathWCard = "./client/dist/assets/25266/WCard"
     let imageNamesWCard = getImageNamesInFolder(folderPathWCard)
 
     let mixedArray = [...imageNamesICard, ...imageNamesHCard]

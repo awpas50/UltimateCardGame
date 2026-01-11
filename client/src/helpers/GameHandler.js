@@ -1,4 +1,4 @@
-import { WCard_Data_24256 } from "../scenes/game.js"
+import { WCard_Data_25266 } from "../scenes/game.js"
 
 export default class GameHandler {
     constructor(scene) {
@@ -83,36 +83,36 @@ export default class GameHandler {
         this.opponentHasGlobalEffect = false
 
         this.setPlayerAuthorData = (authorCardName) => {
-            this.playerWCardId = WCard_Data_24256[authorCardName].ID
-            this.playerSkyElements = WCard_Data_24256[authorCardName].sky
-            this.playerGroundElements = WCard_Data_24256[authorCardName].ground
-            this.playerPersonElements = WCard_Data_24256[authorCardName].person
+            this.playerWCardId = WCard_Data_25266[authorCardName].ID
+            this.playerSkyElements = WCard_Data_25266[authorCardName].sky
+            this.playerGroundElements = WCard_Data_25266[authorCardName].ground
+            this.playerPersonElements = WCard_Data_25266[authorCardName].person
 
             console.log("playerSkyElements: " + this.playerSkyElements)
             console.log("playerGroundElements: " + this.playerGroundElements)
             console.log("playerPersonElements: " + this.playerPersonElements)
 
-            this.authorBuffs = WCard_Data_24256[authorCardName].authorBuffs
-            this.ability = WCard_Data_24256[authorCardName].ability || null
-            this.target = WCard_Data_24256[authorCardName].target || null
-            this.targetRules = WCard_Data_24256[authorCardName].targetRules || null
-            this.hasGlobalEffect = WCard_Data_24256[authorCardName].globalEffect || false
+            this.authorBuffs = WCard_Data_25266[authorCardName].authorBuffs
+            this.ability = WCard_Data_25266[authorCardName].ability || null
+            this.target = WCard_Data_25266[authorCardName].target || null
+            this.targetRules = WCard_Data_25266[authorCardName].targetRules || null
+            this.hasGlobalEffect = WCard_Data_25266[authorCardName].globalEffect || false
         }
 
         this.setOpponentAuthorData = (authorCardName) => {
-            this.opponentWCardId = WCard_Data_24256[authorCardName].ID
-            this.opponentSkyElements = WCard_Data_24256[authorCardName].sky
-            this.opponentGroundElements = WCard_Data_24256[authorCardName].ground
-            this.opponentPersonElements = WCard_Data_24256[authorCardName].person
+            this.opponentWCardId = WCard_Data_25266[authorCardName].ID
+            this.opponentSkyElements = WCard_Data_25266[authorCardName].sky
+            this.opponentGroundElements = WCard_Data_25266[authorCardName].ground
+            this.opponentPersonElements = WCard_Data_25266[authorCardName].person
 
             console.log("opponentSkyElements: " + this.opponentSkyElements)
             console.log("opponentGroundElements: " + this.opponentGroundElements)
             console.log("opponentPersonElements: " + this.opponentPersonElements)
 
-            this.opponentAbility = WCard_Data_24256[authorCardName].ability || null
-            this.opponentTarget = WCard_Data_24256[authorCardName].target || null
-            this.opponentTargetRules = WCard_Data_24256[authorCardName].targetRules || null
-            this.opponentHasGlobalEffect = WCard_Data_24256[authorCardName].globalEffect || false
+            this.opponentAbility = WCard_Data_25266[authorCardName].ability || null
+            this.opponentTarget = WCard_Data_25266[authorCardName].target || null
+            this.opponentTargetRules = WCard_Data_25266[authorCardName].targetRules || null
+            this.opponentHasGlobalEffect = WCard_Data_25266[authorCardName].globalEffect || false
         }
 
         this.addAuthorBuffsPoints = (points) => {
@@ -120,10 +120,10 @@ export default class GameHandler {
         }
 
         this.setPlayerAuthorRarity = (authorCardName) => {
-            this.playerAuthorRarity = WCard_Data_24256[authorCardName].rarity
+            this.playerAuthorRarity = WCard_Data_25266[authorCardName].rarity
         }
         this.setOpponentAuthorRarity = (authorCardName) => {
-            this.opponentAuthorRarity = WCard_Data_24256[authorCardName].rarity
+            this.opponentAuthorRarity = WCard_Data_25266[authorCardName].rarity
         }
 
         this.setTurn = (turn) => {
