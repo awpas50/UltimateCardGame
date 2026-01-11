@@ -39,7 +39,7 @@ export default class AuthorCardEdit extends Phaser.Scene {
             })
         }
         // Prefix / card number / path
-        loadImages("24256_", wCards, "24256/WCard", "jpg")
+        loadImages("25266_", wCards, "25266/WCard", "jpg")
 
         this.load.image("image_cardback", require("../../public/assets/others/image_cardback.png").default)
         this.load.image("BG", require("../../public/assets/others/WoodBackground.jpg").default)

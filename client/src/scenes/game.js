@@ -205,9 +205,9 @@ export const QCard_Data = {
 
 // 火/水/木/金/土屬性加成
 // 例子: [0, 50, 0, -20, 0] 指水+50, 金-20.
-export const WCard_Data_24256 = {
-    "24256_W001": {
-        ID: "24256_W001",
+export const WCard_Data_25266 = {
+    "25266_W001": {
+        ID: "25266_W001",
         name: "李煜",
         rarity: 2,
         sky: ["金", "水"],
@@ -218,8 +218,8 @@ export const WCard_Data_24256 = {
         target: "$element=水$count=1",
     },
 
-    "24256_W002": {
-        ID: "24256_W002",
+    "25266_W002": {
+        ID: "25266_W002",
         name: "孟子",
         rarity: 2,
         sky: ["土", "火"],
@@ -231,8 +231,8 @@ export const WCard_Data_24256 = {
         targetRules: "$series=孟子",
     },
 
-    "24256_W003": {
-        ID: "24256_W003",
+    "25266_W003": {
+        ID: "25266_W003",
         name: "蘇軾",
         rarity: 2,
         sky: ["木", "火"],
@@ -246,8 +246,8 @@ export const WCard_Data_24256 = {
         abilityCharges: 1,
     },
 
-    "24256_W004": {
-        ID: "24256_W004",
+    "25266_W004": {
+        ID: "25266_W004",
         name: "莊子",
         rarity: 2,
         sky: ["土", "金"],
@@ -259,8 +259,8 @@ export const WCard_Data_24256 = {
         targetRules: "$formula=sameElement$check=[4,4,4]",
     },
 
-    "24256_W005": {
-        ID: "24256_W005",
+    "25266_W005": {
+        ID: "25266_W005",
         name: "司馬遷",
         rarity: 2,
         sky: ["金", "土"],
@@ -274,8 +274,8 @@ export const WCard_Data_24256 = {
         abilityCharges: 2,
     },
 
-    "24256_W006": {
-        ID: "24256_W006",
+    "25266_W006": {
+        ID: "25266_W006",
         name: "童年袁枚",
         rarity: 1,
         sky: ["火", "土"],
@@ -289,8 +289,8 @@ export const WCard_Data_24256 = {
         abilityCharges: 9999,
     },
 
-    "24256_W007": {
-        ID: "24256_W007",
+    "25266_W007": {
+        ID: "25266_W007",
         name: "袁枚",
         rarity: 3,
         sky: ["水", "火", "木"],
@@ -302,8 +302,8 @@ export const WCard_Data_24256 = {
         targetRules: "$lastRoundWCard=[24256_W006,24256_W014,24256_W016]",
     },
 
-    "24256_W008": {
-        ID: "24256_W008",
+    "25266_W008": {
+        ID: "25266_W008",
         name: "嫦娥",
         rarity: 3,
         sky: ["土", "火"],
@@ -314,8 +314,8 @@ export const WCard_Data_24256 = {
         target: "$series=中秋$count=1",
     },
 
-    "24256_W009": {
-        ID: "24256_W009",
+    "25266_W009": {
+        ID: "25266_W009",
         name: "李商隱",
         rarity: 3,
         sky: ["水"],
@@ -326,8 +326,8 @@ export const WCard_Data_24256 = {
         target: "$formula=totalRarity$operator=/$number=2",
     },
 
-    "24256_W010": {
-        ID: "24256_W010",
+    "25266_W010": {
+        ID: "25266_W010",
         name: "李白",
         rarity: 4,
         sky: ["木", "水", "火"],
@@ -338,8 +338,8 @@ export const WCard_Data_24256 = {
         target: "$tag=酒$count=2",
     },
 
-    "24256_W011": {
-        ID: "24256_W011",
+    "25266_W011": {
+        ID: "25266_W011",
         name: "杜甫",
         rarity: 1,
         sky: ["水", "金"],
@@ -350,8 +350,8 @@ export const WCard_Data_24256 = {
         target: "$element=金,土",
     },
 
-    "24256_W012": {
-        ID: "24256_W012",
+    "25266_W012": {
+        ID: "25266_W012",
         name: "屈原",
         rarity: 2,
         sky: ["水", "木"],
@@ -362,8 +362,8 @@ export const WCard_Data_24256 = {
         target: "$element=木",
     },
 
-    "24256_W013": {
-        ID: "24256_W013",
+    "25266_W013": {
+        ID: "25266_W013",
         name: "屈原",
         rarity: 1,
         sky: ["木", "水", "火"],
@@ -375,8 +375,8 @@ export const WCard_Data_24256 = {
         globalEffect: true,
     },
 
-    "24256_W014": {
-        ID: "24256_W014",
+    "25266_W014": {
+        ID: "25266_W014",
         name: "童年孔子",
         rarity: 1,
         sky: ["土"],
@@ -387,8 +387,8 @@ export const WCard_Data_24256 = {
         target: "$id=24256_H033$count=1",
     },
 
-    "24256_W015": {
-        ID: "24256_W015",
+    "25266_W015": {
+        ID: "25266_W015",
         name: "孔子",
         rarity: 3,
         sky: ["金"],
@@ -397,8 +397,8 @@ export const WCard_Data_24256 = {
         authorBuffs: [0, 0, 0, 20, 0],
     },
 
-    "24256_W016": {
-        ID: "24256_W016",
+    "25266_W016": {
+        ID: "25266_W016",
         name: "童年孟子",
         rarity: 1,
         sky: ["水"],
@@ -409,8 +409,8 @@ export const WCard_Data_24256 = {
         target: "$id=24256_H049$count=1",
     },
 
-    "24256_W017": {
-        ID: "24256_W017",
+    "25266_W017": {
+        ID: "25266_W017",
         name: "管仲",
         rarity: 3,
         sky: ["水", "金", "火"],
@@ -419,8 +419,8 @@ export const WCard_Data_24256 = {
         authorBuffs: [0, 0, 0, 50, 0],
     },
 
-    "24256_W018": {
-        ID: "24256_W018",
+    "25266_W018": {
+        ID: "25266_W018",
         name: "莊子",
         rarity: 3,
         sky: ["水", "土", "火"],
@@ -434,8 +434,8 @@ export const WCard_Data_24256 = {
         abilityCharges: 9999,
     },
 
-    "24256_W019": {
-        ID: "24256_W019",
+    "25266_W019": {
+        ID: "25266_W019",
         name: "甄寶樹",
         rarity: 3,
         sky: ["水", "木", "火"],
@@ -444,8 +444,8 @@ export const WCard_Data_24256 = {
         authorBuffs: [0, 0, 50, 0, 0],
     },
 
-    "24256_W020": {
-        ID: "24256_W020",
+    "25266_W020": {
+        ID: "25266_W020",
         name: "石如玉",
         rarity: 3,
         sky: ["水", "土", "火"],
@@ -454,8 +454,8 @@ export const WCard_Data_24256 = {
         authorBuffs: [0, 50, 0, 0, 0],
     },
 
-    "24256_W021": {
-        ID: "24256_W021",
+    "25266_W021": {
+        ID: "25266_W021",
         name: "孫中山",
         rarity: 2,
         sky: ["金", "土"],
@@ -489,7 +489,7 @@ export default class Game extends Phaser.Scene {
         }
 
         // Prefix / card number / path
-        loadImages_new("24256_W", 1, 21, "24256/WCard", "jpg")
+        loadImages_new("25266_W", 1, 21, "25266/WCard", "jpg")
         loadImages_new("24256_I", 1, 105, "24256/ICard", "jpg")
         loadImages_new("24256_H", 33, 49, "24256/HCard", "jpg")
         loadImages_new("Q", 1, 48, "QCard", "png")
