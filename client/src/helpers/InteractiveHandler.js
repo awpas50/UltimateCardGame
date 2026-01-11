@@ -370,61 +370,101 @@ export default class InteractiveHandler {
                 dropZone.data.list.cards == 0 &&
                 !scene.GameHandler.hasPlayedCardThisTurn
             ) {
-                // 是否受到對方作者技能"限制出牌"影響?
-                if (scene.GameHandler.opponentAbility === "限制出牌") {
-                    const opponentTarget = scene.GameHandler.opponentTarget
-                    const elementArray = AbilityReader.getMultipleValueByTag(opponentTarget, "$element")
-                    const rules = AbilityReader.getValueByTag(opponentTarget, "$rules")
-                    console.log(
-                        `%c[ability] element: ${elementArray}, rules: ${rules}`,
-                        "color: lightcoral; font-size: 14px; font-weight: bold;"
-                    )
-                    if (elementArray !== null || rules !== null) {
-                        // 24256_W013 屈原: 雙方只可打出火/水/木各一張,不限天地人位置。但會跟 24256_W012 屈原 規則衝突(不能打木屬)?
-                        // ** 暫時設定W013的效果會覆蓋W012的效果
-                        let isPlayedSpecificCard
-                        if (hasGlobalEffectForCard("24256_W013")) {
-                            console.log("TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO")
-                        }
+                let isBeingTrapped = false
+                // 24256_W013 屈原: 雙方只可打出火/水/木各一張,不限天地人位置
+                // ** 全局效果，覆蓋其他限制出牌的效果如"無法打出木屬"
+                if (hasGlobalEffectForCard("24256_W013")) {
+                    console.log('Has global effect for card "24256_W013"')
+                    const elementMap = {
+                        火: 0,
+                        水: 1,
+                        木: 2,
+                        金: 3,
+                        土: 4,
+                        無: 5,
+                    }
+                    let target
+                    let elementArray
+                    let rules
+                    switch (getGlobalEffectOwner("24256_W013")) {
+                        case "player":
+                            console.log("Effect owner: player")
+                            target = scene.GameHandler.target
+                            elementArray = AbilityReader.getMultipleValueByTag(target, "$element")
+                            rules = AbilityReader.getValueByTag(target, "$rules")
+                            break
+                        case "opponent":
+                            console.log("Effect owner: opponent")
+                            target = scene.GameHandler.opponentTarget
+                            elementArray = AbilityReader.getMultipleValueByTag(target, "$element")
+                            rules = AbilityReader.getValueByTag(target, "$rules")
+                            break
+                    }
 
-                        const isBeingTrapped = elementArray.some((element) => {
-                            if (rules === "W013") return false
+                    const tempElementId = elementMap[gameObject.getData("element")]
+                    console.log("tempElementId: " + tempElementId)
+                    if (scene.GameHandler.playerInSceneElement.includes(tempElementId)) {
+                        scene.Toast.showToast("你只可打出火/水/木各一張")
+                        isBeingTrapped = true
+                    } else {
+                        // true: 無法出卡
+                        isBeingTrapped = elementArray.some((element) => {
                             if (gameObject.getData("element") === element) {
+                                scene.Toast.showToast("你的靈感卡受到束縛,無法打出")
                                 return true
                             }
                             return false
                         })
+                    }
+                }
+                // 是否受到對方作者技能"限制出牌"影響?
+                else if (scene.GameHandler.opponentAbility === "限制出牌") {
+                    const opponentTarget = scene.GameHandler.opponentTarget
+                    const elementArray = AbilityReader.getMultipleValueByTag(opponentTarget, "$element")
+                    console.log(
+                        `%c[ability] element: ${elementArray}, rules: ${rules}`,
+                        "color: lightcoral; font-size: 14px; font-weight: bold;"
+                    )
+                    if (elementArray !== null) {
+                        // true: 無法出卡
+                        isBeingTrapped = elementArray.some((element) => {
+                            if (gameObject.getData("element") === element) {
+                                scene.Toast.showToast("你的靈感卡受到束縛,無法打出")
+                                return true
+                            }
+                            return false
+                        })
+                    }
+                }
 
-                        if (isBeingTrapped || isPlayedSpecificCard) {
-                            // Spin 3 times at release point
-                            allowDragging = false
-                            AnimationHandler.flipCardMultipleTimes(gameObject, ["image_cardback"], 2, scene, () => {
+                // 無法出卡的動畫
+                if (isBeingTrapped) {
+                    // Spin 3 times at release point
+                    allowDragging = false
+                    AnimationHandler.flipCardMultipleTimes(gameObject, ["image_cardback"], 2, scene, () => {
+                        scene.tweens.add({
+                            targets: gameObject,
+                            x: gameObject.data.list.initialX || gameObject.input.dragStartX,
+                            y: gameObject.data.list.initialY || gameObject.input.dragStartY,
+                            duration: 300,
+                            ease: "Cubic.easeOut",
+                            onComplete: () => {
                                 scene.tweens.add({
                                     targets: gameObject,
-                                    x: gameObject.data.list.initialX || gameObject.input.dragStartX,
-                                    y: gameObject.data.list.initialY || gameObject.input.dragStartY,
-                                    duration: 300,
+                                    scaleX: ScaleHandler.playerInHandCard.scaleX,
+                                    scaleY: ScaleHandler.playerInHandCard.scaleY,
+                                    duration: 50,
                                     ease: "Cubic.easeOut",
-                                    onComplete: () => {
-                                        scene.tweens.add({
-                                            targets: gameObject,
-                                            scaleX: ScaleHandler.playerInHandCard.scaleX,
-                                            scaleY: ScaleHandler.playerInHandCard.scaleY,
-                                            duration: 50,
-                                            ease: "Cubic.easeOut",
-                                        })
-                                        allowDragging = true
-                                    },
                                 })
-                            })
+                                allowDragging = true
+                            },
+                        })
+                    })
 
-                            scene.Toast.showToast("你的靈感卡受到束縛,無法打出")
-                            return
-                        }
-                    }
-                    // const canContinue = ability_checkCardPlayRestriction(gameObject)
-                    // if (!canContinue) return
+                    return
                 }
+                // ------------------------------------------------------------------------------------------------
+
                 // ---- 正常打出卡牌 ----
                 // 鎖定卡牌位置
                 gameObject.x = dropZone.x
@@ -499,11 +539,13 @@ export default class InteractiveHandler {
                         "serverSetCardType",
                         scene.socket.id,
                         cardPosition, // 天(0), 地(1), 人(2)
+                        elementID,
                         canGetPoints ? elementID : null,
                         canGetPoints ? CardPointConverter.getPoints(gameObject) : null,
                         canGetPoints ? gameObject.getData("series") : null,
                         canGetPoints ? gameObject.getData("rarity") : null,
-                        authorBuffPts
+                        authorBuffPts,
+                        scene.GameHandler.currentRoomID
                     )
                 }
                 // ** "日"(輔助卡格)不能蓋牌，否則無法獲得積分加倍
@@ -637,11 +679,13 @@ export default class InteractiveHandler {
                     "serverSetCardType",
                     cardObjectData.side === "playerCard" ? scene.socket.id : scene.GameHandler.opponentID,
                     cardObjectData.cardPosition, // 天(0), 地(1), 人(2)
+                    elementMap[element],
                     canGetPoints ? elementMap[element] : null,
                     canGetPoints ? CardPointConverter.getPoints(gameObject) : null,
                     canGetPoints ? cardObjectData.series : null,
                     canGetPoints ? cardObjectData.rarity : null,
-                    authorBuffPts
+                    authorBuffPts,
+                    scene.GameHandler.currentRoomID
                 )
                 // 通知server再call SocketHandler的calculatePoints。
                 scene.socket.emit(
@@ -756,6 +800,18 @@ export default class InteractiveHandler {
                 (handler.hasGlobalEffect && handler.playerWCardId === cardId) ||
                 (handler.opponentHasGlobalEffect && handler.opponentWCardId === cardId)
             )
+        }
+
+        function getGlobalEffectOwner(cardId) {
+            const handler = scene.GameHandler
+            // Prefer player if both match
+            if (handler.hasGlobalEffect && handler.playerWCardId === cardId) {
+                return "player"
+            }
+            if (handler.opponentHasGlobalEffect && handler.opponentWCardId === cardId) {
+                return "opponent"
+            }
+            return null // no match
         }
     }
 }

@@ -163,10 +163,12 @@ export default class PointControlPopup {
             cardObjectData.side === "playerCard" ? scene.socket.id : scene.GameHandler.opponentID,
             cardObjectData.cardPosition, // 天(0), 地(1), 人(2)
             cardObjectData.element,
+            cardObjectData.element,
             CardPointConverter.getPoints(gameObject),
             cardObjectData.series,
             cardObjectData.rarity,
-            authorBuffPts
+            authorBuffPts,
+            scene.GameHandler.currentRoomID
         )
         // 通知server再call SocketHandler的calculatePoints。
         scene.socket.emit(

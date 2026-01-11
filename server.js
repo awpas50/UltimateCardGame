@@ -142,6 +142,7 @@ io.on("connection", async function (socket) {
         multiplierSpecialRuleCheck: null,
         multiplierSpecialCount: 1,
         isHCardActive: false, // for multiplier
+        inSceneElement: [null, null, null], // for card record
         inSceneElementCalculator: [null, null, null], // for multiplier
         inSceneIPointCalculator: [null, null, null], // for multiplier
         inSceneSeriesCalculator: [null, null, null], // for multiplier
@@ -296,13 +297,19 @@ io.on("connection", async function (socket) {
 
     // Used for setting score multiplier at the end of the round
     // position: 天(0), 地(1), 人(2)
-    socket.on("serverSetCardType", function (socketId, position, elementId, inspriationPt, series, rarity, authorBuffPt) {
-        players[socketId].inSceneElementCalculator[position] = elementId // double scores if all elements match
-        players[socketId].inSceneIPointCalculator[position] = inspriationPt // triple scores if all inspriation points match
-        players[socketId].inSceneSeriesCalculator[position] = series // triple scores if all series match
-        players[socketId].inSceneRarityCalculator[position] = rarity
-        players[socketId].inSceneAuthorBoostPt[position] = authorBuffPt
-    })
+    socket.on(
+        "serverSetCardType",
+        function (socketId, position, element, elementId, inspirationPt, series, rarity, authorBuffPt, roomId) {
+            players[socketId].inSceneElement[position] = element // no null
+            players[socketId].inSceneElementCalculator[position] = elementId // double scores if all elements match, can be null
+            players[socketId].inSceneIPointCalculator[position] = inspirationPt // triple scores if all inspiration points match
+            players[socketId].inSceneSeriesCalculator[position] = series // triple scores if all series match
+            players[socketId].inSceneRarityCalculator[position] = rarity
+            players[socketId].inSceneAuthorBoostPt[position] = authorBuffPt
+            // local需要一份copy(作者屬性加成除外，暫不需要，如有需要再說)
+            io.to(roomId).emit("localSetCardType", socketId, position, element, elementId, inspirationPt, series, rarity)
+        }
+    )
     socket.on("serverSetHCardActiveState", function (socketId, state) {
         players[socketId].isHCardActive = state
     })
@@ -610,6 +617,7 @@ function endRound(roomId) {
 // endRoundRoom: array (string)
 function resetBattleField(roomId, endRoundRoom) {
     for (let i = 0; i < endRoundRoom.length; i++) {
+        players[endRoundRoom[i]].inSceneElement = [null, null, null]
         players[endRoundRoom[i]].inSceneElementCalculator = [null, null, null]
         players[endRoundRoom[i]].inSceneIPointCalculator = [null, null, null]
         players[endRoundRoom[i]].inSceneSeriesCalculator = [null, null, null]
