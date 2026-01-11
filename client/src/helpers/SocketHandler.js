@@ -592,9 +592,6 @@ export default class SocketHandler {
             // For example: uniqueID = 6, adds score in field D8. As the first row is the header, and uniqueId starts from 0
             fetch(`${ApiDomain.name}/api/update-sheet-data/raw?range=帳號!D${Number(uniqueId) + offset}&value=${newScore}`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
             }).catch((error) => {
                 console.error("Error:", error)
                 scene.Toast.showTopToast("網絡問題，無法更新分數，請聯繫管理員")

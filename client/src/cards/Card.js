@@ -1,4 +1,5 @@
-import { ICard_Data_24256, WCard_Data_25266, HCard_Data_24256 } from "../scenes/game.js"
+import { ICard_Data_24256, HCard_Data_24256 } from "../scenes/game.js"
+import { WCard_Data_25266 } from "../database/gamedata.js"
 
 export default class Card {
     constructor(scene) {

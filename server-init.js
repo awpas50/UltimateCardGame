@@ -1,73 +1,83 @@
 require("dotenv").config()
 const express = require("express")
 const cors = require("cors")
-const server = express()
-server.use(cors())
-
 const { google } = require("googleapis")
 const fs = require("fs")
 
+const server = express()
+server.use(cors())
+
+// Load credentials
 const credentials = JSON.parse(fs.readFileSync("./google-sheets-api-credentials.json", "utf8"))
-
 const SHEET_ID = process.env.GOOGLE_SHEET_ID
-const PRIVATE_KEY = credentials.private_key
-const SERVICE_ACCOUNT = credentials.client_email
 
-const jwtClient = new google.auth.JWT(SERVICE_ACCOUNT, null, PRIVATE_KEY, ["https://www.googleapis.com/auth/spreadsheets"])
+// Auth client
+const jwtClient = new google.auth.JWT(credentials.client_email, null, credentials.private_key, [
+    "https://www.googleapis.com/auth/spreadsheets",
+])
 
-jwtClient.authorize(function (err) {
-    if (err) {
-        console.log(err)
-        return
+// Sheets client (reuse this everywhere)
+const sheets = google.sheets({ version: "v4", auth: jwtClient })
+
+// Authorize once
+jwtClient.authorize().catch((err) => console.error("Auth error:", err))
+
+// --- Routes ---
+
+// GET sheet data
+// range: A1 notation (e.g., "Sheet1!A1:B2")
+server.get("/api/get-sheet-data", async (req, res) => {
+    try {
+        const { range } = req.query
+        const response = await sheets.spreadsheets.values.get({
+            spreadsheetId: SHEET_ID,
+            range,
+        })
+        res.json(response.data.values)
+    } catch (err) {
+        console.error("[Error /api/get-sheet-data]", err)
+        res.status(500).send("Error")
     }
 })
 
+// POST update sheet data
 // range: A1 notation (e.g., "Sheet1!A1:B2")
-server.get("/api/get-sheet-data", (req, res) => {
-    const { range } = req.query
-    const sheets = google.sheets({ version: "v4", auth: jwtClient })
-    sheets.spreadsheets.values.get(
-        {
+server.post("/api/update-sheet-data/raw", async (req, res) => {
+    try {
+        const { range, value } = req.query
+        const parsedValue = [value.split(",")] // supports comma-separated values
+
+        const response = await sheets.spreadsheets.values.update({
             spreadsheetId: SHEET_ID,
-            range: range,
-        },
-        (err, response) => {
-            if (err) {
-                console.error("[Error /api/get-sheet-data]" + err)
-                res.status(500).send("Error")
-                return
-            }
-            res.send(response.data.values)
-        }
-    )
+            range,
+            valueInputOption: "RAW",
+            resource: { values: parsedValue },
+        })
+        res.json(response.data)
+    } catch (err) {
+        console.error("[Error /api/update-sheet-data/raw]", err)
+        res.status(500).send("Error")
+    }
 })
 
-// range: A1 notation (e.g., "Sheet1!A1:B2")
-// value: if bringing multiple values, use a comma-separated string (e.g., "A,B,C")
-server.post("/api/update-sheet-data/raw", (req, res) => {
-    const { range, value } = req.query
-    const sheets = google.sheets({ version: "v4", auth: jwtClient })
+// WCard info: [0]ID [1]名稱 [2]星數 [3]天 [4]地 [5]人
+// [6]屬性加成 (火) [7]屬性加成 (水) [8]屬性加成 (木) [9]屬性加成 (金) [10]屬性加成 (土)
 
-    const parsedValue = [[value]]
-
-    sheets.spreadsheets.values.update(
-        {
+// WCard ability: [11]技能類型(ability) [12]目標(target)
+// [13]條件(targetRules) [14]主動技能(hasActiveSkill)
+// [15]使用次數(abilityCharges)，不填不能用主動技能 [16]領域技能(globalEffect)
+server.get("/api/get-wcard-info/25266", async (req, res) => {
+    try {
+        const range = "25266_作者卡!A5:Q100"
+        const response = await sheets.spreadsheets.values.get({
             spreadsheetId: SHEET_ID,
-            range: range,
-            valueInputOption: "RAW",
-            resource: {
-                values: parsedValue,
-            },
-        },
-        (err, response) => {
-            if (err) {
-                console.error("[Error /api/update-sheet-data/raw]" + err)
-                res.status(500).send("Error")
-                return
-            }
-            res.send(response.data)
-        }
-    )
+            range,
+        })
+        res.json(response.data.values)
+    } catch (err) {
+        console.error("[Error /api/get-wcard-info/25266]", err)
+        res.status(500).send("Error")
+    }
 })
 
 module.exports = server

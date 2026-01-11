@@ -1,4 +1,4 @@
-import { WCard_Data_25266 } from "../scenes/game.js"
+import { WCard_Data_25266 } from "../database/gamedata.js"
 
 export default class GameHandler {
     constructor(scene) {

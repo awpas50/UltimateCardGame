@@ -1,6 +1,6 @@
 import Color from "../helpers/Color"
 import PositionHandler from "../helpers/PositionHandler"
-import { WCard_Data_25266 } from "../scenes/game.js"
+import { WCard_Data_25266 } from "../database/gamedata.js"
 
 export default class AuthorCardDeckEditHandler {
     constructor(scene) {
@@ -172,6 +172,8 @@ export default class AuthorCardDeckEditHandler {
             const totalCards = wCards.length
             let wCardId
             let counter = 0
+            console.log("AFDSHFUE(UIOHFPUIEHFP(*WEHP(F*")
+            console.log(WCard_Data_25266)
 
             for (let i = 0; i < totalCards; i++) {
                 wCardId = wCards[i]

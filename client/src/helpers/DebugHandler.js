@@ -1,3 +1,4 @@
+import ApiDomain from "../mixins/ApiDomain"
 export default class DebugHandler {
     constructor(scene) {
         // Get the x and y coordinates of the mouse pointer
@@ -55,6 +56,14 @@ export default class DebugHandler {
                 opponentInSceneIPointCalculator: scene.GameHandler.opponentInSceneIPointCalculator,
                 opponentInSceneSeriesCalculator: scene.GameHandler.opponentInSceneSeriesCalculator,
                 opponentInSceneRarityCalculator: scene.GameHandler.opponentInSceneRarityCalculator,
+            })
+        })
+        scene.input.keyboard.on("keydown-EIGHT", () => {
+            console.log("[Debug] Excel強制計分")
+            const offset = 2
+            const uniqueId = scene.registry.get("uniqueId") || "0"
+            fetch(`${ApiDomain.name}/api/update-sheet-data/raw?range=帳號!D${Number(uniqueId) + offset}&value=1`, {
+                method: "POST",
             })
         })
         // disabled in production
