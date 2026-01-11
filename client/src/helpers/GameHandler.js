@@ -32,6 +32,19 @@ export default class GameHandler {
         this.opponentGroundElements = []
         this.opponentPersonElements = []
 
+        // 打出的卡
+        this.playerInSceneElement = [null, null, null]
+        this.playerInSceneElementCalculator = [null, null, null]
+        this.playerInSceneIPointCalculator = [null, null, null]
+        this.playerInSceneSeriesCalculator = [null, null, null]
+        this.playerInSceneRarityCalculator = [null, null, null]
+
+        this.opponentInSceneElement = [null, null, null]
+        this.opponentInSceneElementCalculator = [null, null, null]
+        this.opponentInSceneIPointCalculator = [null, null, null]
+        this.opponentInSceneSeriesCalculator = [null, null, null]
+        this.opponentInSceneRarityCalculator = [null, null, null]
+
         //加成 [5種屬性]
         this.authorBuffs = []
         this.authorBuffPoint = 0
@@ -150,6 +163,17 @@ export default class GameHandler {
         }
         this.setOpponentPersonPoint = (point) => {
             this.opponentPersonPoint = point
+        }
+        this.clearInSceneCardInfo = () => {
+            this.playerInSceneElementCalculator = [null, null, null]
+            this.playerInSceneIPointCalculator = [null, null, null]
+            this.playerInSceneSeriesCalculator = [null, null, null]
+            this.playerInSceneRarityCalculator = [null, null, null]
+
+            this.opponentInSceneElementCalculator = [null, null, null]
+            this.opponentInSceneIPointCalculator = [null, null, null]
+            this.opponentInSceneSeriesCalculator = [null, null, null]
+            this.opponentInSceneRarityCalculator = [null, null, null]
         }
 
         this.setPlayerTotalPoint = () => {

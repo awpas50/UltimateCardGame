@@ -370,6 +370,7 @@ export const WCard_Data_24256 = {
         ground: ["木", "水", "火"],
         person: ["木", "水", "火"],
         authorBuffs: [10, 10, 10, 0, 0],
+        ability: "限制出牌",
         target: "$element=金,土$rules=W013",
         globalEffect: true,
     },
