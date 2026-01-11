@@ -531,6 +531,23 @@ export default class SocketHandler {
             )
         })
 
+        // from server: serverSetCardType
+        scene.socket.on("localSetCardType", (socketId, position, element, elementId, inspirationPt, series, rarity) => {
+            if (socketId === scene.socket.id) {
+                scene.GameHandler.playerInSceneElement[position] = element
+                scene.GameHandler.playerInSceneElementCalculator[position] = elementId
+                scene.GameHandler.playerInSceneIPointCalculator[position] = inspirationPt
+                scene.GameHandler.playerInSceneSeriesCalculator[position] = series
+                scene.GameHandler.playerInSceneRarityCalculator[position] = rarity
+            } else {
+                scene.GameHandler.opponentInSceneElement[position] = element
+                scene.GameHandler.opponentInSceneElementCalculator[position] = elementId
+                scene.GameHandler.opponentInSceneIPointCalculator[position] = inspirationPt
+                scene.GameHandler.opponentInSceneSeriesCalculator[position] = series
+                scene.GameHandler.opponentInSceneRarityCalculator[position] = rarity
+            }
+        })
+
         scene.socket.on("setTurn", (turn) => {
             scene.GameHandler.setTurn(turn)
         })
@@ -585,7 +602,6 @@ export default class SocketHandler {
         })
 
         scene.socket.on("clearLocalBattleField", (socketIdToStartLater) => {
-            console.log("clearLocalBattleField")
             // Destroy objects in all storage arrays
             scene.CardStorage.inSceneStorage.forEach((object) => {
                 if (object && object.destroy) {
@@ -613,6 +629,7 @@ export default class SocketHandler {
             scene.GameHandler.setOpponentSkyPoint(0)
             scene.GameHandler.setOpponentGroundPoint(0)
             scene.GameHandler.setOpponentPersonPoint(0)
+            scene.GameHandler.clearInSceneCardInfo()
             scene.UIHandler.setPlayerPointText(0)
             scene.UIHandler.setOpponentPointText(0)
             // UI

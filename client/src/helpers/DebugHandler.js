@@ -34,6 +34,29 @@ export default class DebugHandler {
         scene.input.keyboard.on("keydown-SIX", () => {
             console.log("[Debug] 你的回合? ", scene.GameHandler.isMyTurn)
         })
+        scene.input.keyboard.on("keydown-SEVEN", () => {
+            console.log({
+                playerSkyElements: scene.GameHandler.playerSkyElements,
+                playerGroundElements: scene.GameHandler.playerGroundElements,
+                playerPersonElements: scene.GameHandler.playerPersonElements,
+
+                opponentSkyElements: scene.GameHandler.opponentSkyElements,
+                opponentGroundElements: scene.GameHandler.opponentGroundElements,
+                opponentPersonElements: scene.GameHandler.opponentPersonElements,
+
+                playerInSceneElement: scene.GameHandler.playerInSceneElement,
+                playerInSceneElementCalculator: scene.GameHandler.playerInSceneElementCalculator,
+                playerInSceneIPointCalculator: scene.GameHandler.playerInSceneIPointCalculator,
+                playerInSceneSeriesCalculator: scene.GameHandler.playerInSceneSeriesCalculator,
+                playerInSceneRarityCalculator: scene.GameHandler.playerInSceneRarityCalculator,
+
+                opponentInSceneElement: scene.GameHandler.opponentInSceneElement,
+                opponentInSceneElementCalculator: scene.GameHandler.opponentInSceneElementCalculator,
+                opponentInSceneIPointCalculator: scene.GameHandler.opponentInSceneIPointCalculator,
+                opponentInSceneSeriesCalculator: scene.GameHandler.opponentInSceneSeriesCalculator,
+                opponentInSceneRarityCalculator: scene.GameHandler.opponentInSceneRarityCalculator,
+            })
+        })
         // disabled in production
         // scene.input.keyboard.on("keydown-NUMPAD_ADD", () => {
         //     scene.socket.emit("serverDebugUpdateScores", scene.socket.id, 1, (response) => {
